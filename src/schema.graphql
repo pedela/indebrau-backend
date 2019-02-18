@@ -1,0 +1,41 @@
+# import Graph, GraphData, Permission, Brewday from "./generated/prisma.graphql"
+
+type Query {
+  activeGraph(logFileName: String): Graph
+  me: User
+}
+
+type Mutation {
+  signup(
+    email: String!
+    name: String!
+    password: String!
+    registrationSecret: String
+  ): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  addData(sensorData: SensorDataInput!): GraphData!
+  addGraph(name: String!, logFileName: String!, startDateTime: DateTime): Graph!
+}
+
+type Subscription {
+  graphSubscription: GraphSubscriptionPayload!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type User {
+  id: ID!
+  mail: String!
+  name: String!
+  permissions: Permission
+  brewdays: Brewday
+}
+
+input SensorDataInput {
+  sensorName: String!
+  sensorTimeStamp: DateTime!
+  sensorValue: Float!
+}

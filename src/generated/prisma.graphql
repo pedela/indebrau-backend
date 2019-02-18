@@ -1,0 +1,1293 @@
+# source: https://indebrau-e39f02ad0a.herokuapp.com/indebrau-backend/dev
+# timestamp: Thu Feb 14 2019 20:24:08 GMT+0100 (Central European Standard Time)
+
+type AggregateBrewday {
+  count: Int!
+}
+
+type AggregateGraph {
+  count: Int!
+}
+
+type AggregateGraphData {
+  count: Int!
+}
+
+type AggregateUser {
+  count: Int!
+}
+
+type BatchPayload {
+  """The number of nodes that have been affected by the Batch operation."""
+  count: Long!
+}
+
+type Brewday implements Node {
+  id: ID!
+}
+
+"""A connection to a list of items."""
+type BrewdayConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [BrewdayEdge]!
+  aggregate: AggregateBrewday!
+}
+
+input BrewdayCreateManyInput {
+  connect: [BrewdayWhereUniqueInput!]
+}
+
+"""An edge in a connection."""
+type BrewdayEdge {
+  """The item at the end of the edge."""
+  node: Brewday!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum BrewdayOrderByInput {
+  id_ASC
+  id_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type BrewdayPreviousValues {
+  id: ID!
+}
+
+input BrewdayScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [BrewdayScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [BrewdayScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [BrewdayScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+}
+
+type BrewdaySubscriptionPayload {
+  mutation: MutationType!
+  node: Brewday
+  updatedFields: [String!]
+  previousValues: BrewdayPreviousValues
+}
+
+input BrewdaySubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [BrewdaySubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [BrewdaySubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [BrewdaySubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: BrewdayWhereInput
+}
+
+input BrewdayUpdateManyInput {
+  connect: [BrewdayWhereUniqueInput!]
+  disconnect: [BrewdayWhereUniqueInput!]
+  delete: [BrewdayWhereUniqueInput!]
+  deleteMany: [BrewdayScalarWhereInput!]
+}
+
+input BrewdayWhereInput {
+  """Logical AND on all given filters."""
+  AND: [BrewdayWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [BrewdayWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [BrewdayWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+}
+
+input BrewdayWhereUniqueInput {
+  id: ID
+}
+
+scalar DateTime
+
+type Graph implements Node {
+  id: ID!
+  name: String!
+  sensorName: String!
+  active: Boolean!
+  startDateTime: DateTime!
+  endDateTime: DateTime
+  graphData(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData!]
+}
+
+"""A connection to a list of items."""
+type GraphConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [GraphEdge]!
+  aggregate: AggregateGraph!
+}
+
+input GraphCreateInput {
+  name: String!
+  sensorName: String!
+  active: Boolean!
+  startDateTime: DateTime!
+  endDateTime: DateTime
+  graphData: GraphDataCreateManyWithoutGraphInput
+}
+
+input GraphCreateOneWithoutGraphDataInput {
+  create: GraphCreateWithoutGraphDataInput
+  connect: GraphWhereUniqueInput
+}
+
+input GraphCreateWithoutGraphDataInput {
+  name: String!
+  sensorName: String!
+  active: Boolean!
+  startDateTime: DateTime!
+  endDateTime: DateTime
+}
+
+type GraphData implements Node {
+  id: ID!
+  time: DateTime!
+  value: Float!
+  graph: Graph
+}
+
+"""A connection to a list of items."""
+type GraphDataConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [GraphDataEdge]!
+  aggregate: AggregateGraphData!
+}
+
+input GraphDataCreateInput {
+  time: DateTime!
+  value: Float!
+  graph: GraphCreateOneWithoutGraphDataInput
+}
+
+input GraphDataCreateManyWithoutGraphInput {
+  create: [GraphDataCreateWithoutGraphInput!]
+  connect: [GraphDataWhereUniqueInput!]
+}
+
+input GraphDataCreateWithoutGraphInput {
+  time: DateTime!
+  value: Float!
+}
+
+"""An edge in a connection."""
+type GraphDataEdge {
+  """The item at the end of the edge."""
+  node: GraphData!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum GraphDataOrderByInput {
+  id_ASC
+  id_DESC
+  time_ASC
+  time_DESC
+  value_ASC
+  value_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type GraphDataPreviousValues {
+  id: ID!
+  time: DateTime!
+  value: Float!
+}
+
+input GraphDataScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [GraphDataScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [GraphDataScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [GraphDataScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  time: DateTime
+
+  """All values that are not equal to given value."""
+  time_not: DateTime
+
+  """All values that are contained in given list."""
+  time_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  time_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  time_lt: DateTime
+
+  """All values less than or equal the given value."""
+  time_lte: DateTime
+
+  """All values greater than the given value."""
+  time_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  time_gte: DateTime
+  value: Float
+
+  """All values that are not equal to given value."""
+  value_not: Float
+
+  """All values that are contained in given list."""
+  value_in: [Float!]
+
+  """All values that are not contained in given list."""
+  value_not_in: [Float!]
+
+  """All values less than the given value."""
+  value_lt: Float
+
+  """All values less than or equal the given value."""
+  value_lte: Float
+
+  """All values greater than the given value."""
+  value_gt: Float
+
+  """All values greater than or equal the given value."""
+  value_gte: Float
+}
+
+type GraphDataSubscriptionPayload {
+  mutation: MutationType!
+  node: GraphData
+  updatedFields: [String!]
+  previousValues: GraphDataPreviousValues
+}
+
+input GraphDataSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [GraphDataSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [GraphDataSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [GraphDataSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: GraphDataWhereInput
+}
+
+input GraphDataUpdateInput {
+  time: DateTime
+  value: Float
+  graph: GraphUpdateOneWithoutGraphDataInput
+}
+
+input GraphDataUpdateManyDataInput {
+  time: DateTime
+  value: Float
+}
+
+input GraphDataUpdateManyMutationInput {
+  time: DateTime
+  value: Float
+}
+
+input GraphDataUpdateManyWithoutGraphInput {
+  create: [GraphDataCreateWithoutGraphInput!]
+  connect: [GraphDataWhereUniqueInput!]
+  disconnect: [GraphDataWhereUniqueInput!]
+  delete: [GraphDataWhereUniqueInput!]
+  update: [GraphDataUpdateWithWhereUniqueWithoutGraphInput!]
+  updateMany: [GraphDataUpdateManyWithWhereNestedInput!]
+  deleteMany: [GraphDataScalarWhereInput!]
+  upsert: [GraphDataUpsertWithWhereUniqueWithoutGraphInput!]
+}
+
+input GraphDataUpdateManyWithWhereNestedInput {
+  where: GraphDataScalarWhereInput!
+  data: GraphDataUpdateManyDataInput!
+}
+
+input GraphDataUpdateWithoutGraphDataInput {
+  time: DateTime
+  value: Float
+}
+
+input GraphDataUpdateWithWhereUniqueWithoutGraphInput {
+  where: GraphDataWhereUniqueInput!
+  data: GraphDataUpdateWithoutGraphDataInput!
+}
+
+input GraphDataUpsertWithWhereUniqueWithoutGraphInput {
+  where: GraphDataWhereUniqueInput!
+  update: GraphDataUpdateWithoutGraphDataInput!
+  create: GraphDataCreateWithoutGraphInput!
+}
+
+input GraphDataWhereInput {
+  """Logical AND on all given filters."""
+  AND: [GraphDataWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [GraphDataWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [GraphDataWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  time: DateTime
+
+  """All values that are not equal to given value."""
+  time_not: DateTime
+
+  """All values that are contained in given list."""
+  time_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  time_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  time_lt: DateTime
+
+  """All values less than or equal the given value."""
+  time_lte: DateTime
+
+  """All values greater than the given value."""
+  time_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  time_gte: DateTime
+  value: Float
+
+  """All values that are not equal to given value."""
+  value_not: Float
+
+  """All values that are contained in given list."""
+  value_in: [Float!]
+
+  """All values that are not contained in given list."""
+  value_not_in: [Float!]
+
+  """All values less than the given value."""
+  value_lt: Float
+
+  """All values less than or equal the given value."""
+  value_lte: Float
+
+  """All values greater than the given value."""
+  value_gt: Float
+
+  """All values greater than or equal the given value."""
+  value_gte: Float
+  graph: GraphWhereInput
+}
+
+input GraphDataWhereUniqueInput {
+  id: ID
+}
+
+"""An edge in a connection."""
+type GraphEdge {
+  """The item at the end of the edge."""
+  node: Graph!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum GraphOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  sensorName_ASC
+  sensorName_DESC
+  active_ASC
+  active_DESC
+  startDateTime_ASC
+  startDateTime_DESC
+  endDateTime_ASC
+  endDateTime_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type GraphPreviousValues {
+  id: ID!
+  name: String!
+  sensorName: String!
+  active: Boolean!
+  startDateTime: DateTime!
+  endDateTime: DateTime
+}
+
+type GraphSubscriptionPayload {
+  mutation: MutationType!
+  node: Graph
+  updatedFields: [String!]
+  previousValues: GraphPreviousValues
+}
+
+input GraphSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [GraphSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [GraphSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [GraphSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: GraphWhereInput
+}
+
+input GraphUpdateInput {
+  name: String
+  sensorName: String
+  active: Boolean
+  startDateTime: DateTime
+  endDateTime: DateTime
+  graphData: GraphDataUpdateManyWithoutGraphInput
+}
+
+input GraphUpdateManyMutationInput {
+  name: String
+  sensorName: String
+  active: Boolean
+  startDateTime: DateTime
+  endDateTime: DateTime
+}
+
+input GraphUpdateOneWithoutGraphDataInput {
+  create: GraphCreateWithoutGraphDataInput
+  connect: GraphWhereUniqueInput
+  disconnect: Boolean
+  delete: Boolean
+  update: GraphUpdateWithoutGraphDataDataInput
+  upsert: GraphUpsertWithoutGraphDataInput
+}
+
+input GraphUpdateWithoutGraphDataDataInput {
+  name: String
+  sensorName: String
+  active: Boolean
+  startDateTime: DateTime
+  endDateTime: DateTime
+}
+
+input GraphUpsertWithoutGraphDataInput {
+  update: GraphUpdateWithoutGraphDataDataInput!
+  create: GraphCreateWithoutGraphDataInput!
+}
+
+input GraphWhereInput {
+  """Logical AND on all given filters."""
+  AND: [GraphWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [GraphWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [GraphWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  sensorName: String
+
+  """All values that are not equal to given value."""
+  sensorName_not: String
+
+  """All values that are contained in given list."""
+  sensorName_in: [String!]
+
+  """All values that are not contained in given list."""
+  sensorName_not_in: [String!]
+
+  """All values less than the given value."""
+  sensorName_lt: String
+
+  """All values less than or equal the given value."""
+  sensorName_lte: String
+
+  """All values greater than the given value."""
+  sensorName_gt: String
+
+  """All values greater than or equal the given value."""
+  sensorName_gte: String
+
+  """All values containing the given string."""
+  sensorName_contains: String
+
+  """All values not containing the given string."""
+  sensorName_not_contains: String
+
+  """All values starting with the given string."""
+  sensorName_starts_with: String
+
+  """All values not starting with the given string."""
+  sensorName_not_starts_with: String
+
+  """All values ending with the given string."""
+  sensorName_ends_with: String
+
+  """All values not ending with the given string."""
+  sensorName_not_ends_with: String
+  active: Boolean
+
+  """All values that are not equal to given value."""
+  active_not: Boolean
+  startDateTime: DateTime
+
+  """All values that are not equal to given value."""
+  startDateTime_not: DateTime
+
+  """All values that are contained in given list."""
+  startDateTime_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  startDateTime_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  startDateTime_lt: DateTime
+
+  """All values less than or equal the given value."""
+  startDateTime_lte: DateTime
+
+  """All values greater than the given value."""
+  startDateTime_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  startDateTime_gte: DateTime
+  endDateTime: DateTime
+
+  """All values that are not equal to given value."""
+  endDateTime_not: DateTime
+
+  """All values that are contained in given list."""
+  endDateTime_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  endDateTime_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  endDateTime_lt: DateTime
+
+  """All values less than or equal the given value."""
+  endDateTime_lte: DateTime
+
+  """All values greater than the given value."""
+  endDateTime_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  endDateTime_gte: DateTime
+  graphData_every: GraphDataWhereInput
+  graphData_some: GraphDataWhereInput
+  graphData_none: GraphDataWhereInput
+}
+
+input GraphWhereUniqueInput {
+  id: ID
+}
+
+"""
+The `Long` scalar type represents non-fractional signed whole numeric values.
+Long can represent values between -(2^63) and 2^63 - 1.
+"""
+scalar Long
+
+type Mutation {
+  createUser(data: UserCreateInput!): User!
+  createGraphData(data: GraphDataCreateInput!): GraphData!
+  createGraph(data: GraphCreateInput!): Graph!
+  createBrewday: Brewday!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateGraphData(data: GraphDataUpdateInput!, where: GraphDataWhereUniqueInput!): GraphData
+  updateGraph(data: GraphUpdateInput!, where: GraphWhereUniqueInput!): Graph
+  deleteUser(where: UserWhereUniqueInput!): User
+  deleteGraphData(where: GraphDataWhereUniqueInput!): GraphData
+  deleteGraph(where: GraphWhereUniqueInput!): Graph
+  deleteBrewday(where: BrewdayWhereUniqueInput!): Brewday
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertGraphData(where: GraphDataWhereUniqueInput!, create: GraphDataCreateInput!, update: GraphDataUpdateInput!): GraphData!
+  upsertGraph(where: GraphWhereUniqueInput!, create: GraphCreateInput!, update: GraphUpdateInput!): Graph!
+  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  updateManyGraphDatas(data: GraphDataUpdateManyMutationInput!, where: GraphDataWhereInput): BatchPayload!
+  updateManyGraphs(data: GraphUpdateManyMutationInput!, where: GraphWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyGraphDatas(where: GraphDataWhereInput): BatchPayload!
+  deleteManyGraphs(where: GraphWhereInput): BatchPayload!
+  deleteManyBrewdays(where: BrewdayWhereInput): BatchPayload!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+"""An object with an ID"""
+interface Node {
+  """The id of the object."""
+  id: ID!
+}
+
+"""Information about pagination in a connection."""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+enum Permission {
+  ADMIN
+  USER
+}
+
+type Query {
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  graphDatas(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData]!
+  graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph]!
+  brewdays(where: BrewdayWhereInput, orderBy: BrewdayOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Brewday]!
+  user(where: UserWhereUniqueInput!): User
+  graphData(where: GraphDataWhereUniqueInput!): GraphData
+  graph(where: GraphWhereUniqueInput!): Graph
+  brewday(where: BrewdayWhereUniqueInput!): Brewday
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  graphDatasConnection(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphDataConnection!
+  graphsConnection(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphConnection!
+  brewdaysConnection(where: BrewdayWhereInput, orderBy: BrewdayOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewdayConnection!
+
+  """Fetches an object given its ID"""
+  node(
+    """The ID of an object"""
+    id: ID!
+  ): Node
+}
+
+type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  graphData(where: GraphDataSubscriptionWhereInput): GraphDataSubscriptionPayload
+  graph(where: GraphSubscriptionWhereInput): GraphSubscriptionPayload
+  brewday(where: BrewdaySubscriptionWhereInput): BrewdaySubscriptionPayload
+}
+
+type User implements Node {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  permissions: [Permission!]!
+  brewdays(where: BrewdayWhereInput, orderBy: BrewdayOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Brewday!]
+}
+
+"""A connection to a list of items."""
+type UserConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [UserEdge]!
+  aggregate: AggregateUser!
+}
+
+input UserCreateInput {
+  name: String!
+  email: String!
+  password: String!
+  permissions: UserCreatepermissionsInput
+  brewdays: BrewdayCreateManyInput
+}
+
+input UserCreatepermissionsInput {
+  set: [Permission!]
+}
+
+"""An edge in a connection."""
+type UserEdge {
+  """The item at the end of the edge."""
+  node: User!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum UserOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  email_ASC
+  email_DESC
+  password_ASC
+  password_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type UserPreviousValues {
+  id: ID!
+  name: String!
+  email: String!
+  password: String!
+  permissions: [Permission!]!
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [UserSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [UserSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [UserSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
+}
+
+input UserUpdateInput {
+  name: String
+  email: String
+  password: String
+  permissions: UserUpdatepermissionsInput
+  brewdays: BrewdayUpdateManyInput
+}
+
+input UserUpdateManyMutationInput {
+  name: String
+  email: String
+  password: String
+  permissions: UserUpdatepermissionsInput
+}
+
+input UserUpdatepermissionsInput {
+  set: [Permission!]
+}
+
+input UserWhereInput {
+  """Logical AND on all given filters."""
+  AND: [UserWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [UserWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [UserWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  email: String
+
+  """All values that are not equal to given value."""
+  email_not: String
+
+  """All values that are contained in given list."""
+  email_in: [String!]
+
+  """All values that are not contained in given list."""
+  email_not_in: [String!]
+
+  """All values less than the given value."""
+  email_lt: String
+
+  """All values less than or equal the given value."""
+  email_lte: String
+
+  """All values greater than the given value."""
+  email_gt: String
+
+  """All values greater than or equal the given value."""
+  email_gte: String
+
+  """All values containing the given string."""
+  email_contains: String
+
+  """All values not containing the given string."""
+  email_not_contains: String
+
+  """All values starting with the given string."""
+  email_starts_with: String
+
+  """All values not starting with the given string."""
+  email_not_starts_with: String
+
+  """All values ending with the given string."""
+  email_ends_with: String
+
+  """All values not ending with the given string."""
+  email_not_ends_with: String
+  password: String
+
+  """All values that are not equal to given value."""
+  password_not: String
+
+  """All values that are contained in given list."""
+  password_in: [String!]
+
+  """All values that are not contained in given list."""
+  password_not_in: [String!]
+
+  """All values less than the given value."""
+  password_lt: String
+
+  """All values less than or equal the given value."""
+  password_lte: String
+
+  """All values greater than the given value."""
+  password_gt: String
+
+  """All values greater than or equal the given value."""
+  password_gte: String
+
+  """All values containing the given string."""
+  password_contains: String
+
+  """All values not containing the given string."""
+  password_not_contains: String
+
+  """All values starting with the given string."""
+  password_starts_with: String
+
+  """All values not starting with the given string."""
+  password_not_starts_with: String
+
+  """All values ending with the given string."""
+  password_ends_with: String
+
+  """All values not ending with the given string."""
+  password_not_ends_with: String
+  brewdays_every: BrewdayWhereInput
+  brewdays_some: BrewdayWhereInput
+  brewdays_none: BrewdayWhereInput
+}
+
+input UserWhereUniqueInput {
+  id: ID
+  email: String
+}

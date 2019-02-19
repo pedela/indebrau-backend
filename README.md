@@ -1,7 +1,7 @@
 # HowTo Build
 
 Run: yarn dev  
-or npm run dev
+or npm run debug
 
 Deploy Database:  
 docker-compose up -d  

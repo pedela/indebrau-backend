@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const auth = {
+  
   async signup(parent, args, ctx) {
     const password = await bcrypt.hash(args.password, 10);
     const name = args.name;
@@ -27,8 +28,13 @@ const auth = {
     if (!valid) {
       throw new Error('Invalid password');
     }
+    let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    ctx.response.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
+    });
     return {
-      token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+      token: token,
       user
     };
   }

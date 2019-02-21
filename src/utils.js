@@ -1,21 +1,3 @@
-const jwt = require('jsonwebtoken');
-
-function getUserId(ctx) {
-  const Authorization = ctx.request.get('Authorization');
-  if (Authorization) {
-    const token = Authorization.replace('Bearer ', '');
-    const { userId } = jwt.verify(token, process.env.APP_SECRET);
-    return userId;
-  }
-  throw new AuthError();
-}
-
-class AuthError extends Error {
-  constructor() {
-    super('Not authorized');
-  }
-}
-
 function hasPermission(user, permissionsNeeded) {
   const matchedPermissions = user.permissions.filter(permissionTheyHave =>
     permissionsNeeded.includes(permissionTheyHave)
@@ -29,8 +11,20 @@ function hasPermission(user, permissionsNeeded) {
   }
 }
 
+/* Helper function that updates a passed active brewdays object. */
+async function getActiveBrewDays(ctx, activeBrewDays) {
+  if (activeBrewDays.length == 0) {
+    activeBrewDays = await ctx.db.query.brewdays(
+      { where: { active: true } },
+      `{
+      id,start,end,graphs{id}
+      }`
+    );
+  }
+  return activeBrewDays;
+}
+
 module.exports = {
-  getUserId,
-  AuthError,
-  hasPermission
+  hasPermission,
+  getActiveBrewDays
 };

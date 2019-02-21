@@ -1,8 +1,13 @@
-const { getUserId } = require('../../utils');
+const { getUserId, getActiveBrewDays } = require('../../utils');
+var activeBrewDays = [];
 
 const graphMutations = {
   async addData(parent, args, ctx) {
-    getUserId(ctx);
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to do that!');
+    }
+    activeBrewDays = getActiveBrewDays(ctx, activeBrewDays);
+
     const sensorDataInput = args.sensorData;
     // get active graph with matching sensor name
     // (should be the one we are filling with data..)

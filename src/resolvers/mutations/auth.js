@@ -15,7 +15,8 @@ const auth = {
       data: { name, password, email }
     });
     return {
-      token: jwt.sign({ userId: user.id }, process.env.APP_SECRET)
+      token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
+      user
     };
   },
 

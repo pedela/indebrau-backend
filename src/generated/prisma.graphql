@@ -1,7 +1,7 @@
-# source: http://localhost:4466
-# timestamp: Thu Feb 21 2019 18:02:40 GMT+0100 (Central European Standard Time)
+# source: https://indebrauprismadb-8f06e6548c.herokuapp.com
+# timestamp: Thu Mar 07 2019 12:43:16 GMT+0100 (Central European Standard Time)
 
-type AggregateBrewday {
+type AggregateBrewingProcess {
   count: Int!
 }
 
@@ -22,7 +22,7 @@ type BatchPayload {
   count: Long!
 }
 
-type Brewday implements Node {
+type BrewingProcess implements Node {
   id: ID!
   start: DateTime!
   end: DateTime
@@ -32,57 +32,57 @@ type Brewday implements Node {
 }
 
 """A connection to a list of items."""
-type BrewdayConnection {
+type BrewingProcessConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [BrewdayEdge]!
-  aggregate: AggregateBrewday!
+  edges: [BrewingProcessEdge]!
+  aggregate: AggregateBrewingProcess!
 }
 
-input BrewdayCreateInput {
+input BrewingProcessCreateInput {
   start: DateTime!
   end: DateTime
   active: Boolean!
-  graphs: GraphCreateManyWithoutBrewdayInput
-  users: UserCreateManyWithoutParticipatingBrewdaysInput
+  graphs: GraphCreateManyWithoutBrewingProcessInput
+  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
 }
 
-input BrewdayCreateManyWithoutUsersInput {
-  create: [BrewdayCreateWithoutUsersInput!]
-  connect: [BrewdayWhereUniqueInput!]
+input BrewingProcessCreateManyWithoutUsersInput {
+  create: [BrewingProcessCreateWithoutUsersInput!]
+  connect: [BrewingProcessWhereUniqueInput!]
 }
 
-input BrewdayCreateOneWithoutGraphsInput {
-  create: BrewdayCreateWithoutGraphsInput
-  connect: BrewdayWhereUniqueInput
+input BrewingProcessCreateOneWithoutGraphsInput {
+  create: BrewingProcessCreateWithoutGraphsInput
+  connect: BrewingProcessWhereUniqueInput
 }
 
-input BrewdayCreateWithoutGraphsInput {
+input BrewingProcessCreateWithoutGraphsInput {
   start: DateTime!
   end: DateTime
   active: Boolean!
-  users: UserCreateManyWithoutParticipatingBrewdaysInput
+  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
 }
 
-input BrewdayCreateWithoutUsersInput {
+input BrewingProcessCreateWithoutUsersInput {
   start: DateTime!
   end: DateTime
   active: Boolean!
-  graphs: GraphCreateManyWithoutBrewdayInput
+  graphs: GraphCreateManyWithoutBrewingProcessInput
 }
 
 """An edge in a connection."""
-type BrewdayEdge {
+type BrewingProcessEdge {
   """The item at the end of the edge."""
-  node: Brewday!
+  node: BrewingProcess!
 
   """A cursor for use in pagination."""
   cursor: String!
 }
 
-enum BrewdayOrderByInput {
+enum BrewingProcessOrderByInput {
   id_ASC
   id_DESC
   start_ASC
@@ -97,22 +97,22 @@ enum BrewdayOrderByInput {
   createdAt_DESC
 }
 
-type BrewdayPreviousValues {
+type BrewingProcessPreviousValues {
   id: ID!
   start: DateTime!
   end: DateTime
   active: Boolean!
 }
 
-input BrewdayScalarWhereInput {
+input BrewingProcessScalarWhereInput {
   """Logical AND on all given filters."""
-  AND: [BrewdayScalarWhereInput!]
+  AND: [BrewingProcessScalarWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [BrewdayScalarWhereInput!]
+  OR: [BrewingProcessScalarWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [BrewdayScalarWhereInput!]
+  NOT: [BrewingProcessScalarWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -203,22 +203,22 @@ input BrewdayScalarWhereInput {
   active_not: Boolean
 }
 
-type BrewdaySubscriptionPayload {
+type BrewingProcessSubscriptionPayload {
   mutation: MutationType!
-  node: Brewday
+  node: BrewingProcess
   updatedFields: [String!]
-  previousValues: BrewdayPreviousValues
+  previousValues: BrewingProcessPreviousValues
 }
 
-input BrewdaySubscriptionWhereInput {
+input BrewingProcessSubscriptionWhereInput {
   """Logical AND on all given filters."""
-  AND: [BrewdaySubscriptionWhereInput!]
+  AND: [BrewingProcessSubscriptionWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [BrewdaySubscriptionWhereInput!]
+  OR: [BrewingProcessSubscriptionWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [BrewdaySubscriptionWhereInput!]
+  NOT: [BrewingProcessSubscriptionWhereInput!]
 
   """
   The subscription event gets dispatched when it's listed in mutation_in
@@ -239,92 +239,91 @@ input BrewdaySubscriptionWhereInput {
   The subscription event gets only dispatched when some of the field names included in this list have been updated
   """
   updatedFields_contains_some: [String!]
-  node: BrewdayWhereInput
+  node: BrewingProcessWhereInput
 }
 
-input BrewdayUpdateInput {
+input BrewingProcessUpdateInput {
   start: DateTime
   end: DateTime
   active: Boolean
-  graphs: GraphUpdateManyWithoutBrewdayInput
-  users: UserUpdateManyWithoutParticipatingBrewdaysInput
+  graphs: GraphUpdateManyWithoutBrewingProcessInput
+  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
 }
 
-input BrewdayUpdateManyDataInput {
-  start: DateTime
-  end: DateTime
-  active: Boolean
-}
-
-input BrewdayUpdateManyMutationInput {
+input BrewingProcessUpdateManyDataInput {
   start: DateTime
   end: DateTime
   active: Boolean
 }
 
-input BrewdayUpdateManyWithoutUsersInput {
-  create: [BrewdayCreateWithoutUsersInput!]
-  connect: [BrewdayWhereUniqueInput!]
-  set: [BrewdayWhereUniqueInput!]
-  disconnect: [BrewdayWhereUniqueInput!]
-  delete: [BrewdayWhereUniqueInput!]
-  update: [BrewdayUpdateWithWhereUniqueWithoutUsersInput!]
-  updateMany: [BrewdayUpdateManyWithWhereNestedInput!]
-  deleteMany: [BrewdayScalarWhereInput!]
-  upsert: [BrewdayUpsertWithWhereUniqueWithoutUsersInput!]
-}
-
-input BrewdayUpdateManyWithWhereNestedInput {
-  where: BrewdayScalarWhereInput!
-  data: BrewdayUpdateManyDataInput!
-}
-
-input BrewdayUpdateOneRequiredWithoutGraphsInput {
-  create: BrewdayCreateWithoutGraphsInput
-  connect: BrewdayWhereUniqueInput
-  update: BrewdayUpdateWithoutGraphsDataInput
-  upsert: BrewdayUpsertWithoutGraphsInput
-}
-
-input BrewdayUpdateWithoutGraphsDataInput {
+input BrewingProcessUpdateManyMutationInput {
   start: DateTime
   end: DateTime
   active: Boolean
-  users: UserUpdateManyWithoutParticipatingBrewdaysInput
 }
 
-input BrewdayUpdateWithoutUsersDataInput {
+input BrewingProcessUpdateManyWithoutUsersInput {
+  create: [BrewingProcessCreateWithoutUsersInput!]
+  connect: [BrewingProcessWhereUniqueInput!]
+  disconnect: [BrewingProcessWhereUniqueInput!]
+  delete: [BrewingProcessWhereUniqueInput!]
+  update: [BrewingProcessUpdateWithWhereUniqueWithoutUsersInput!]
+  updateMany: [BrewingProcessUpdateManyWithWhereNestedInput!]
+  deleteMany: [BrewingProcessScalarWhereInput!]
+  upsert: [BrewingProcessUpsertWithWhereUniqueWithoutUsersInput!]
+}
+
+input BrewingProcessUpdateManyWithWhereNestedInput {
+  where: BrewingProcessScalarWhereInput!
+  data: BrewingProcessUpdateManyDataInput!
+}
+
+input BrewingProcessUpdateOneRequiredWithoutGraphsInput {
+  create: BrewingProcessCreateWithoutGraphsInput
+  connect: BrewingProcessWhereUniqueInput
+  update: BrewingProcessUpdateWithoutGraphsDataInput
+  upsert: BrewingProcessUpsertWithoutGraphsInput
+}
+
+input BrewingProcessUpdateWithoutGraphsDataInput {
   start: DateTime
   end: DateTime
   active: Boolean
-  graphs: GraphUpdateManyWithoutBrewdayInput
+  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
 }
 
-input BrewdayUpdateWithWhereUniqueWithoutUsersInput {
-  where: BrewdayWhereUniqueInput!
-  data: BrewdayUpdateWithoutUsersDataInput!
+input BrewingProcessUpdateWithoutUsersDataInput {
+  start: DateTime
+  end: DateTime
+  active: Boolean
+  graphs: GraphUpdateManyWithoutBrewingProcessInput
 }
 
-input BrewdayUpsertWithoutGraphsInput {
-  update: BrewdayUpdateWithoutGraphsDataInput!
-  create: BrewdayCreateWithoutGraphsInput!
+input BrewingProcessUpdateWithWhereUniqueWithoutUsersInput {
+  where: BrewingProcessWhereUniqueInput!
+  data: BrewingProcessUpdateWithoutUsersDataInput!
 }
 
-input BrewdayUpsertWithWhereUniqueWithoutUsersInput {
-  where: BrewdayWhereUniqueInput!
-  update: BrewdayUpdateWithoutUsersDataInput!
-  create: BrewdayCreateWithoutUsersInput!
+input BrewingProcessUpsertWithoutGraphsInput {
+  update: BrewingProcessUpdateWithoutGraphsDataInput!
+  create: BrewingProcessCreateWithoutGraphsInput!
 }
 
-input BrewdayWhereInput {
+input BrewingProcessUpsertWithWhereUniqueWithoutUsersInput {
+  where: BrewingProcessWhereUniqueInput!
+  update: BrewingProcessUpdateWithoutUsersDataInput!
+  create: BrewingProcessCreateWithoutUsersInput!
+}
+
+input BrewingProcessWhereInput {
   """Logical AND on all given filters."""
-  AND: [BrewdayWhereInput!]
+  AND: [BrewingProcessWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [BrewdayWhereInput!]
+  OR: [BrewingProcessWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [BrewdayWhereInput!]
+  NOT: [BrewingProcessWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -421,7 +420,7 @@ input BrewdayWhereInput {
   users_none: UserWhereInput
 }
 
-input BrewdayWhereUniqueInput {
+input BrewingProcessWhereUniqueInput {
   id: ID
 }
 
@@ -431,7 +430,7 @@ type Graph implements Node {
   id: ID!
   name: String!
   sensorName: String!
-  brewday: Brewday!
+  brewingProcess: BrewingProcess!
   active: Boolean!
   graphData(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData!]
 }
@@ -450,12 +449,12 @@ input GraphCreateInput {
   name: String!
   sensorName: String!
   active: Boolean!
-  brewday: BrewdayCreateOneWithoutGraphsInput!
+  brewingProcess: BrewingProcessCreateOneWithoutGraphsInput!
   graphData: GraphDataCreateManyWithoutGraphInput
 }
 
-input GraphCreateManyWithoutBrewdayInput {
-  create: [GraphCreateWithoutBrewdayInput!]
+input GraphCreateManyWithoutBrewingProcessInput {
+  create: [GraphCreateWithoutBrewingProcessInput!]
   connect: [GraphWhereUniqueInput!]
 }
 
@@ -464,7 +463,7 @@ input GraphCreateOneWithoutGraphDataInput {
   connect: GraphWhereUniqueInput
 }
 
-input GraphCreateWithoutBrewdayInput {
+input GraphCreateWithoutBrewingProcessInput {
   name: String!
   sensorName: String!
   active: Boolean!
@@ -475,7 +474,7 @@ input GraphCreateWithoutGraphDataInput {
   name: String!
   sensorName: String!
   active: Boolean!
-  brewday: BrewdayCreateOneWithoutGraphsInput!
+  brewingProcess: BrewingProcessCreateOneWithoutGraphsInput!
 }
 
 type GraphData implements Node {
@@ -692,7 +691,6 @@ input GraphDataUpdateManyMutationInput {
 input GraphDataUpdateManyWithoutGraphInput {
   create: [GraphDataCreateWithoutGraphInput!]
   connect: [GraphDataWhereUniqueInput!]
-  set: [GraphDataWhereUniqueInput!]
   disconnect: [GraphDataWhereUniqueInput!]
   delete: [GraphDataWhereUniqueInput!]
   update: [GraphDataUpdateWithWhereUniqueWithoutGraphInput!]
@@ -1031,7 +1029,7 @@ input GraphUpdateInput {
   name: String
   sensorName: String
   active: Boolean
-  brewday: BrewdayUpdateOneRequiredWithoutGraphsInput
+  brewingProcess: BrewingProcessUpdateOneRequiredWithoutGraphsInput
   graphData: GraphDataUpdateManyWithoutGraphInput
 }
 
@@ -1047,16 +1045,15 @@ input GraphUpdateManyMutationInput {
   active: Boolean
 }
 
-input GraphUpdateManyWithoutBrewdayInput {
-  create: [GraphCreateWithoutBrewdayInput!]
+input GraphUpdateManyWithoutBrewingProcessInput {
+  create: [GraphCreateWithoutBrewingProcessInput!]
   connect: [GraphWhereUniqueInput!]
-  set: [GraphWhereUniqueInput!]
   disconnect: [GraphWhereUniqueInput!]
   delete: [GraphWhereUniqueInput!]
-  update: [GraphUpdateWithWhereUniqueWithoutBrewdayInput!]
+  update: [GraphUpdateWithWhereUniqueWithoutBrewingProcessInput!]
   updateMany: [GraphUpdateManyWithWhereNestedInput!]
   deleteMany: [GraphScalarWhereInput!]
-  upsert: [GraphUpsertWithWhereUniqueWithoutBrewdayInput!]
+  upsert: [GraphUpsertWithWhereUniqueWithoutBrewingProcessInput!]
 }
 
 input GraphUpdateManyWithWhereNestedInput {
@@ -1071,7 +1068,7 @@ input GraphUpdateOneRequiredWithoutGraphDataInput {
   upsert: GraphUpsertWithoutGraphDataInput
 }
 
-input GraphUpdateWithoutBrewdayDataInput {
+input GraphUpdateWithoutBrewingProcessDataInput {
   name: String
   sensorName: String
   active: Boolean
@@ -1082,12 +1079,12 @@ input GraphUpdateWithoutGraphDataDataInput {
   name: String
   sensorName: String
   active: Boolean
-  brewday: BrewdayUpdateOneRequiredWithoutGraphsInput
+  brewingProcess: BrewingProcessUpdateOneRequiredWithoutGraphsInput
 }
 
-input GraphUpdateWithWhereUniqueWithoutBrewdayInput {
+input GraphUpdateWithWhereUniqueWithoutBrewingProcessInput {
   where: GraphWhereUniqueInput!
-  data: GraphUpdateWithoutBrewdayDataInput!
+  data: GraphUpdateWithoutBrewingProcessDataInput!
 }
 
 input GraphUpsertWithoutGraphDataInput {
@@ -1095,10 +1092,10 @@ input GraphUpsertWithoutGraphDataInput {
   create: GraphCreateWithoutGraphDataInput!
 }
 
-input GraphUpsertWithWhereUniqueWithoutBrewdayInput {
+input GraphUpsertWithWhereUniqueWithoutBrewingProcessInput {
   where: GraphWhereUniqueInput!
-  update: GraphUpdateWithoutBrewdayDataInput!
-  create: GraphCreateWithoutBrewdayInput!
+  update: GraphUpdateWithoutBrewingProcessDataInput!
+  create: GraphCreateWithoutBrewingProcessInput!
 }
 
 input GraphWhereInput {
@@ -1234,7 +1231,7 @@ input GraphWhereInput {
 
   """All values that are not equal to given value."""
   active_not: Boolean
-  brewday: BrewdayWhereInput
+  brewingProcess: BrewingProcessWhereInput
   graphData_every: GraphDataWhereInput
   graphData_some: GraphDataWhereInput
   graphData_none: GraphDataWhereInput
@@ -1244,9 +1241,6 @@ input GraphWhereUniqueInput {
   id: ID
 }
 
-"""Raw JSON value"""
-scalar Json
-
 """
 The `Long` scalar type represents non-fractional signed whole numeric values.
 Long can represent values between -(2^63) and 2^63 - 1.
@@ -1255,30 +1249,29 @@ scalar Long
 
 type Mutation {
   createUser(data: UserCreateInput!): User!
-  createBrewday(data: BrewdayCreateInput!): Brewday!
+  createBrewingProcess(data: BrewingProcessCreateInput!): BrewingProcess!
   createGraph(data: GraphCreateInput!): Graph!
   createGraphData(data: GraphDataCreateInput!): GraphData!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  updateBrewday(data: BrewdayUpdateInput!, where: BrewdayWhereUniqueInput!): Brewday
+  updateBrewingProcess(data: BrewingProcessUpdateInput!, where: BrewingProcessWhereUniqueInput!): BrewingProcess
   updateGraph(data: GraphUpdateInput!, where: GraphWhereUniqueInput!): Graph
   updateGraphData(data: GraphDataUpdateInput!, where: GraphDataWhereUniqueInput!): GraphData
   deleteUser(where: UserWhereUniqueInput!): User
-  deleteBrewday(where: BrewdayWhereUniqueInput!): Brewday
+  deleteBrewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
   deleteGraph(where: GraphWhereUniqueInput!): Graph
   deleteGraphData(where: GraphDataWhereUniqueInput!): GraphData
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  upsertBrewday(where: BrewdayWhereUniqueInput!, create: BrewdayCreateInput!, update: BrewdayUpdateInput!): Brewday!
+  upsertBrewingProcess(where: BrewingProcessWhereUniqueInput!, create: BrewingProcessCreateInput!, update: BrewingProcessUpdateInput!): BrewingProcess!
   upsertGraph(where: GraphWhereUniqueInput!, create: GraphCreateInput!, update: GraphUpdateInput!): Graph!
   upsertGraphData(where: GraphDataWhereUniqueInput!, create: GraphDataCreateInput!, update: GraphDataUpdateInput!): GraphData!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
-  updateManyBrewdays(data: BrewdayUpdateManyMutationInput!, where: BrewdayWhereInput): BatchPayload!
+  updateManyBrewingProcesses(data: BrewingProcessUpdateManyMutationInput!, where: BrewingProcessWhereInput): BatchPayload!
   updateManyGraphs(data: GraphUpdateManyMutationInput!, where: GraphWhereInput): BatchPayload!
   updateManyGraphDatas(data: GraphDataUpdateManyMutationInput!, where: GraphDataWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
-  deleteManyBrewdays(where: BrewdayWhereInput): BatchPayload!
+  deleteManyBrewingProcesses(where: BrewingProcessWhereInput): BatchPayload!
   deleteManyGraphs(where: GraphWhereInput): BatchPayload!
   deleteManyGraphDatas(where: GraphDataWhereInput): BatchPayload!
-  executeRaw(database: PrismaDatabase, query: String!): Json!
 }
 
 enum MutationType {
@@ -1313,21 +1306,17 @@ enum Permission {
   USER
 }
 
-enum PrismaDatabase {
-  default
-}
-
 type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  brewdays(where: BrewdayWhereInput, orderBy: BrewdayOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Brewday]!
+  brewingProcesses(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcess]!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph]!
   graphDatas(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData]!
   user(where: UserWhereUniqueInput!): User
-  brewday(where: BrewdayWhereUniqueInput!): Brewday
+  brewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
   graph(where: GraphWhereUniqueInput!): Graph
   graphData(where: GraphDataWhereUniqueInput!): GraphData
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
-  brewdaysConnection(where: BrewdayWhereInput, orderBy: BrewdayOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewdayConnection!
+  brewingProcessesConnection(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessConnection!
   graphsConnection(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphConnection!
   graphDatasConnection(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphDataConnection!
 
@@ -1340,7 +1329,7 @@ type Query {
 
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
-  brewday(where: BrewdaySubscriptionWhereInput): BrewdaySubscriptionPayload
+  brewingProcess(where: BrewingProcessSubscriptionWhereInput): BrewingProcessSubscriptionPayload
   graph(where: GraphSubscriptionWhereInput): GraphSubscriptionPayload
   graphData(where: GraphDataSubscriptionWhereInput): GraphDataSubscriptionPayload
 }
@@ -1351,7 +1340,7 @@ type User implements Node {
   name: String!
   password: String!
   permissions: [Permission!]!
-  participatingBrewdays(where: BrewdayWhereInput, orderBy: BrewdayOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Brewday!]
+  participatingBrewingProcesses(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcess!]
 }
 
 """A connection to a list of items."""
@@ -1369,11 +1358,11 @@ input UserCreateInput {
   name: String!
   password: String!
   permissions: UserCreatepermissionsInput
-  participatingBrewdays: BrewdayCreateManyWithoutUsersInput
+  participatingBrewingProcesses: BrewingProcessCreateManyWithoutUsersInput
 }
 
-input UserCreateManyWithoutParticipatingBrewdaysInput {
-  create: [UserCreateWithoutParticipatingBrewdaysInput!]
+input UserCreateManyWithoutParticipatingBrewingProcessesInput {
+  create: [UserCreateWithoutParticipatingBrewingProcessesInput!]
   connect: [UserWhereUniqueInput!]
 }
 
@@ -1381,7 +1370,7 @@ input UserCreatepermissionsInput {
   set: [Permission!]
 }
 
-input UserCreateWithoutParticipatingBrewdaysInput {
+input UserCreateWithoutParticipatingBrewingProcessesInput {
   email: String!
   name: String!
   password: String!
@@ -1635,7 +1624,7 @@ input UserUpdateInput {
   name: String
   password: String
   permissions: UserUpdatepermissionsInput
-  participatingBrewdays: BrewdayUpdateManyWithoutUsersInput
+  participatingBrewingProcesses: BrewingProcessUpdateManyWithoutUsersInput
 }
 
 input UserUpdateManyDataInput {
@@ -1652,16 +1641,15 @@ input UserUpdateManyMutationInput {
   permissions: UserUpdatepermissionsInput
 }
 
-input UserUpdateManyWithoutParticipatingBrewdaysInput {
-  create: [UserCreateWithoutParticipatingBrewdaysInput!]
+input UserUpdateManyWithoutParticipatingBrewingProcessesInput {
+  create: [UserCreateWithoutParticipatingBrewingProcessesInput!]
   connect: [UserWhereUniqueInput!]
-  set: [UserWhereUniqueInput!]
   disconnect: [UserWhereUniqueInput!]
   delete: [UserWhereUniqueInput!]
-  update: [UserUpdateWithWhereUniqueWithoutParticipatingBrewdaysInput!]
+  update: [UserUpdateWithWhereUniqueWithoutParticipatingBrewingProcessesInput!]
   updateMany: [UserUpdateManyWithWhereNestedInput!]
   deleteMany: [UserScalarWhereInput!]
-  upsert: [UserUpsertWithWhereUniqueWithoutParticipatingBrewdaysInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutParticipatingBrewingProcessesInput!]
 }
 
 input UserUpdateManyWithWhereNestedInput {
@@ -1673,22 +1661,22 @@ input UserUpdatepermissionsInput {
   set: [Permission!]
 }
 
-input UserUpdateWithoutParticipatingBrewdaysDataInput {
+input UserUpdateWithoutParticipatingBrewingProcessesDataInput {
   email: String
   name: String
   password: String
   permissions: UserUpdatepermissionsInput
 }
 
-input UserUpdateWithWhereUniqueWithoutParticipatingBrewdaysInput {
+input UserUpdateWithWhereUniqueWithoutParticipatingBrewingProcessesInput {
   where: UserWhereUniqueInput!
-  data: UserUpdateWithoutParticipatingBrewdaysDataInput!
+  data: UserUpdateWithoutParticipatingBrewingProcessesDataInput!
 }
 
-input UserUpsertWithWhereUniqueWithoutParticipatingBrewdaysInput {
+input UserUpsertWithWhereUniqueWithoutParticipatingBrewingProcessesInput {
   where: UserWhereUniqueInput!
-  update: UserUpdateWithoutParticipatingBrewdaysDataInput!
-  create: UserCreateWithoutParticipatingBrewdaysInput!
+  update: UserUpdateWithoutParticipatingBrewingProcessesDataInput!
+  create: UserCreateWithoutParticipatingBrewingProcessesInput!
 }
 
 input UserWhereInput {
@@ -1860,9 +1848,9 @@ input UserWhereInput {
 
   """All values not ending with the given string."""
   password_not_ends_with: String
-  participatingBrewdays_every: BrewdayWhereInput
-  participatingBrewdays_some: BrewdayWhereInput
-  participatingBrewdays_none: BrewdayWhereInput
+  participatingBrewingProcesses_every: BrewingProcessWhereInput
+  participatingBrewingProcesses_some: BrewingProcessWhereInput
+  participatingBrewingProcesses_none: BrewingProcessWhereInput
 }
 
 input UserWhereUniqueInput {

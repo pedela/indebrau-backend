@@ -1,4 +1,4 @@
-# import Graph, GraphData, Permission, Brewday from "./generated/prisma.graphql"
+# import Graph, GraphData, Permission, BrewingProcess from "./generated/prisma.graphql"
 
 type Query {
   activeGraph(logFileName: String): Graph
@@ -31,7 +31,7 @@ type User {
   email: String!
   name: String!
   permissions: Permission
-  brewdays: Brewday
+  participatingBrewingProcesses: [BrewingProcess!]!
 }
 
 input SensorDataInput {

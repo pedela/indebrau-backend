@@ -1,6 +1,6 @@
 # HowTo Build
 
-Run locally:  
+Run localy:  
 Deploy Database:  
 docker-compose up -d  
 prisma deploy  

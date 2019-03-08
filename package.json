@@ -2,11 +2,10 @@
   "name": "indebrau-backend",
   "version": "0.0.1",
   "description": "Provides the backend for indebrau",
-  "repository": "https://github.com/PedeLa/indebrau/",
+  "repository": "https://github.com/PedeLa/indebrau-backend",
   "scripts": {
     "start": "nodemon -e js,graphql -x node -r dotenv/config src/index.js",
-    "debug": "nodemon -e js,graphql -x node --inspect -r dotenv/config src/index.js",
-    "playground": "graphql playground"
+    "debug": "nodemon -e js,graphql -x node --inspect -r dotenv/config src/index.js"
   },
   "engines": {
     "node": "~11.9.0",
@@ -14,17 +13,18 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.4",
     "graphql-yoga": "^1.17.4",
-    "jsonwebtoken": "^8.4.0",
-    "prisma-binding": "^2.3.2",
-    "cookie-parser": "^1.4.4"
+    "jsonwebtoken": "^8.5.0",
+    "prisma-binding": "^2.3.5"
   },
   "devDependencies": {
     "dotenv": "^6.2.0",
-    "graphql-cli": "^3.0.10",
+    "eslint": "^5.15.1",
+    "graphql-cli": "^3.0.11",
     "nodemon": "^1.18.10",
     "npm-run-all": "^4.1.5",
-    "prisma": "^1.26.6"
+    "prisma": "^1.28.1"
   },
   "author": "Peter de Lange",
   "license": "ISC"

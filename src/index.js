@@ -1,8 +1,9 @@
 const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
-const resolvers = require('./resolvers');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+
+const resolvers = require('./resolvers');
 
 const db = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',

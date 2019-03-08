@@ -14,6 +14,7 @@ type User {
 
 type BrewingProcess {
   id: ID! @unique
+  name: String!
   start: DateTime!
   end: DateTime
   active: Boolean!
@@ -26,7 +27,7 @@ type Graph {
   name: String!
   sensorName: String!
   brewingProcess: BrewingProcess!
-  active: Boolean! # there is only one active graph per sensor, while there can be multiple brewdays..
+  active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
   graphData: [GraphData!]!
 }
 

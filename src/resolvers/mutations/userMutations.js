@@ -1,8 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const auth = {
-  
+const userMutations = {
   async signup(parent, args, ctx) {
     const password = await bcrypt.hash(args.password, 10);
     const name = args.name;
@@ -41,4 +40,4 @@ const auth = {
   }
 };
 
-module.exports = { auth };
+module.exports = { userMutations };

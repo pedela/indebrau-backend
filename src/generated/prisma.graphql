@@ -1,5 +1,5 @@
-# source: https://indebrauprismadb-8f06e6548c.herokuapp.com
-# timestamp: Thu Mar 07 2019 12:43:16 GMT+0100 (Central European Standard Time)
+# source: https://indebrauprismadb-8f06e6548c.herokuapp.com/indebrau-database/prod
+# timestamp: Fri Mar 08 2019 14:09:06 GMT+0100 (Central European Standard Time)
 
 type AggregateBrewingProcess {
   count: Int!
@@ -24,6 +24,7 @@ type BatchPayload {
 
 type BrewingProcess implements Node {
   id: ID!
+  name: String!
   start: DateTime!
   end: DateTime
   active: Boolean!
@@ -42,6 +43,7 @@ type BrewingProcessConnection {
 }
 
 input BrewingProcessCreateInput {
+  name: String!
   start: DateTime!
   end: DateTime
   active: Boolean!
@@ -60,6 +62,7 @@ input BrewingProcessCreateOneWithoutGraphsInput {
 }
 
 input BrewingProcessCreateWithoutGraphsInput {
+  name: String!
   start: DateTime!
   end: DateTime
   active: Boolean!
@@ -67,6 +70,7 @@ input BrewingProcessCreateWithoutGraphsInput {
 }
 
 input BrewingProcessCreateWithoutUsersInput {
+  name: String!
   start: DateTime!
   end: DateTime
   active: Boolean!
@@ -85,6 +89,8 @@ type BrewingProcessEdge {
 enum BrewingProcessOrderByInput {
   id_ASC
   id_DESC
+  name_ASC
+  name_DESC
   start_ASC
   start_DESC
   end_ASC
@@ -99,6 +105,7 @@ enum BrewingProcessOrderByInput {
 
 type BrewingProcessPreviousValues {
   id: ID!
+  name: String!
   start: DateTime!
   end: DateTime
   active: Boolean!
@@ -153,6 +160,46 @@ input BrewingProcessScalarWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
   start: DateTime
 
   """All values that are not equal to given value."""
@@ -243,6 +290,7 @@ input BrewingProcessSubscriptionWhereInput {
 }
 
 input BrewingProcessUpdateInput {
+  name: String
   start: DateTime
   end: DateTime
   active: Boolean
@@ -251,12 +299,14 @@ input BrewingProcessUpdateInput {
 }
 
 input BrewingProcessUpdateManyDataInput {
+  name: String
   start: DateTime
   end: DateTime
   active: Boolean
 }
 
 input BrewingProcessUpdateManyMutationInput {
+  name: String
   start: DateTime
   end: DateTime
   active: Boolean
@@ -286,6 +336,7 @@ input BrewingProcessUpdateOneRequiredWithoutGraphsInput {
 }
 
 input BrewingProcessUpdateWithoutGraphsDataInput {
+  name: String
   start: DateTime
   end: DateTime
   active: Boolean
@@ -293,6 +344,7 @@ input BrewingProcessUpdateWithoutGraphsDataInput {
 }
 
 input BrewingProcessUpdateWithoutUsersDataInput {
+  name: String
   start: DateTime
   end: DateTime
   active: Boolean
@@ -364,6 +416,46 @@ input BrewingProcessWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
   start: DateTime
 
   """All values that are not equal to given value."""

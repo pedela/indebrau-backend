@@ -1,19 +1,22 @@
 const { userQueries } = require('./queries/userQueries');
-const { graphQuery } = require('./queries/graphQuery');
-const { Subscription } = require('./Subscription');
-const { auth } = require('./mutations/auth');
+const { graphQueries } = require('./queries/graphQueries');
+const {userMutations } = require('./mutations/userMutations');
 const { graphMutations } = require('./mutations/graphMutations');
-const { AuthPayload } = require('./AuthPayload');
+const { graphDataMutations } = require('./mutations/graphDataMutations');
+const { brewingProcessMutations } = require('./mutations/brewingProcessMutations');
+
+const { AuthPayload } = require('./authPayload');
 
 module.exports = {
   Query: {
     ...userQueries,
-    ...graphQuery
+    ...graphQueries
   },
   Mutation: {
-    ...auth,
-    ...graphMutations
+    ...userMutations,
+    ...brewingProcessMutations,
+    ...graphMutations,
+    ...graphDataMutations
   },
-  Subscription,
   AuthPayload
 };

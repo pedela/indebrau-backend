@@ -11,20 +11,25 @@ function hasPermission(user, permissionsNeeded) {
   }
 }
 
-/* Helper function that updates a passed active brewdays object. */
-async function getActiveBrewDays(ctx, activeBrewDays) {
-  if (activeBrewDays.length == 0) {
-    activeBrewDays = await ctx.db.query.brewdays(
+/* Helper function that updates a passed active brew day object. */
+var activeBrewingProcesses = [];
+async function getActiveBrewingProcesses(ctx) {
+  if (activeBrewingProcesses.length == 0) {
+    console.log('refreshing active brewing processes list...');
+    activeBrewingProcesses = await ctx.db.query.brewingProcesses(
       { where: { active: true } },
       `{
-      id,start,end,graphs{id}
+      id,start,end,graphs{id, sensorName, active}
       }`
     );
+  } else {
+    console.log('using active brewing processes cache...');
   }
-  return activeBrewDays;
+
+  return activeBrewingProcesses;
 }
 
 module.exports = {
   hasPermission,
-  getActiveBrewDays
+  getActiveBrewingProcesses
 };

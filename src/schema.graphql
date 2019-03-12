@@ -12,7 +12,7 @@ type Mutation {
     password: String!
     registrationSecret: String
   ): AuthPayload!
-  login(email: String!, password: String!): AuthPayload!
+  signin(email: String!, password: String!): AuthPayload!
 
   addGraphData(graphData: GraphDataInput!): GraphData!
   createGraph(graph: GraphInput!): Graph!

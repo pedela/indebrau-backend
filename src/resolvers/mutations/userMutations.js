@@ -19,7 +19,7 @@ const userMutations = {
     };
   },
 
-  async login(parent, { email, password }, ctx) {
+  async signin(parent, { email, password }, ctx) {
     const user = await ctx.db.query.user({ where: { email } });
     if (!user) {
       throw new Error(`No such user found for email: ${email}`);

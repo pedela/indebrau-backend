@@ -9,26 +9,31 @@ type User {
   name: String!
   password: String!
   permissions: [Permission!]!
-  brewdays: [Brewday!]!
+  participatingBrewingProcesses: [BrewingProcess!]!
 }
 
-type GraphData {
+type BrewingProcess {
   id: ID! @unique
-  time: DateTime!
-  value: Float!
-  graph: Graph
+  name: String!
+  start: DateTime!
+  end: DateTime
+  active: Boolean!
+  graphs: [Graph!]!
+  users: [User!]!
 }
 
 type Graph {
   id: ID! @unique
   name: String!
   sensorName: String!
-  active: Boolean!
-  startDateTime: DateTime!
-  endDateTime: DateTime
+  brewingProcess: BrewingProcess!
+  active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
   graphData: [GraphData!]!
 }
 
-type Brewday {
+type GraphData {
   id: ID! @unique
+  time: DateTime!
+  value: Float!
+  graph: Graph!
 }

@@ -1,21 +1,3 @@
-const jwt = require('jsonwebtoken');
-
-function getUserId(ctx) {
-  const Authorization = ctx.request.get('Authorization');
-  if (Authorization) {
-    const token = Authorization.replace('Bearer ', '');
-    const { userId } = jwt.verify(token, process.env.APP_SECRET);
-    return userId;
-  }
-  throw new AuthError();
-}
-
-class AuthError extends Error {
-  constructor() {
-    super('Not authorized');
-  }
-}
-
 function hasPermission(user, permissionsNeeded) {
   const matchedPermissions = user.permissions.filter(permissionTheyHave =>
     permissionsNeeded.includes(permissionTheyHave)
@@ -29,8 +11,25 @@ function hasPermission(user, permissionsNeeded) {
   }
 }
 
+/* Helper function that updates a passed active brew day object. */
+var activeBrewingProcesses = [];
+async function getActiveBrewingProcesses(ctx) {
+  if (activeBrewingProcesses.length == 0) {
+    console.log('refreshing active brewing processes list...');
+    activeBrewingProcesses = await ctx.db.query.brewingProcesses(
+      { where: { active: true } },
+      `{
+      id,start,end,graphs{id, sensorName, active}
+      }`
+    );
+  } else {
+    console.log('using active brewing processes cache...');
+  }
+
+  return activeBrewingProcesses;
+}
+
 module.exports = {
-  getUserId,
-  AuthError,
-  hasPermission
+  hasPermission,
+  getActiveBrewingProcesses
 };

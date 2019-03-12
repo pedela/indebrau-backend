@@ -16,7 +16,7 @@
     "cookie-parser": "^1.4.4",
     "graphql-yoga": "^1.17.4",
     "jsonwebtoken": "^8.5.0",
-    "prisma-binding": "^2.3.5"
+    "prisma-binding": "^2.3.6"
   },
   "devDependencies": {
     "dotenv": "^6.2.0",
@@ -24,7 +24,7 @@
     "graphql-cli": "^3.0.11",
     "nodemon": "^1.18.10",
     "npm-run-all": "^4.1.5",
-    "prisma": "^1.28.1"
+    "prisma": "^1.28.3"
   },
   "author": "Peter de Lange",
   "license": "ISC"

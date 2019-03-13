@@ -1,7 +1,7 @@
 const { getActiveBrewingProcesses } = require('../../utils');
 
 const graphDataMutations = {
-  async addGraphData(parent, { graphData }, ctx) {
+  async addGraphData(parent, args, ctx) {
     if (!ctx.request.userId) {
       throw new Error('You must be logged in to do that!');
     }
@@ -15,7 +15,7 @@ const graphDataMutations = {
         let graph = activeBrewingProcesses[i].graphs[j];
         if (
           graph.active &&
-          !graph.sensorName.localeCompare(graphData.sensorName)
+          !graph.sensorName.localeCompare(args.sensorName)
         ) {
           // first active graph should be the only active graph..
           activeGraph = graph;
@@ -26,13 +26,13 @@ const graphDataMutations = {
     // check if graph was found
     if (typeof activeGraph == 'undefined') {
       throw new Error(
-        'did not find active graph for sensor ' + graphData.sensorName
+        'did not find active graph for sensor ' + args.sensorName
       );
     }
     const data = await ctx.db.mutation.createGraphData({
       data: {
-        time: graphData.sensorTimeStamp,
-        value: graphData.sensorValue,
+        time: args.sensorTimeStamp,
+        value: args.sensorValue,
         graph: {
           connect: {
             id: activeGraph.id

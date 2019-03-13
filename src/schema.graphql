@@ -11,22 +11,21 @@ type Mutation {
     name: String!
     password: String!
     registrationSecret: String
-  ): AuthPayload!
-  signin(email: String!, password: String!): AuthPayload!
-
-  addGraphData(graphData: GraphDataInput!): GraphData!
-  createGraph(graph: GraphInput!): Graph!
+  ): User!
+  signin(email: String!, password: String!): User!
+  signout: SuccessMessage
+  addGraphData(
+    sensorName: String!
+    sensorTimeStamp: DateTime!
+    sensorValue: Float!
+  ): GraphData!
+  createGraph(name: String!, sensorName: String!, brewingProcessId: ID!): Graph!
 
   createBrewingProcess(name: String!): BrewingProcess!
 }
 
 type Subscription {
   graphSubscription: GraphSubscriptionPayload!
-}
-
-type AuthPayload {
-  token: String!
-  user: User!
 }
 
 type User {
@@ -37,14 +36,6 @@ type User {
   participatingBrewingProcesses: [BrewingProcess!]!
 }
 
-input GraphDataInput {
-  sensorName: String!
-  sensorTimeStamp: DateTime!
-  sensorValue: Float!
-}
-
-input GraphInput {
-  name: String!
-  sensorName: String!
-  brewingProcessId: ID!
+type SuccessMessage {
+  message: String
 }

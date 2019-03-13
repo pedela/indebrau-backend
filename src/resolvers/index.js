@@ -5,8 +5,6 @@ const { graphMutations } = require('./mutations/graphMutations');
 const { graphDataMutations } = require('./mutations/graphDataMutations');
 const { brewingProcessMutations } = require('./mutations/brewingProcessMutations');
 
-const { AuthPayload } = require('./authPayload');
-
 module.exports = {
   Query: {
     ...userQueries,
@@ -18,5 +16,4 @@ module.exports = {
     ...graphMutations,
     ...graphDataMutations
   },
-  AuthPayload
 };

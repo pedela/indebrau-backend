@@ -14,7 +14,6 @@ const userMutations = {
       data: { name, password, email }
     });
     return {
-      token: jwt.sign({ userId: user.id }, process.env.APP_SECRET),
       user
     };
   },
@@ -34,10 +33,14 @@ const userMutations = {
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
     return {
-      token: token,
       user
     };
-  }
+  },
+
+  signout(parent, args, ctx) {
+    ctx.response.clearCookie('token');
+    return { message: 'Goodbye!' };
+  },
 };
 
 module.exports = { userMutations };

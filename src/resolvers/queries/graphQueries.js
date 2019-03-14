@@ -1,3 +1,5 @@
+const { forwardTo } = require('prisma-binding');
+
 const graphQueries = {
   async activeGraph(parent, { sensorName }, ctx, info) {
     if (!ctx.request.userId) {
@@ -16,6 +18,13 @@ const graphQueries = {
       throw new Error('no active Graph found for sensor');
     }
     return graphs[0];
+  },
+
+  async graph(parent, {id}, ctx, info) {
+    if (!ctx.request.userId) {
+      throw new Error('You must be logged in to do that!');
+    }
+    return ctx.db.query.graph({ where: { id: id} }, info);
   }
 };
 

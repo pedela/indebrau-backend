@@ -1,9 +1,10 @@
 # import * from "./generated/prisma.graphql"
 
 type Query {
+  me: User
   activeGraph(sensorName: String!): Graph
   graph(id: ID!): Graph
-  me: User
+  brewingProcesses: [BrewingProcess!]!
 }
 
 type Mutation {

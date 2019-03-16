@@ -11,18 +11,16 @@ const graphQueries = {
       info
     );
     if (graphs.length > 1) {
-      throw new Error('more than one active graph for this sensor!?...');
+      throw new Error('More than one active graph for this sensor!?');
     }
     if (graphs.length == 0) {
-      throw new Error('no active Graph found for sensor');
+      throw new Error('No active graph found for sensor...');
     }
     return graphs[0];
   },
 
   async graph(parent, { id }, ctx, info) {
-    if (!ctx.request.userId) {
-      throw new Error('You must be logged in to do that!');
-    }
+    checkUserPermissions(ctx, ['ADMIN', 'ADMIN']);
     return ctx.db.query.graph({ where: { id: id } }, info);
   }
 };

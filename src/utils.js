@@ -16,12 +16,12 @@ function checkUserPermissions(ctx, permissionsNeeded) {
   }
 }
 
-/* Helper function that updates a passed active brewing process object. */
-var activeBrewingProcesses = [];
-async function getActiveBrewingProcesses(ctx) {
-  if (activeBrewingProcesses.length == 0) {
+/* Helper function that caches active brewing processes. */
+var cachedActiveBrewingProcesses = [];
+async function activeBrewingProcessesCache(ctx, update) {
+  if (cachedActiveBrewingProcesses.length == 0 || update) {
     console.log('refreshing active brewing processes list...');
-    activeBrewingProcesses = await ctx.db.query.brewingProcesses(
+    cachedActiveBrewingProcesses = await ctx.db.query.brewingProcesses(
       { where: { active: true } },
       `{
       id,start,end,graphs{id, sensorName, active, updateFrequency}
@@ -30,11 +30,10 @@ async function getActiveBrewingProcesses(ctx) {
   } else {
     console.log('using active brewing processes cache...');
   }
-
-  return activeBrewingProcesses;
+  return cachedActiveBrewingProcesses;
 }
 
 module.exports = {
   checkUserPermissions,
-  getActiveBrewingProcesses
+  activeBrewingProcessesCache
 };

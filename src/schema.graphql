@@ -15,12 +15,19 @@ type Mutation {
   ): User!
   signin(email: String!, password: String!): User!
   signout: SuccessMessage
+
   addGraphData(
     sensorName: String!
     sensorTimeStamp: DateTime!
     sensorValue: Float!
   ): GraphData!
-  createGraph(name: String!, sensorName: String!, brewingProcessId: ID!): Graph!
+
+  createGraph(
+    name: String!
+    sensorName: String!
+    updateInterval: Int
+    brewingProcessId: ID!
+  ): Graph!
 
   createBrewingProcess(name: String!): BrewingProcess!
 }

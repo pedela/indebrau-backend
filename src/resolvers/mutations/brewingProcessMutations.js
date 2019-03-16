@@ -1,8 +1,9 @@
+const { checkUserPermissions } = require('../../utils');
+
 const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
-    if (!ctx.request.userId) {
-      throw new Error('You must be logged in to do that!');
-    }
+    checkUserPermissions(ctx, ['USER', 'ADMIN']);
+
     const createdBrewingProcess = await ctx.db.mutation.createBrewingProcess({
       data: {
         name: args.name,

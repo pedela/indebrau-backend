@@ -28,6 +28,7 @@ type Graph {
   sensorName: String!
   brewingProcess: BrewingProcess!
   active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
+  updateFrequency: Int! # in seconds
   graphData: [GraphData!]!
 }
 

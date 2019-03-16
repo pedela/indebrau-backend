@@ -23,33 +23,25 @@ const server = new GraphQLServer({
 
 server.express.use(cookieParser());
 
-// decode either auth header or passed token
-server.express.use((req, res, next) => {
+// decode either auth header (priority!) or passed token and
+// populate the currently active user
+server.express.use(async (req, res, next) => {
   const Authorization = req.get('Authorization');
+  const cookieToken = req.cookies.token;
+  var userId;
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '');
-    const { userId } = jwt.verify(token, process.env.APP_SECRET);
-    req.userId = userId;
-    return next();
+    userId = jwt.verify(token, process.env.APP_SECRET).userId;
+  } else if (cookieToken) {
+    userId = jwt.verify(cookieToken, process.env.APP_SECRET).userId;
   }
-  const { token } = req.cookies;
-  if (token) {
-    const { userId } = jwt.verify(token, process.env.APP_SECRET);
-    req.userId = userId;
+  if (userId) {
+    const user = await db.query.user(
+      { where: { id: userId } },
+      '{ id, permissions, email, name }'
+    );
+    req.user = user;
   }
-  next();
-});
-
-// (for later) populate the currently active user
-// TODO Don't do this for now, since it blows up debug output in playground
-server.express.use(async (req, res, next) => {
-  // if they aren't logged in, skip this
-  if (!req.userId) return next();
-  // const user = await db.query.user(
-  //   { where: { id: req.userId } },
-  //   '{ id, permissions, email, name }'
-  // );
-  // req.user = user;
   next();
 });
 

@@ -1,10 +1,9 @@
-const { forwardTo } = require('prisma-binding');
+const { checkUserPermissions } = require('../../utils');
 
 const graphQueries = {
   async activeGraph(parent, { sensorName }, ctx, info) {
-    if (!ctx.request.userId) {
-      throw new Error('You must be logged in to do that!');
-    }
+    checkUserPermissions(ctx, ['ADMIN', 'ADMIN']);
+
     const graphs = await ctx.db.query.graphs(
       {
         where: { active: true, sensorName: sensorName }
@@ -20,11 +19,11 @@ const graphQueries = {
     return graphs[0];
   },
 
-  async graph(parent, {id}, ctx, info) {
+  async graph(parent, { id }, ctx, info) {
     if (!ctx.request.userId) {
       throw new Error('You must be logged in to do that!');
     }
-    return ctx.db.query.graph({ where: { id: id} }, info);
+    return ctx.db.query.graph({ where: { id: id } }, info);
   }
 };
 

@@ -1,5 +1,5 @@
 # source: https://indebrauprismadb-8f06e6548c.herokuapp.com/indebrau-database/prod
-# timestamp: Fri Mar 08 2019 14:09:06 GMT+0100 (Central European Standard Time)
+# timestamp: Fri Mar 15 2019 21:35:54 GMT+0100 (Central European Standard Time)
 
 type AggregateBrewingProcess {
   count: Int!
@@ -524,6 +524,7 @@ type Graph implements Node {
   sensorName: String!
   brewingProcess: BrewingProcess!
   active: Boolean!
+  updateFrequency: Int
   graphData(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData!]
 }
 
@@ -541,6 +542,7 @@ input GraphCreateInput {
   name: String!
   sensorName: String!
   active: Boolean!
+  updateFrequency: Int
   brewingProcess: BrewingProcessCreateOneWithoutGraphsInput!
   graphData: GraphDataCreateManyWithoutGraphInput
 }
@@ -559,6 +561,7 @@ input GraphCreateWithoutBrewingProcessInput {
   name: String!
   sensorName: String!
   active: Boolean!
+  updateFrequency: Int
   graphData: GraphDataCreateManyWithoutGraphInput
 }
 
@@ -566,6 +569,7 @@ input GraphCreateWithoutGraphDataInput {
   name: String!
   sensorName: String!
   active: Boolean!
+  updateFrequency: Int
   brewingProcess: BrewingProcessCreateOneWithoutGraphsInput!
 }
 
@@ -930,6 +934,8 @@ enum GraphOrderByInput {
   sensorName_DESC
   active_ASC
   active_DESC
+  updateFrequency_ASC
+  updateFrequency_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -941,6 +947,7 @@ type GraphPreviousValues {
   name: String!
   sensorName: String!
   active: Boolean!
+  updateFrequency: Int
 }
 
 input GraphScalarWhereInput {
@@ -1076,6 +1083,28 @@ input GraphScalarWhereInput {
 
   """All values that are not equal to given value."""
   active_not: Boolean
+  updateFrequency: Int
+
+  """All values that are not equal to given value."""
+  updateFrequency_not: Int
+
+  """All values that are contained in given list."""
+  updateFrequency_in: [Int!]
+
+  """All values that are not contained in given list."""
+  updateFrequency_not_in: [Int!]
+
+  """All values less than the given value."""
+  updateFrequency_lt: Int
+
+  """All values less than or equal the given value."""
+  updateFrequency_lte: Int
+
+  """All values greater than the given value."""
+  updateFrequency_gt: Int
+
+  """All values greater than or equal the given value."""
+  updateFrequency_gte: Int
 }
 
 type GraphSubscriptionPayload {
@@ -1121,6 +1150,7 @@ input GraphUpdateInput {
   name: String
   sensorName: String
   active: Boolean
+  updateFrequency: Int
   brewingProcess: BrewingProcessUpdateOneRequiredWithoutGraphsInput
   graphData: GraphDataUpdateManyWithoutGraphInput
 }
@@ -1129,12 +1159,14 @@ input GraphUpdateManyDataInput {
   name: String
   sensorName: String
   active: Boolean
+  updateFrequency: Int
 }
 
 input GraphUpdateManyMutationInput {
   name: String
   sensorName: String
   active: Boolean
+  updateFrequency: Int
 }
 
 input GraphUpdateManyWithoutBrewingProcessInput {
@@ -1164,6 +1196,7 @@ input GraphUpdateWithoutBrewingProcessDataInput {
   name: String
   sensorName: String
   active: Boolean
+  updateFrequency: Int
   graphData: GraphDataUpdateManyWithoutGraphInput
 }
 
@@ -1171,6 +1204,7 @@ input GraphUpdateWithoutGraphDataDataInput {
   name: String
   sensorName: String
   active: Boolean
+  updateFrequency: Int
   brewingProcess: BrewingProcessUpdateOneRequiredWithoutGraphsInput
 }
 
@@ -1323,6 +1357,28 @@ input GraphWhereInput {
 
   """All values that are not equal to given value."""
   active_not: Boolean
+  updateFrequency: Int
+
+  """All values that are not equal to given value."""
+  updateFrequency_not: Int
+
+  """All values that are contained in given list."""
+  updateFrequency_in: [Int!]
+
+  """All values that are not contained in given list."""
+  updateFrequency_not_in: [Int!]
+
+  """All values less than the given value."""
+  updateFrequency_lt: Int
+
+  """All values less than or equal the given value."""
+  updateFrequency_lte: Int
+
+  """All values greater than the given value."""
+  updateFrequency_gt: Int
+
+  """All values greater than or equal the given value."""
+  updateFrequency_gte: Int
   brewingProcess: BrewingProcessWhereInput
   graphData_every: GraphDataWhereInput
   graphData_some: GraphDataWhereInput

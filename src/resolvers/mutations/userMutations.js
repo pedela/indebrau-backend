@@ -8,13 +8,18 @@ const userMutations = {
     const email = args.email;
     const valid = args.registrationSecret.localeCompare(process.env.APP_SECRET);
     if (valid != 0) {
-      throw new Error('or no registration secret');
+      throw new Error('no registration secret');
     }
     const user = await ctx.db.mutation.createUser({
       data: { name, password, email }
     });
+    let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
+    ctx.response.cookie('token', token, {
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
+    });
     return {
-      user
+      ...user
     };
   },
 

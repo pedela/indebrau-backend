@@ -1,17 +1,22 @@
-function hasPermission(user, permissionsNeeded) {
-  const matchedPermissions = user.permissions.filter(permissionTheyHave =>
-    permissionsNeeded.includes(permissionTheyHave)
+/* Authorizes users, permissions may be undefined for any permissions acceptable */
+function checkUserPermissions(ctx, permissionsNeeded) {
+  if (!ctx.request.user) {
+    throw new Error('You must be logged in to do that!');
+  }
+  if (!permissionsNeeded) return;
+  const matchedPermissions = ctx.request.user.permissions.filter(
+    permissionTheyHave => permissionsNeeded.includes(permissionTheyHave)
   );
   if (!matchedPermissions.length) {
     throw new Error(
       `You do not have sufficient permissions: ${permissionsNeeded}, You Have: ${
-        user.permissions
+        ctx.request.user.permissions
       }`
     );
   }
 }
 
-/* Helper function that updates a passed active brew day object. */
+/* Helper function that updates a passed active brewing process object. */
 var activeBrewingProcesses = [];
 async function getActiveBrewingProcesses(ctx) {
   if (activeBrewingProcesses.length == 0) {
@@ -19,7 +24,7 @@ async function getActiveBrewingProcesses(ctx) {
     activeBrewingProcesses = await ctx.db.query.brewingProcesses(
       { where: { active: true } },
       `{
-      id,start,end,graphs{id, sensorName, active}
+      id,start,end,graphs{id, sensorName, active, updateFrequency}
       }`
     );
   } else {
@@ -30,6 +35,6 @@ async function getActiveBrewingProcesses(ctx) {
 }
 
 module.exports = {
-  hasPermission,
+  checkUserPermissions,
   getActiveBrewingProcesses
 };

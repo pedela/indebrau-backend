@@ -6,12 +6,8 @@ const userMutations = {
     const password = await bcrypt.hash(args.password, 10);
     const name = args.name;
     const email = args.email;
-    const valid = args.registrationSecret.localeCompare(process.env.APP_SECRET);
-    if (valid != 0) {
-      throw new Error('no registration secret');
-    }
     const user = await ctx.db.mutation.createUser({
-      data: { name, password, email }
+      data: { name, password, email, permissions: { set: 'USER' } }
     });
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     ctx.response.cookie('token', token, {

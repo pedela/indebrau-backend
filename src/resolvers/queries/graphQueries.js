@@ -20,7 +20,7 @@ const graphQueries = {
   },
 
   async graph(parent, { id }, ctx, info) {
-    checkUserPermissions(ctx, ['ADMIN', 'ADMIN']);
+    checkUserPermissions(ctx, ['USER', 'ADMIN']);
     return ctx.db.query.graph({ where: { id: id } }, info);
   }
 };

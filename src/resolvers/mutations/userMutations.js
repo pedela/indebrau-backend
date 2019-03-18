@@ -15,7 +15,8 @@ const userMutations = {
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
     return {
-      ...user
+      ...user,
+      token: token
     };
   },
 
@@ -34,14 +35,15 @@ const userMutations = {
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
     return {
-      ...user
+      ...user,
+      token: token
     };
   },
 
   signout(parent, args, ctx) {
     ctx.response.clearCookie('token');
     return { message: 'Goodbye!' };
-  },
+  }
 };
 
 module.exports = { userMutations };

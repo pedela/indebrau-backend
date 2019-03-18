@@ -38,6 +38,7 @@ type User {
   name: String!
   permissions: [Permission!]!
   participatingBrewingProcesses: [BrewingProcess!]!
+  token: String! #instead of password
 }
 
 type SuccessMessage {

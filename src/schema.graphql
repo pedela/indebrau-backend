@@ -28,10 +28,6 @@ type Mutation {
   createBrewingProcess(name: String!): BrewingProcess!
 }
 
-type Subscription {
-  graphSubscription: GraphSubscriptionPayload!
-}
-
 type User {
   id: ID!
   email: String!

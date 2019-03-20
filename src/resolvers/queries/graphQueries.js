@@ -2,7 +2,7 @@ const { checkUserPermissions } = require('../../utils');
 
 const graphQueries = {
   async activeGraph(parent, { sensorName }, ctx, info) {
-    checkUserPermissions(ctx, ['ADMIN', 'ADMIN']);
+    checkUserPermissions(ctx, ['ADMIN']);
 
     const graphs = await ctx.db.query.graphs(
       {

@@ -1,8 +1,11 @@
-const { checkUserPermissions } = require('../../utils');
+const {
+  activeBrewingProcessesCache,
+  checkUserPermissions
+} = require('../../utils');
 
 const graphMutations = {
   async createGraph(parent, args, ctx) {
-    checkUserPermissions(ctx, ['ADMIN', 'ADMIN']);
+    checkUserPermissions(ctx, ['ADMIN']);
 
     // 1. search for previous active graph for this sensor and update if exists
     await ctx.db.mutation.updateManyGraphs({
@@ -27,6 +30,8 @@ const graphMutations = {
         }
       }
     });
+    // update cache
+    await activeBrewingProcessesCache(ctx, true);
     if (!createdGraph) {
       throw new Error('problem storing graph');
     }

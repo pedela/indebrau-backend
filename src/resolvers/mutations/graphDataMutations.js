@@ -5,7 +5,7 @@ const {
 
 const graphDataMutations = {
   async addGraphData(parent, args, ctx) {
-    checkUserPermissions(ctx, ['USER', 'ADMIN']);
+    checkUserPermissions(ctx, ['ADMIN']);
     // fetch from cache
     var activeBrewingProcesses = await activeBrewingProcessesCache(ctx);
     // get active graph with matching sensor name
@@ -25,19 +25,13 @@ const graphDataMutations = {
             activeGraph.updateFrequency * 1000; // last entry must be at least this old
           // now fetch the latest entry's timestamp
           oldEnoughLatestGraphData = await ctx.db.query.graphDatas(
-            {
-              where: {
-                AND: [
-                  { graph: { id: activeGraph.id } },
-                  { time_gt: new Date(earliestDate).toJSON() }
-                ]
-              },
-              first: 1
+            { where: {
+              AND: [
+                { graph: { id: activeGraph.id } },
+                { time_gt: new Date(earliestDate).toJSON() }
+              ] }, first: 1
             },
-            `{
-              id,
-              time
-            }`
+            '{ id, time }'
           );
           break;
         }
@@ -49,7 +43,7 @@ const graphDataMutations = {
         'Did not find active graph for sensor ' + args.sensorName
       );
     }
-    // check if pld graph data was found (=> new data too recent)
+    // check if old graph data was found (=> new data too recent)
     if (oldEnoughLatestGraphData.length == 1) {
       throw new Error(
         'Sensor data too recent, not updating ' + args.sensorName

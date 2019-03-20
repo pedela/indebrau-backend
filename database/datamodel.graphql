@@ -12,24 +12,14 @@ type User {
   participatingBrewingProcesses: [BrewingProcess!]!
 }
 
-type BrewingProcess {
-  id: ID! @unique
-  name: String!
-  start: DateTime!
-  end: DateTime
-  active: Boolean!
-  graphs: [Graph!]!
-  users: [User!]!
-}
-
 type Graph {
   id: ID! @unique
   name: String!
-  sensorName: String!
-  brewingProcess: BrewingProcess!
+  sensorName: String! # mqtt topic
   active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
   updateFrequency: Int! # in seconds
-  graphData: [GraphData!]!
+  brewingProcess: BrewingProcess! # to which brewing process does this Graph belong...
+  graphData: [GraphData!]! # it's "content"
 }
 
 type GraphData {
@@ -37,4 +27,81 @@ type GraphData {
   time: DateTime!
   value: Float!
   graph: Graph!
+}
+
+type BrewingProcess {
+  id: ID! @unique
+  name: String!
+  start: DateTime!
+  active: Boolean!
+  description: String!
+
+  # predetermined recipe values
+  malts: [Malt!]!
+  hops: [Hop!]!
+  yeast: Yeast
+
+  mashWaterLiter: Float!
+  spargingWaterLiter: Float!
+  yieldsLiter: Int!
+  carbonizationGramPerLiter: Float!
+  mashInTemperature: Float!
+  mashSteps: [MashStep!]!
+  spargingTemperature: Float!
+  boilingMinutes: Int!
+  boilHopAdditions: [HopAddition!]!
+  dryHopping: HopAddition # leave null for no dry hopping
+  fermentationSteps: [FermentationStep!]!
+
+  # to be added during/after brewing
+  originalExtractPlato: Float
+  pitchingTemperature: Float
+  alcoholPercent: Float
+  conditioningDays: Int # days until botteling
+  end: DateTime
+
+  # graphs linked to this brewing process
+  graphs: [Graph!]!
+  # participating users
+  users: [User!]!
+}
+
+type Malt {
+  id: ID! @unique
+  name: String!
+  amountGram: Float!
+  details: String # can be set to tell about the malt
+}
+
+type Hop {
+  id: ID! @unique
+  name: String!
+  amountGram: Float!
+  details: String # can be set to tell about the hop
+}
+
+type Yeast {
+  id: ID! @unique
+  name: String!
+  amountGram: Float!
+  details: String # can be set to tell about the malt
+}
+
+type MashSteps {
+  id: ID! @unique
+  durationMinutes: Int!
+  temperature: Float!
+}
+
+type HopAddition {
+  id: ID! @unique
+  minutesAfterBoilStart: Int # null for dryhopping
+  amountGram: Float!
+  hop: Hop! # links back to the hop ingredient
+}
+
+type FermentationStep {
+  id: ID! @unique
+  durationDays: Int!
+  temperature: Float!
 }

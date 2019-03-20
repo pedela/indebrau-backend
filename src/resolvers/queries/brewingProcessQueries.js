@@ -4,8 +4,7 @@ const {
 
 const brewingProcessQueries = {
   async brewingProcesses(parent, args, ctx, info) {
-    checkUserPermissions(ctx, ['USER', 'ADMIN']);
-    // fetch from cache
+    checkUserPermissions(ctx, ['ADMIN']);
     return await ctx.db.query.brewingProcesses({}, info);
   }
 };

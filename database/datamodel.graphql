@@ -71,6 +71,7 @@ type Malt {
   name: String!
   amountGram: Float!
   details: String # can be set to tell about the malt
+  brewingProcess: BrewingProcess!
 }
 
 type Hop {
@@ -78,6 +79,7 @@ type Hop {
   name: String!
   amountGram: Float!
   details: String # can be set to tell about the hop
+  brewingProcess: BrewingProcess!
 }
 
 type Yeast {
@@ -85,12 +87,14 @@ type Yeast {
   name: String!
   amountGram: Float!
   details: String # can be set to tell about the malt
+  brewingProcess: BrewingProcess!
 }
 
 type MashSteps {
   id: ID! @unique
   durationMinutes: Int!
   temperature: Float!
+  brewingProcess: BrewingProcess!
 }
 
 type HopAddition {
@@ -98,10 +102,12 @@ type HopAddition {
   minutesAfterBoilStart: Int # null for dryhopping
   amountGram: Float!
   hop: Hop! # links back to the hop ingredient
+  brewingProcess: BrewingProcess!
 }
 
 type FermentationStep {
   id: ID! @unique
   durationDays: Int!
   temperature: Float!
+  brewingProcess: BrewingProcess!
 }

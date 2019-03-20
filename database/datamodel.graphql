@@ -49,8 +49,8 @@ type BrewingProcess {
   mashSteps: [MashStep!]!
   spargingTemperature: Float!
   boilingMinutes: Int!
-  boilHopAdditions: [HopAddition!]!
-  dryHopping: HopAddition # leave null for no dry hopping
+  boilHopAddition: [boilHopAddition!]!
+  dryHopping: dryHopAddition # can be set to null for no dry hopping
   fermentationSteps: [FermentationStep!]!
 
   # to be added during/after brewing
@@ -90,18 +90,26 @@ type Yeast {
   brewingProcess: BrewingProcess!
 }
 
-type MashSteps {
+type MashStep {
   id: ID! @unique
   durationMinutes: Int!
   temperature: Float!
   brewingProcess: BrewingProcess!
 }
 
-type HopAddition {
+type boilHopAddition {
   id: ID! @unique
-  minutesAfterBoilStart: Int # null for dryhopping
+  minutesAfterBoilStart: Int! # null for dryhopping
   amountGram: Float!
   hop: Hop! # links back to the hop ingredient
+  brewingProcess: BrewingProcess!
+}
+
+type dryHopAddition {
+  id: ID! @unique
+  amountGram: Float!
+  hop: Hop! # links back to the hop ingredient
+  addedOn: DateTime # to be edited when actually added
   brewingProcess: BrewingProcess!
 }
 

@@ -1,13 +1,10 @@
-const {
-  activeBrewingProcessesCache,
-  checkUserPermissions
-} = require('../../utils');
+const { activeGraphCache, checkUserPermissions } = require('../../utils');
 
 const graphDataMutations = {
   async addGraphData(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     // fetch from cache
-    var activeBrewingProcesses = await activeBrewingProcessesCache(ctx);
+    var activeBrewingProcesses = await activeGraphCache(ctx);
     // get active graph with matching sensor name
     // (local comparisons, no additional queries here)
     var activeGraph;

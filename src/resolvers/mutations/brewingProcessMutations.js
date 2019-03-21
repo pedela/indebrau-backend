@@ -1,7 +1,4 @@
-const {
-  activeBrewingProcessesCache,
-  checkUserPermissions
-} = require('../../utils');
+const { checkUserPermissions } = require('../../utils');
 
 const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
@@ -14,8 +11,6 @@ const brewingProcessMutations = {
         active: true
       }
     });
-    // update cache
-    await activeBrewingProcessesCache(ctx, true);
     if (!createdBrewingProcess) {
       throw new Error('problem creating brewing process');
     }

@@ -16,24 +16,24 @@ function checkUserPermissions(ctx, permissionsNeeded) {
   }
 }
 
-/* Helper function that caches active brewing processes. */
-var cachedActiveBrewingProcesses = [];
-async function activeBrewingProcessesCache(ctx, update) {
-  if (cachedActiveBrewingProcesses.length == 0 || update) {
-    console.log('refreshing active brewing processes list...');
-    cachedActiveBrewingProcesses = await ctx.db.query.brewingProcesses(
+/* Helper function that caches active graphs (to speed up inserts). */
+var cachedActiveGraphs = [];
+async function activeGraphCache(ctx, update) {
+  if (cachedActiveGraphs.length == 0 || update) {
+    console.log('refreshing active graph list...');
+    cachedActiveGraphs = await ctx.db.query.graphs(
       { where: { active: true } },
       `{
-      id,start,end,graphs{id, sensorName, active, updateFrequency}
+      id, sensorName, active, updateFrequency
       }`
     );
   } else {
-    console.log('using active brewing processes cache...');
+    console.log('using active graph cache...');
   }
-  return cachedActiveBrewingProcesses;
+  return cachedActiveGraphs;
 }
 
 module.exports = {
   checkUserPermissions,
-  activeBrewingProcessesCache
+  activeGraphCache
 };

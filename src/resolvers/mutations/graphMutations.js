@@ -1,7 +1,4 @@
-const {
-  activeBrewingProcessesCache,
-  checkUserPermissions
-} = require('../../utils');
+const { activeGraphCache, checkUserPermissions } = require('../../utils');
 
 const graphMutations = {
   async createGraph(parent, args, ctx) {
@@ -31,7 +28,7 @@ const graphMutations = {
       }
     });
     // update cache
-    await activeBrewingProcessesCache(ctx, true);
+    await activeGraphCache(ctx, true);
     if (!createdGraph) {
       throw new Error('problem storing graph');
     }

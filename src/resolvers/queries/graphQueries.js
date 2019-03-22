@@ -1,22 +1,32 @@
-const { checkUserPermissions } = require('../../utils');
+const { checkUserPermissions, reduceGraphDataEvenly } = require('../../utils');
 
 const graphQueries = {
-  async activeGraph(parent, { sensorName }, ctx, info) {
+  async activeGraphs(parent, { sensorNames, dataPoints }, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
-
-    const graphs = await ctx.db.query.graphs(
-      {
-        where: { active: true, sensorName: sensorName }
-      },
-      info
-    );
-    if (graphs.length > 1) {
-      throw new Error('More than one active graph for this sensor!?');
+    var graphs = null;
+    if (!sensorNames) {
+      graphs = await ctx.db.query.graphs(
+        {
+          where: { active: true, sensorName_in: sensorNames }
+        },
+        info
+      );
+    } else {
+      graphs = await ctx.db.query.graphs(
+        {
+          where: { active: true, sensorName_in: sensorNames }
+        },
+        info
+      );
     }
     if (graphs.length == 0) {
-      throw new Error('No active graph found for sensor...');
+      throw new Error('No active graphs found');
     }
-    return graphs[0];
+    // reduce returned graph data evenly across time
+    graphs.map((graph) => {
+      graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);
+    });
+    return graphs;
   },
 
   async graph(parent, { id }, ctx, info) {

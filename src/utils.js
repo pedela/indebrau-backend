@@ -33,7 +33,35 @@ async function activeGraphCache(ctx, update) {
   return cachedActiveGraphs;
 }
 
+/* reduce datapoints evenly across time (every nth element) */
+async function reduceGraphDataEvenly(graphData, dataPoints) {
+  // check if graphData present and longer than desired
+  if (
+    !graphData ||
+    !graphData[0].time ||
+    !graphData[0].value ||
+    graphData.length < dataPoints
+  ) {
+    return graphData;
+  }
+  var reducedData = [];
+  var nthElement = Math.floor(graphData.length / dataPoints);
+  for (var j = 0; j < dataPoints - 1; j++) {
+    reducedData[j] = {
+      time: graphData[j * nthElement].time,
+      value: graphData[j * nthElement].value
+    };
+  }
+  // last one should be most recent one (because we want that...)
+  reducedData[dataPoints - 1] = {
+    time: graphData[graphData.length - 1].time,
+    value: graphData[graphData.length - 1].value
+  };
+  return reducedData;
+}
+
 module.exports = {
   checkUserPermissions,
-  activeGraphCache
+  activeGraphCache,
+  reduceGraphDataEvenly
 };

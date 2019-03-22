@@ -19,13 +19,13 @@ type Graph {
   active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
   updateFrequency: Int! # in seconds
   brewingProcess: BrewingProcess! # to which brewing process does this Graph belong...
-  graphData: [GraphData!]! # it's "content"
+  graphData: [GraphData!]! # its "content"
 }
 
 type GraphData {
   id: ID! @unique
   time: DateTime!
-  value: Float!
+  value: String!
   graph: Graph!
 }
 

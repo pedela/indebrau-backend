@@ -2,9 +2,9 @@
 
 type Query {
   me: User
-  activeGraphs(sensorNames: [String], dataPoints: Int): [Graph!]!
-  graph(id: ID!): Graph
-  brewingProcesses: [BrewingProcess!]!
+  activeGraphs(sensorNames: [String], dataPoints: Int): [Graph!]! #admin
+  graph(id: ID!): Graph #admin
+  brewingProcesses: [BrewingProcess!]! #admin
 }
 
 type Mutation {
@@ -12,12 +12,14 @@ type Mutation {
   signin(email: String!, password: String!): User!
   signout: SuccessMessage
 
+  #admin
   addGraphData(
     sensorName: String!
     sensorTimeStamp: DateTime!
     sensorValue: String!
   ): GraphData!
 
+  #admin
   createGraph(
     name: String!
     sensorName: String!
@@ -25,6 +27,7 @@ type Mutation {
     brewingProcessId: ID!
   ): Graph!
 
+  #admin
   createBrewingProcess(name: String!): BrewingProcess!
 }
 

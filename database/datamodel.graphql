@@ -33,8 +33,19 @@ type BrewingProcess {
   id: ID! @unique
   name: String!
   start: DateTime!
+  end: DateTime # add when finished
   active: Boolean!
   description: String!
+  brewingProcessDetails: BrewingProcessDetails!
+  # graphs linked to this brewing process
+  graphs: [Graph!]!
+  # participating users
+  users: [User!]!
+}
+
+type BrewingProcessDetails {
+  id: ID! @unique
+  brewingProcess: BrewingProcess!
 
   # predetermined recipe values
   malts: [Malt!]!
@@ -58,12 +69,6 @@ type BrewingProcess {
   pitchingTemperature: Float
   alcoholPercent: Float
   conditioningDays: Int # days until botteling
-  end: DateTime
-
-  # graphs linked to this brewing process
-  graphs: [Graph!]!
-  # participating users
-  users: [User!]!
 }
 
 type Malt {

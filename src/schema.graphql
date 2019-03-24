@@ -2,9 +2,9 @@
 
 type Query {
   me: User
-  activeGraphs(sensorNames: [String], dataPoints: Int): [Graph!]! #admin
-  graph(id: ID!): Graph #admin
-  brewingProcesses: [BrewingProcess!]! #admin
+  activeGraphs(sensorNames: [String], dataPoints: Int): [Graph!]! # admin
+  graph(id: ID!): Graph # admin
+  brewingProcesses: [BrewingProcess!]! # admin
 }
 
 type Mutation {
@@ -12,14 +12,14 @@ type Mutation {
   signin(email: String!, password: String!): User!
   signout: SuccessMessage
 
-  #admin
+  # admin
   addGraphData(
     sensorName: String!
     sensorTimeStamp: DateTime!
     sensorValue: String!
   ): GraphData!
 
-  #admin
+  # admin
   createGraph(
     name: String!
     sensorName: String!
@@ -27,8 +27,56 @@ type Mutation {
     brewingProcessId: ID!
   ): Graph!
 
-  #admin
-  createBrewingProcess(name: String!): BrewingProcess!
+  # admin
+  createBrewingProcess(
+    name: String!
+    start: DateTime # default: now
+    description: String!
+    brewingProcessDetails: DetailsInput!
+  ): BrewingProcess!
+}
+
+input DetailsInput {
+  # predetermined recipe values
+  # hops only added via hop additions
+  malts: [IngredientInput!]!
+  yeast: IngredientInput!
+
+  mashWaterLiter: Float!
+  spargingWaterLiter: Float!
+  yieldsLiter: Int!
+  carbonizationGramPerLiter: Float!
+  mashInTemperature: Float!
+  mashSteps: [StepInput!]!
+  spargingTemperature: Float!
+  boilingMinutes: Int!
+  boilHopAdditions: [HopAddition!]!
+  dryHopping: HopAddition # can be set to null for no dry hopping
+  fermentationSteps: [StepInput!]!
+
+  # to be added during/after brewing
+  originalExtractPlato: Float
+  pitchingTemperature: Float
+  alcoholPercent: Float
+  conditioningDays: Int # days until botteling
+}
+
+input IngredientInput {
+  name: String!
+  amountGram: Float!
+  details: String
+  type: IngredientType!
+}
+
+input StepInput {
+  durationMinutes: Int!
+  temperature: Float!
+  details: String
+}
+
+input HopAddition {
+  hop: IngredientInput! # add hops here
+  minutesAfterBoilStart: Int! # null for dryhopping
 }
 
 type User {

@@ -3,6 +3,12 @@ enum Permission {
   USER
 }
 
+enum IngredientType {
+  MALT
+  HOP
+  YEAST
+}
+
 type User {
   id: ID! @unique
   email: String! @unique
@@ -32,11 +38,12 @@ type GraphData {
 type BrewingProcess {
   id: ID! @unique
   name: String!
-  start: DateTime!
-  end: DateTime # add when finished
-  active: Boolean!
+  start: DateTime! # default: now
+  end: DateTime
   description: String!
   brewingProcessDetails: BrewingProcessDetails!
+    @relation(name: "BrewingProcessDetails", onDelete: CASCADE)
+
   # graphs linked to this brewing process
   graphs: [Graph!]!
   # participating users
@@ -45,24 +52,25 @@ type BrewingProcess {
 
 type BrewingProcessDetails {
   id: ID! @unique
-  brewingProcess: BrewingProcess!
 
   # predetermined recipe values
-  malts: [Malt!]!
-  hops: [Hop!]!
-  yeast: Yeast
-
+  malts: [Ingredient!]! @relation(name: "Malts", onDelete: CASCADE)
+  yeast: Ingredient! @relation(name: "Yeast", onDelete: CASCADE)
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
   yieldsLiter: Int!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
-  mashSteps: [MashStep!]!
+  mashSteps: [Step!]! @relation(name: "MashSteps", onDelete: CASCADE)
   spargingTemperature: Float!
   boilingMinutes: Int!
-  boilHopAddition: [boilHopAddition!]!
-  dryHopping: dryHopAddition # can be set to null for no dry hopping
-  fermentationSteps: [FermentationStep!]!
+  boilHopAdditions: [boilHopAddition!]!
+    @relation(name: "BoilHopAddition", onDelete: CASCADE)
+  dryHopping: dryHopAddition
+    @relation(name: "DryHopAddition", onDelete: CASCADE)
+  # can be set to null for no dry hopping
+  fermentationSteps: [Step!]!
+    @relation(name: "FermentationSteps", onDelete: CASCADE)
 
   # to be added during/after brewing
   originalExtractPlato: Float
@@ -71,56 +79,29 @@ type BrewingProcessDetails {
   conditioningDays: Int # days until botteling
 }
 
-type Malt {
+type Ingredient {
   id: ID! @unique
+  type: IngredientType!
   name: String!
   amountGram: Float!
-  details: String # can be set to tell about the malt
-  brewingProcess: BrewingProcess!
+  details: String
 }
 
-type Hop {
-  id: ID! @unique
-  name: String!
-  amountGram: Float!
-  details: String # can be set to tell about the hop
-  brewingProcess: BrewingProcess!
-}
-
-type Yeast {
-  id: ID! @unique
-  name: String!
-  amountGram: Float!
-  details: String # can be set to tell about the malt
-  brewingProcess: BrewingProcess!
-}
-
-type MashStep {
+type Step {
   id: ID! @unique
   durationMinutes: Int!
   temperature: Float!
-  brewingProcess: BrewingProcess!
+  details: String
 }
 
 type boilHopAddition {
   id: ID! @unique
-  minutesAfterBoilStart: Int! # null for dryhopping
-  amountGram: Float!
-  hop: Hop! # links back to the hop ingredient
-  brewingProcess: BrewingProcess!
+  hop: Ingredient! @relation(name: "BoilHop", onDelete: CASCADE)
+  minutesAfterBoilStart: Int!
 }
 
 type dryHopAddition {
   id: ID! @unique
-  amountGram: Float!
-  hop: Hop! # links back to the hop ingredient
+  hop: Ingredient! @relation(name: "DryHop", onDelete: CASCADE)
   addedOn: DateTime # to be edited when actually added
-  brewingProcess: BrewingProcess!
-}
-
-type FermentationStep {
-  id: ID! @unique
-  durationDays: Int!
-  temperature: Float!
-  brewingProcess: BrewingProcess!
 }

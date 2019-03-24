@@ -19,9 +19,6 @@ const graphQueries = {
         info
       );
     }
-    if (graphs.length == 0) {
-      throw new Error('No active graphs found');
-    }
     // reduce returned graph data evenly across time
     graphs.map(graph => {
       graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);

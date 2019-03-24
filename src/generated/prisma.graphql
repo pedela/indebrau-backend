@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Sun Mar 24 2019 00:39:39 GMT+0100 (Central European Standard Time)
+# timestamp: Sun Mar 24 2019 12:23:17 GMT+0100 (Central European Standard Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -17,10 +17,6 @@ type AggregatedryHopAddition {
   count: Int!
 }
 
-type AggregateFermentationStep {
-  count: Int!
-}
-
 type AggregateGraph {
   count: Int!
 }
@@ -29,23 +25,15 @@ type AggregateGraphData {
   count: Int!
 }
 
-type AggregateHop {
+type AggregateIngredient {
   count: Int!
 }
 
-type AggregateMalt {
-  count: Int!
-}
-
-type AggregateMashStep {
+type AggregateStep {
   count: Int!
 }
 
 type AggregateUser {
-  count: Int!
-}
-
-type AggregateYeast {
   count: Int!
 }
 
@@ -56,10 +44,8 @@ type BatchPayload {
 
 type boilHopAddition implements Node {
   id: ID!
+  hop: Ingredient!
   minutesAfterBoilStart: Int!
-  amountGram: Float!
-  hop: Hop!
-  brewingProcess: BrewingProcess!
 }
 
 """A connection to a list of items."""
@@ -74,9 +60,7 @@ type boilHopAdditionConnection {
 
 input boilHopAdditionCreateInput {
   minutesAfterBoilStart: Int!
-  amountGram: Float!
-  hop: HopCreateOneInput!
-  brewingProcess: BrewingProcessCreateOneInput!
+  hop: IngredientCreateOneInput!
 }
 
 input boilHopAdditionCreateManyInput {
@@ -98,8 +82,6 @@ enum boilHopAdditionOrderByInput {
   id_DESC
   minutesAfterBoilStart_ASC
   minutesAfterBoilStart_DESC
-  amountGram_ASC
-  amountGram_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -109,7 +91,6 @@ enum boilHopAdditionOrderByInput {
 type boilHopAdditionPreviousValues {
   id: ID!
   minutesAfterBoilStart: Int!
-  amountGram: Float!
 }
 
 input boilHopAdditionScalarWhereInput {
@@ -183,28 +164,6 @@ input boilHopAdditionScalarWhereInput {
 
   """All values greater than or equal the given value."""
   minutesAfterBoilStart_gte: Int
-  amountGram: Float
-
-  """All values that are not equal to given value."""
-  amountGram_not: Float
-
-  """All values that are contained in given list."""
-  amountGram_in: [Float!]
-
-  """All values that are not contained in given list."""
-  amountGram_not_in: [Float!]
-
-  """All values less than the given value."""
-  amountGram_lt: Float
-
-  """All values less than or equal the given value."""
-  amountGram_lte: Float
-
-  """All values greater than the given value."""
-  amountGram_gt: Float
-
-  """All values greater than or equal the given value."""
-  amountGram_gte: Float
 }
 
 type boilHopAdditionSubscriptionPayload {
@@ -248,21 +207,16 @@ input boilHopAdditionSubscriptionWhereInput {
 
 input boilHopAdditionUpdateDataInput {
   minutesAfterBoilStart: Int
-  amountGram: Float
-  hop: HopUpdateOneRequiredInput
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
+  hop: IngredientUpdateOneRequiredInput
 }
 
 input boilHopAdditionUpdateInput {
   minutesAfterBoilStart: Int
-  amountGram: Float
-  hop: HopUpdateOneRequiredInput
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
+  hop: IngredientUpdateOneRequiredInput
 }
 
 input boilHopAdditionUpdateManyDataInput {
   minutesAfterBoilStart: Int
-  amountGram: Float
 }
 
 input boilHopAdditionUpdateManyInput {
@@ -279,7 +233,6 @@ input boilHopAdditionUpdateManyInput {
 
 input boilHopAdditionUpdateManyMutationInput {
   minutesAfterBoilStart: Int
-  amountGram: Float
 }
 
 input boilHopAdditionUpdateManyWithWhereNestedInput {
@@ -369,30 +322,7 @@ input boilHopAdditionWhereInput {
 
   """All values greater than or equal the given value."""
   minutesAfterBoilStart_gte: Int
-  amountGram: Float
-
-  """All values that are not equal to given value."""
-  amountGram_not: Float
-
-  """All values that are contained in given list."""
-  amountGram_in: [Float!]
-
-  """All values that are not contained in given list."""
-  amountGram_not_in: [Float!]
-
-  """All values less than the given value."""
-  amountGram_lt: Float
-
-  """All values less than or equal the given value."""
-  amountGram_lte: Float
-
-  """All values greater than the given value."""
-  amountGram_gt: Float
-
-  """All values greater than or equal the given value."""
-  amountGram_gte: Float
-  hop: HopWhereInput
-  brewingProcess: BrewingProcessWhereInput
+  hop: IngredientWhereInput
 }
 
 input boilHopAdditionWhereUniqueInput {
@@ -404,7 +334,6 @@ type BrewingProcess implements Node {
   name: String!
   start: DateTime!
   end: DateTime
-  active: Boolean!
   description: String!
   brewingProcessDetails: BrewingProcessDetails!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph!]
@@ -425,9 +354,8 @@ input BrewingProcessCreateInput {
   name: String!
   start: DateTime!
   end: DateTime
-  active: Boolean!
   description: String!
-  brewingProcessDetails: BrewingProcessDetailsCreateOneWithoutBrewingProcessInput!
+  brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   graphs: GraphCreateManyWithoutBrewingProcessInput
   users: UserCreateManyWithoutParticipatingBrewingProcessesInput
 }
@@ -437,38 +365,17 @@ input BrewingProcessCreateManyWithoutUsersInput {
   connect: [BrewingProcessWhereUniqueInput!]
 }
 
-input BrewingProcessCreateOneInput {
-  create: BrewingProcessCreateInput
-  connect: BrewingProcessWhereUniqueInput
-}
-
-input BrewingProcessCreateOneWithoutBrewingProcessDetailsInput {
-  create: BrewingProcessCreateWithoutBrewingProcessDetailsInput
-  connect: BrewingProcessWhereUniqueInput
-}
-
 input BrewingProcessCreateOneWithoutGraphsInput {
   create: BrewingProcessCreateWithoutGraphsInput
   connect: BrewingProcessWhereUniqueInput
-}
-
-input BrewingProcessCreateWithoutBrewingProcessDetailsInput {
-  name: String!
-  start: DateTime!
-  end: DateTime
-  active: Boolean!
-  description: String!
-  graphs: GraphCreateManyWithoutBrewingProcessInput
-  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
 }
 
 input BrewingProcessCreateWithoutGraphsInput {
   name: String!
   start: DateTime!
   end: DateTime
-  active: Boolean!
   description: String!
-  brewingProcessDetails: BrewingProcessDetailsCreateOneWithoutBrewingProcessInput!
+  brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   users: UserCreateManyWithoutParticipatingBrewingProcessesInput
 }
 
@@ -476,29 +383,26 @@ input BrewingProcessCreateWithoutUsersInput {
   name: String!
   start: DateTime!
   end: DateTime
-  active: Boolean!
   description: String!
-  brewingProcessDetails: BrewingProcessDetailsCreateOneWithoutBrewingProcessInput!
+  brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   graphs: GraphCreateManyWithoutBrewingProcessInput
 }
 
 type BrewingProcessDetails implements Node {
   id: ID!
-  brewingProcess: BrewingProcess!
-  malts(where: MaltWhereInput, orderBy: MaltOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Malt!]
-  hops(where: HopWhereInput, orderBy: HopOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Hop!]
-  yeast: Yeast
+  malts(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Ingredient!]
+  yeast: Ingredient!
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
   yieldsLiter: Int!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
-  mashSteps(where: MashStepWhereInput, orderBy: MashStepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MashStep!]
+  mashSteps(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Step!]
   spargingTemperature: Float!
   boilingMinutes: Int!
-  boilHopAddition(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition!]
+  boilHopAdditions(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition!]
   dryHopping: dryHopAddition
-  fermentationSteps(where: FermentationStepWhereInput, orderBy: FermentationStepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FermentationStep!]
+  fermentationSteps(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Step!]
   originalExtractPlato: Float
   pitchingTemperature: Float
   alcoholPercent: Float
@@ -527,40 +431,17 @@ input BrewingProcessDetailsCreateInput {
   pitchingTemperature: Float
   alcoholPercent: Float
   conditioningDays: Int
-  brewingProcess: BrewingProcessCreateOneWithoutBrewingProcessDetailsInput!
-  malts: MaltCreateManyInput
-  hops: HopCreateManyInput
-  yeast: YeastCreateOneInput
-  mashSteps: MashStepCreateManyInput
-  boilHopAddition: boilHopAdditionCreateManyInput
+  malts: IngredientCreateManyInput
+  yeast: IngredientCreateOneInput!
+  mashSteps: StepCreateManyInput
+  boilHopAdditions: boilHopAdditionCreateManyInput
   dryHopping: dryHopAdditionCreateOneInput
-  fermentationSteps: FermentationStepCreateManyInput
+  fermentationSteps: StepCreateManyInput
 }
 
-input BrewingProcessDetailsCreateOneWithoutBrewingProcessInput {
-  create: BrewingProcessDetailsCreateWithoutBrewingProcessInput
+input BrewingProcessDetailsCreateOneInput {
+  create: BrewingProcessDetailsCreateInput
   connect: BrewingProcessDetailsWhereUniqueInput
-}
-
-input BrewingProcessDetailsCreateWithoutBrewingProcessInput {
-  mashWaterLiter: Float!
-  spargingWaterLiter: Float!
-  yieldsLiter: Int!
-  carbonizationGramPerLiter: Float!
-  mashInTemperature: Float!
-  spargingTemperature: Float!
-  boilingMinutes: Int!
-  originalExtractPlato: Float
-  pitchingTemperature: Float
-  alcoholPercent: Float
-  conditioningDays: Int
-  malts: MaltCreateManyInput
-  hops: HopCreateManyInput
-  yeast: YeastCreateOneInput
-  mashSteps: MashStepCreateManyInput
-  boilHopAddition: boilHopAdditionCreateManyInput
-  dryHopping: dryHopAdditionCreateOneInput
-  fermentationSteps: FermentationStepCreateManyInput
 }
 
 """An edge in a connection."""
@@ -657,6 +538,26 @@ input BrewingProcessDetailsSubscriptionWhereInput {
   node: BrewingProcessDetailsWhereInput
 }
 
+input BrewingProcessDetailsUpdateDataInput {
+  mashWaterLiter: Float
+  spargingWaterLiter: Float
+  yieldsLiter: Int
+  carbonizationGramPerLiter: Float
+  mashInTemperature: Float
+  spargingTemperature: Float
+  boilingMinutes: Int
+  originalExtractPlato: Float
+  pitchingTemperature: Float
+  alcoholPercent: Float
+  conditioningDays: Int
+  malts: IngredientUpdateManyInput
+  yeast: IngredientUpdateOneRequiredInput
+  mashSteps: StepUpdateManyInput
+  boilHopAdditions: boilHopAdditionUpdateManyInput
+  dryHopping: dryHopAdditionUpdateOneInput
+  fermentationSteps: StepUpdateManyInput
+}
+
 input BrewingProcessDetailsUpdateInput {
   mashWaterLiter: Float
   spargingWaterLiter: Float
@@ -669,14 +570,12 @@ input BrewingProcessDetailsUpdateInput {
   pitchingTemperature: Float
   alcoholPercent: Float
   conditioningDays: Int
-  brewingProcess: BrewingProcessUpdateOneRequiredWithoutBrewingProcessDetailsInput
-  malts: MaltUpdateManyInput
-  hops: HopUpdateManyInput
-  yeast: YeastUpdateOneInput
-  mashSteps: MashStepUpdateManyInput
-  boilHopAddition: boilHopAdditionUpdateManyInput
+  malts: IngredientUpdateManyInput
+  yeast: IngredientUpdateOneRequiredInput
+  mashSteps: StepUpdateManyInput
+  boilHopAdditions: boilHopAdditionUpdateManyInput
   dryHopping: dryHopAdditionUpdateOneInput
-  fermentationSteps: FermentationStepUpdateManyInput
+  fermentationSteps: StepUpdateManyInput
 }
 
 input BrewingProcessDetailsUpdateManyMutationInput {
@@ -693,37 +592,16 @@ input BrewingProcessDetailsUpdateManyMutationInput {
   conditioningDays: Int
 }
 
-input BrewingProcessDetailsUpdateOneRequiredWithoutBrewingProcessInput {
-  create: BrewingProcessDetailsCreateWithoutBrewingProcessInput
+input BrewingProcessDetailsUpdateOneRequiredInput {
+  create: BrewingProcessDetailsCreateInput
   connect: BrewingProcessDetailsWhereUniqueInput
-  update: BrewingProcessDetailsUpdateWithoutBrewingProcessDataInput
-  upsert: BrewingProcessDetailsUpsertWithoutBrewingProcessInput
+  update: BrewingProcessDetailsUpdateDataInput
+  upsert: BrewingProcessDetailsUpsertNestedInput
 }
 
-input BrewingProcessDetailsUpdateWithoutBrewingProcessDataInput {
-  mashWaterLiter: Float
-  spargingWaterLiter: Float
-  yieldsLiter: Int
-  carbonizationGramPerLiter: Float
-  mashInTemperature: Float
-  spargingTemperature: Float
-  boilingMinutes: Int
-  originalExtractPlato: Float
-  pitchingTemperature: Float
-  alcoholPercent: Float
-  conditioningDays: Int
-  malts: MaltUpdateManyInput
-  hops: HopUpdateManyInput
-  yeast: YeastUpdateOneInput
-  mashSteps: MashStepUpdateManyInput
-  boilHopAddition: boilHopAdditionUpdateManyInput
-  dryHopping: dryHopAdditionUpdateOneInput
-  fermentationSteps: FermentationStepUpdateManyInput
-}
-
-input BrewingProcessDetailsUpsertWithoutBrewingProcessInput {
-  update: BrewingProcessDetailsUpdateWithoutBrewingProcessDataInput!
-  create: BrewingProcessDetailsCreateWithoutBrewingProcessInput!
+input BrewingProcessDetailsUpsertNestedInput {
+  update: BrewingProcessDetailsUpdateDataInput!
+  create: BrewingProcessDetailsCreateInput!
 }
 
 input BrewingProcessDetailsWhereInput {
@@ -1017,24 +895,20 @@ input BrewingProcessDetailsWhereInput {
 
   """All values greater than or equal the given value."""
   conditioningDays_gte: Int
-  brewingProcess: BrewingProcessWhereInput
-  malts_every: MaltWhereInput
-  malts_some: MaltWhereInput
-  malts_none: MaltWhereInput
-  hops_every: HopWhereInput
-  hops_some: HopWhereInput
-  hops_none: HopWhereInput
-  yeast: YeastWhereInput
-  mashSteps_every: MashStepWhereInput
-  mashSteps_some: MashStepWhereInput
-  mashSteps_none: MashStepWhereInput
-  boilHopAddition_every: boilHopAdditionWhereInput
-  boilHopAddition_some: boilHopAdditionWhereInput
-  boilHopAddition_none: boilHopAdditionWhereInput
+  malts_every: IngredientWhereInput
+  malts_some: IngredientWhereInput
+  malts_none: IngredientWhereInput
+  yeast: IngredientWhereInput
+  mashSteps_every: StepWhereInput
+  mashSteps_some: StepWhereInput
+  mashSteps_none: StepWhereInput
+  boilHopAdditions_every: boilHopAdditionWhereInput
+  boilHopAdditions_some: boilHopAdditionWhereInput
+  boilHopAdditions_none: boilHopAdditionWhereInput
   dryHopping: dryHopAdditionWhereInput
-  fermentationSteps_every: FermentationStepWhereInput
-  fermentationSteps_some: FermentationStepWhereInput
-  fermentationSteps_none: FermentationStepWhereInput
+  fermentationSteps_every: StepWhereInput
+  fermentationSteps_some: StepWhereInput
+  fermentationSteps_none: StepWhereInput
 }
 
 input BrewingProcessDetailsWhereUniqueInput {
@@ -1059,8 +933,6 @@ enum BrewingProcessOrderByInput {
   start_DESC
   end_ASC
   end_DESC
-  active_ASC
-  active_DESC
   description_ASC
   description_DESC
   updatedAt_ASC
@@ -1074,7 +946,6 @@ type BrewingProcessPreviousValues {
   name: String!
   start: DateTime!
   end: DateTime
-  active: Boolean!
   description: String!
 }
 
@@ -1211,10 +1082,6 @@ input BrewingProcessScalarWhereInput {
 
   """All values greater than or equal the given value."""
   end_gte: DateTime
-  active: Boolean
-
-  """All values that are not equal to given value."""
-  active_not: Boolean
   description: String
 
   """All values that are not equal to given value."""
@@ -1296,24 +1163,12 @@ input BrewingProcessSubscriptionWhereInput {
   node: BrewingProcessWhereInput
 }
 
-input BrewingProcessUpdateDataInput {
-  name: String
-  start: DateTime
-  end: DateTime
-  active: Boolean
-  description: String
-  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredWithoutBrewingProcessInput
-  graphs: GraphUpdateManyWithoutBrewingProcessInput
-  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
-}
-
 input BrewingProcessUpdateInput {
   name: String
   start: DateTime
   end: DateTime
-  active: Boolean
   description: String
-  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredWithoutBrewingProcessInput
+  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   graphs: GraphUpdateManyWithoutBrewingProcessInput
   users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
 }
@@ -1322,7 +1177,6 @@ input BrewingProcessUpdateManyDataInput {
   name: String
   start: DateTime
   end: DateTime
-  active: Boolean
   description: String
 }
 
@@ -1330,7 +1184,6 @@ input BrewingProcessUpdateManyMutationInput {
   name: String
   start: DateTime
   end: DateTime
-  active: Boolean
   description: String
 }
 
@@ -1351,20 +1204,6 @@ input BrewingProcessUpdateManyWithWhereNestedInput {
   data: BrewingProcessUpdateManyDataInput!
 }
 
-input BrewingProcessUpdateOneRequiredInput {
-  create: BrewingProcessCreateInput
-  connect: BrewingProcessWhereUniqueInput
-  update: BrewingProcessUpdateDataInput
-  upsert: BrewingProcessUpsertNestedInput
-}
-
-input BrewingProcessUpdateOneRequiredWithoutBrewingProcessDetailsInput {
-  create: BrewingProcessCreateWithoutBrewingProcessDetailsInput
-  connect: BrewingProcessWhereUniqueInput
-  update: BrewingProcessUpdateWithoutBrewingProcessDetailsDataInput
-  upsert: BrewingProcessUpsertWithoutBrewingProcessDetailsInput
-}
-
 input BrewingProcessUpdateOneRequiredWithoutGraphsInput {
   create: BrewingProcessCreateWithoutGraphsInput
   connect: BrewingProcessWhereUniqueInput
@@ -1372,23 +1211,12 @@ input BrewingProcessUpdateOneRequiredWithoutGraphsInput {
   upsert: BrewingProcessUpsertWithoutGraphsInput
 }
 
-input BrewingProcessUpdateWithoutBrewingProcessDetailsDataInput {
-  name: String
-  start: DateTime
-  end: DateTime
-  active: Boolean
-  description: String
-  graphs: GraphUpdateManyWithoutBrewingProcessInput
-  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
-}
-
 input BrewingProcessUpdateWithoutGraphsDataInput {
   name: String
   start: DateTime
   end: DateTime
-  active: Boolean
   description: String
-  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredWithoutBrewingProcessInput
+  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
 }
 
@@ -1396,25 +1224,14 @@ input BrewingProcessUpdateWithoutUsersDataInput {
   name: String
   start: DateTime
   end: DateTime
-  active: Boolean
   description: String
-  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredWithoutBrewingProcessInput
+  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   graphs: GraphUpdateManyWithoutBrewingProcessInput
 }
 
 input BrewingProcessUpdateWithWhereUniqueWithoutUsersInput {
   where: BrewingProcessWhereUniqueInput!
   data: BrewingProcessUpdateWithoutUsersDataInput!
-}
-
-input BrewingProcessUpsertNestedInput {
-  update: BrewingProcessUpdateDataInput!
-  create: BrewingProcessCreateInput!
-}
-
-input BrewingProcessUpsertWithoutBrewingProcessDetailsInput {
-  update: BrewingProcessUpdateWithoutBrewingProcessDetailsDataInput!
-  create: BrewingProcessCreateWithoutBrewingProcessDetailsInput!
 }
 
 input BrewingProcessUpsertWithoutGraphsInput {
@@ -1561,10 +1378,6 @@ input BrewingProcessWhereInput {
 
   """All values greater than or equal the given value."""
   end_gte: DateTime
-  active: Boolean
-
-  """All values that are not equal to given value."""
-  active_not: Boolean
   description: String
 
   """All values that are not equal to given value."""
@@ -1622,10 +1435,8 @@ scalar DateTime
 
 type dryHopAddition implements Node {
   id: ID!
-  amountGram: Float!
-  hop: Hop!
+  hop: Ingredient!
   addedOn: DateTime
-  brewingProcess: BrewingProcess!
 }
 
 """A connection to a list of items."""
@@ -1639,10 +1450,8 @@ type dryHopAdditionConnection {
 }
 
 input dryHopAdditionCreateInput {
-  amountGram: Float!
   addedOn: DateTime
-  hop: HopCreateOneInput!
-  brewingProcess: BrewingProcessCreateOneInput!
+  hop: IngredientCreateOneInput!
 }
 
 input dryHopAdditionCreateOneInput {
@@ -1662,8 +1471,6 @@ type dryHopAdditionEdge {
 enum dryHopAdditionOrderByInput {
   id_ASC
   id_DESC
-  amountGram_ASC
-  amountGram_DESC
   addedOn_ASC
   addedOn_DESC
   updatedAt_ASC
@@ -1674,7 +1481,6 @@ enum dryHopAdditionOrderByInput {
 
 type dryHopAdditionPreviousValues {
   id: ID!
-  amountGram: Float!
   addedOn: DateTime
 }
 
@@ -1718,21 +1524,16 @@ input dryHopAdditionSubscriptionWhereInput {
 }
 
 input dryHopAdditionUpdateDataInput {
-  amountGram: Float
   addedOn: DateTime
-  hop: HopUpdateOneRequiredInput
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
+  hop: IngredientUpdateOneRequiredInput
 }
 
 input dryHopAdditionUpdateInput {
-  amountGram: Float
   addedOn: DateTime
-  hop: HopUpdateOneRequiredInput
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
+  hop: IngredientUpdateOneRequiredInput
 }
 
 input dryHopAdditionUpdateManyMutationInput {
-  amountGram: Float
   addedOn: DateTime
 }
 
@@ -1799,28 +1600,6 @@ input dryHopAdditionWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  amountGram: Float
-
-  """All values that are not equal to given value."""
-  amountGram_not: Float
-
-  """All values that are contained in given list."""
-  amountGram_in: [Float!]
-
-  """All values that are not contained in given list."""
-  amountGram_not_in: [Float!]
-
-  """All values less than the given value."""
-  amountGram_lt: Float
-
-  """All values less than or equal the given value."""
-  amountGram_lte: Float
-
-  """All values greater than the given value."""
-  amountGram_gt: Float
-
-  """All values greater than or equal the given value."""
-  amountGram_gte: Float
   addedOn: DateTime
 
   """All values that are not equal to given value."""
@@ -1843,351 +1622,10 @@ input dryHopAdditionWhereInput {
 
   """All values greater than or equal the given value."""
   addedOn_gte: DateTime
-  hop: HopWhereInput
-  brewingProcess: BrewingProcessWhereInput
+  hop: IngredientWhereInput
 }
 
 input dryHopAdditionWhereUniqueInput {
-  id: ID
-}
-
-type FermentationStep implements Node {
-  id: ID!
-  durationDays: Int!
-  temperature: Float!
-  brewingProcess: BrewingProcess!
-}
-
-"""A connection to a list of items."""
-type FermentationStepConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [FermentationStepEdge]!
-  aggregate: AggregateFermentationStep!
-}
-
-input FermentationStepCreateInput {
-  durationDays: Int!
-  temperature: Float!
-  brewingProcess: BrewingProcessCreateOneInput!
-}
-
-input FermentationStepCreateManyInput {
-  create: [FermentationStepCreateInput!]
-  connect: [FermentationStepWhereUniqueInput!]
-}
-
-"""An edge in a connection."""
-type FermentationStepEdge {
-  """The item at the end of the edge."""
-  node: FermentationStep!
-
-  """A cursor for use in pagination."""
-  cursor: String!
-}
-
-enum FermentationStepOrderByInput {
-  id_ASC
-  id_DESC
-  durationDays_ASC
-  durationDays_DESC
-  temperature_ASC
-  temperature_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
-}
-
-type FermentationStepPreviousValues {
-  id: ID!
-  durationDays: Int!
-  temperature: Float!
-}
-
-input FermentationStepScalarWhereInput {
-  """Logical AND on all given filters."""
-  AND: [FermentationStepScalarWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [FermentationStepScalarWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [FermentationStepScalarWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  durationDays: Int
-
-  """All values that are not equal to given value."""
-  durationDays_not: Int
-
-  """All values that are contained in given list."""
-  durationDays_in: [Int!]
-
-  """All values that are not contained in given list."""
-  durationDays_not_in: [Int!]
-
-  """All values less than the given value."""
-  durationDays_lt: Int
-
-  """All values less than or equal the given value."""
-  durationDays_lte: Int
-
-  """All values greater than the given value."""
-  durationDays_gt: Int
-
-  """All values greater than or equal the given value."""
-  durationDays_gte: Int
-  temperature: Float
-
-  """All values that are not equal to given value."""
-  temperature_not: Float
-
-  """All values that are contained in given list."""
-  temperature_in: [Float!]
-
-  """All values that are not contained in given list."""
-  temperature_not_in: [Float!]
-
-  """All values less than the given value."""
-  temperature_lt: Float
-
-  """All values less than or equal the given value."""
-  temperature_lte: Float
-
-  """All values greater than the given value."""
-  temperature_gt: Float
-
-  """All values greater than or equal the given value."""
-  temperature_gte: Float
-}
-
-type FermentationStepSubscriptionPayload {
-  mutation: MutationType!
-  node: FermentationStep
-  updatedFields: [String!]
-  previousValues: FermentationStepPreviousValues
-}
-
-input FermentationStepSubscriptionWhereInput {
-  """Logical AND on all given filters."""
-  AND: [FermentationStepSubscriptionWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [FermentationStepSubscriptionWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [FermentationStepSubscriptionWhereInput!]
-
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: FermentationStepWhereInput
-}
-
-input FermentationStepUpdateDataInput {
-  durationDays: Int
-  temperature: Float
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input FermentationStepUpdateInput {
-  durationDays: Int
-  temperature: Float
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input FermentationStepUpdateManyDataInput {
-  durationDays: Int
-  temperature: Float
-}
-
-input FermentationStepUpdateManyInput {
-  create: [FermentationStepCreateInput!]
-  connect: [FermentationStepWhereUniqueInput!]
-  set: [FermentationStepWhereUniqueInput!]
-  disconnect: [FermentationStepWhereUniqueInput!]
-  delete: [FermentationStepWhereUniqueInput!]
-  update: [FermentationStepUpdateWithWhereUniqueNestedInput!]
-  updateMany: [FermentationStepUpdateManyWithWhereNestedInput!]
-  deleteMany: [FermentationStepScalarWhereInput!]
-  upsert: [FermentationStepUpsertWithWhereUniqueNestedInput!]
-}
-
-input FermentationStepUpdateManyMutationInput {
-  durationDays: Int
-  temperature: Float
-}
-
-input FermentationStepUpdateManyWithWhereNestedInput {
-  where: FermentationStepScalarWhereInput!
-  data: FermentationStepUpdateManyDataInput!
-}
-
-input FermentationStepUpdateWithWhereUniqueNestedInput {
-  where: FermentationStepWhereUniqueInput!
-  data: FermentationStepUpdateDataInput!
-}
-
-input FermentationStepUpsertWithWhereUniqueNestedInput {
-  where: FermentationStepWhereUniqueInput!
-  update: FermentationStepUpdateDataInput!
-  create: FermentationStepCreateInput!
-}
-
-input FermentationStepWhereInput {
-  """Logical AND on all given filters."""
-  AND: [FermentationStepWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [FermentationStepWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [FermentationStepWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  durationDays: Int
-
-  """All values that are not equal to given value."""
-  durationDays_not: Int
-
-  """All values that are contained in given list."""
-  durationDays_in: [Int!]
-
-  """All values that are not contained in given list."""
-  durationDays_not_in: [Int!]
-
-  """All values less than the given value."""
-  durationDays_lt: Int
-
-  """All values less than or equal the given value."""
-  durationDays_lte: Int
-
-  """All values greater than the given value."""
-  durationDays_gt: Int
-
-  """All values greater than or equal the given value."""
-  durationDays_gte: Int
-  temperature: Float
-
-  """All values that are not equal to given value."""
-  temperature_not: Float
-
-  """All values that are contained in given list."""
-  temperature_in: [Float!]
-
-  """All values that are not contained in given list."""
-  temperature_not_in: [Float!]
-
-  """All values less than the given value."""
-  temperature_lt: Float
-
-  """All values less than or equal the given value."""
-  temperature_lte: Float
-
-  """All values greater than the given value."""
-  temperature_gt: Float
-
-  """All values greater than or equal the given value."""
-  temperature_gte: Float
-  brewingProcess: BrewingProcessWhereInput
-}
-
-input FermentationStepWhereUniqueInput {
   id: ID
 }
 
@@ -3100,53 +2538,55 @@ input GraphWhereUniqueInput {
   id: ID
 }
 
-type Hop implements Node {
+type Ingredient implements Node {
   id: ID!
+  type: IngredientType!
   name: String!
   amountGram: Float!
   details: String
-  brewingProcess: BrewingProcess!
 }
 
 """A connection to a list of items."""
-type HopConnection {
+type IngredientConnection {
   """Information to aid in pagination."""
   pageInfo: PageInfo!
 
   """A list of edges."""
-  edges: [HopEdge]!
-  aggregate: AggregateHop!
+  edges: [IngredientEdge]!
+  aggregate: AggregateIngredient!
 }
 
-input HopCreateInput {
+input IngredientCreateInput {
+  type: IngredientType!
   name: String!
   amountGram: Float!
   details: String
-  brewingProcess: BrewingProcessCreateOneInput!
 }
 
-input HopCreateManyInput {
-  create: [HopCreateInput!]
-  connect: [HopWhereUniqueInput!]
+input IngredientCreateManyInput {
+  create: [IngredientCreateInput!]
+  connect: [IngredientWhereUniqueInput!]
 }
 
-input HopCreateOneInput {
-  create: HopCreateInput
-  connect: HopWhereUniqueInput
+input IngredientCreateOneInput {
+  create: IngredientCreateInput
+  connect: IngredientWhereUniqueInput
 }
 
 """An edge in a connection."""
-type HopEdge {
+type IngredientEdge {
   """The item at the end of the edge."""
-  node: Hop!
+  node: Ingredient!
 
   """A cursor for use in pagination."""
   cursor: String!
 }
 
-enum HopOrderByInput {
+enum IngredientOrderByInput {
   id_ASC
   id_DESC
+  type_ASC
+  type_DESC
   name_ASC
   name_DESC
   amountGram_ASC
@@ -3159,22 +2599,23 @@ enum HopOrderByInput {
   createdAt_DESC
 }
 
-type HopPreviousValues {
+type IngredientPreviousValues {
   id: ID!
+  type: IngredientType!
   name: String!
   amountGram: Float!
   details: String
 }
 
-input HopScalarWhereInput {
+input IngredientScalarWhereInput {
   """Logical AND on all given filters."""
-  AND: [HopScalarWhereInput!]
+  AND: [IngredientScalarWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [HopScalarWhereInput!]
+  OR: [IngredientScalarWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [HopScalarWhereInput!]
+  NOT: [IngredientScalarWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -3215,6 +2656,16 @@ input HopScalarWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  type: IngredientType
+
+  """All values that are not equal to given value."""
+  type_not: IngredientType
+
+  """All values that are contained in given list."""
+  type_in: [IngredientType!]
+
+  """All values that are not contained in given list."""
+  type_not_in: [IngredientType!]
   name: String
 
   """All values that are not equal to given value."""
@@ -3319,22 +2770,22 @@ input HopScalarWhereInput {
   details_not_ends_with: String
 }
 
-type HopSubscriptionPayload {
+type IngredientSubscriptionPayload {
   mutation: MutationType!
-  node: Hop
+  node: Ingredient
   updatedFields: [String!]
-  previousValues: HopPreviousValues
+  previousValues: IngredientPreviousValues
 }
 
-input HopSubscriptionWhereInput {
+input IngredientSubscriptionWhereInput {
   """Logical AND on all given filters."""
-  AND: [HopSubscriptionWhereInput!]
+  AND: [IngredientSubscriptionWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [HopSubscriptionWhereInput!]
+  OR: [IngredientSubscriptionWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [HopSubscriptionWhereInput!]
+  NOT: [IngredientSubscriptionWhereInput!]
 
   """
   The subscription event gets dispatched when it's listed in mutation_in
@@ -3355,84 +2806,92 @@ input HopSubscriptionWhereInput {
   The subscription event gets only dispatched when some of the field names included in this list have been updated
   """
   updatedFields_contains_some: [String!]
-  node: HopWhereInput
+  node: IngredientWhereInput
 }
 
-input HopUpdateDataInput {
-  name: String
-  amountGram: Float
-  details: String
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
+enum IngredientType {
+  MALT
+  HOP
+  YEAST
 }
 
-input HopUpdateInput {
-  name: String
-  amountGram: Float
-  details: String
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input HopUpdateManyDataInput {
+input IngredientUpdateDataInput {
+  type: IngredientType
   name: String
   amountGram: Float
   details: String
 }
 
-input HopUpdateManyInput {
-  create: [HopCreateInput!]
-  connect: [HopWhereUniqueInput!]
-  set: [HopWhereUniqueInput!]
-  disconnect: [HopWhereUniqueInput!]
-  delete: [HopWhereUniqueInput!]
-  update: [HopUpdateWithWhereUniqueNestedInput!]
-  updateMany: [HopUpdateManyWithWhereNestedInput!]
-  deleteMany: [HopScalarWhereInput!]
-  upsert: [HopUpsertWithWhereUniqueNestedInput!]
-}
-
-input HopUpdateManyMutationInput {
+input IngredientUpdateInput {
+  type: IngredientType
   name: String
   amountGram: Float
   details: String
 }
 
-input HopUpdateManyWithWhereNestedInput {
-  where: HopScalarWhereInput!
-  data: HopUpdateManyDataInput!
+input IngredientUpdateManyDataInput {
+  type: IngredientType
+  name: String
+  amountGram: Float
+  details: String
 }
 
-input HopUpdateOneRequiredInput {
-  create: HopCreateInput
-  connect: HopWhereUniqueInput
-  update: HopUpdateDataInput
-  upsert: HopUpsertNestedInput
+input IngredientUpdateManyInput {
+  create: [IngredientCreateInput!]
+  connect: [IngredientWhereUniqueInput!]
+  set: [IngredientWhereUniqueInput!]
+  disconnect: [IngredientWhereUniqueInput!]
+  delete: [IngredientWhereUniqueInput!]
+  update: [IngredientUpdateWithWhereUniqueNestedInput!]
+  updateMany: [IngredientUpdateManyWithWhereNestedInput!]
+  deleteMany: [IngredientScalarWhereInput!]
+  upsert: [IngredientUpsertWithWhereUniqueNestedInput!]
 }
 
-input HopUpdateWithWhereUniqueNestedInput {
-  where: HopWhereUniqueInput!
-  data: HopUpdateDataInput!
+input IngredientUpdateManyMutationInput {
+  type: IngredientType
+  name: String
+  amountGram: Float
+  details: String
 }
 
-input HopUpsertNestedInput {
-  update: HopUpdateDataInput!
-  create: HopCreateInput!
+input IngredientUpdateManyWithWhereNestedInput {
+  where: IngredientScalarWhereInput!
+  data: IngredientUpdateManyDataInput!
 }
 
-input HopUpsertWithWhereUniqueNestedInput {
-  where: HopWhereUniqueInput!
-  update: HopUpdateDataInput!
-  create: HopCreateInput!
+input IngredientUpdateOneRequiredInput {
+  create: IngredientCreateInput
+  connect: IngredientWhereUniqueInput
+  update: IngredientUpdateDataInput
+  upsert: IngredientUpsertNestedInput
 }
 
-input HopWhereInput {
+input IngredientUpdateWithWhereUniqueNestedInput {
+  where: IngredientWhereUniqueInput!
+  data: IngredientUpdateDataInput!
+}
+
+input IngredientUpsertNestedInput {
+  update: IngredientUpdateDataInput!
+  create: IngredientCreateInput!
+}
+
+input IngredientUpsertWithWhereUniqueNestedInput {
+  where: IngredientWhereUniqueInput!
+  update: IngredientUpdateDataInput!
+  create: IngredientCreateInput!
+}
+
+input IngredientWhereInput {
   """Logical AND on all given filters."""
-  AND: [HopWhereInput!]
+  AND: [IngredientWhereInput!]
 
   """Logical OR on all given filters."""
-  OR: [HopWhereInput!]
+  OR: [IngredientWhereInput!]
 
   """Logical NOT on all given filters combined by AND."""
-  NOT: [HopWhereInput!]
+  NOT: [IngredientWhereInput!]
   id: ID
 
   """All values that are not equal to given value."""
@@ -3473,6 +2932,16 @@ input HopWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
+  type: IngredientType
+
+  """All values that are not equal to given value."""
+  type_not: IngredientType
+
+  """All values that are contained in given list."""
+  type_in: [IngredientType!]
+
+  """All values that are not contained in given list."""
+  type_not_in: [IngredientType!]
   name: String
 
   """All values that are not equal to given value."""
@@ -3575,10 +3044,9 @@ input HopWhereInput {
 
   """All values not ending with the given string."""
   details_not_ends_with: String
-  brewingProcess: BrewingProcessWhereInput
 }
 
-input HopWhereUniqueInput {
+input IngredientWhereUniqueInput {
   id: ID
 }
 
@@ -3588,884 +3056,61 @@ Long can represent values between -(2^63) and 2^63 - 1.
 """
 scalar Long
 
-type Malt implements Node {
-  id: ID!
-  name: String!
-  amountGram: Float!
-  details: String
-  brewingProcess: BrewingProcess!
-}
-
-"""A connection to a list of items."""
-type MaltConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [MaltEdge]!
-  aggregate: AggregateMalt!
-}
-
-input MaltCreateInput {
-  name: String!
-  amountGram: Float!
-  details: String
-  brewingProcess: BrewingProcessCreateOneInput!
-}
-
-input MaltCreateManyInput {
-  create: [MaltCreateInput!]
-  connect: [MaltWhereUniqueInput!]
-}
-
-"""An edge in a connection."""
-type MaltEdge {
-  """The item at the end of the edge."""
-  node: Malt!
-
-  """A cursor for use in pagination."""
-  cursor: String!
-}
-
-enum MaltOrderByInput {
-  id_ASC
-  id_DESC
-  name_ASC
-  name_DESC
-  amountGram_ASC
-  amountGram_DESC
-  details_ASC
-  details_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
-}
-
-type MaltPreviousValues {
-  id: ID!
-  name: String!
-  amountGram: Float!
-  details: String
-}
-
-input MaltScalarWhereInput {
-  """Logical AND on all given filters."""
-  AND: [MaltScalarWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [MaltScalarWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [MaltScalarWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  name: String
-
-  """All values that are not equal to given value."""
-  name_not: String
-
-  """All values that are contained in given list."""
-  name_in: [String!]
-
-  """All values that are not contained in given list."""
-  name_not_in: [String!]
-
-  """All values less than the given value."""
-  name_lt: String
-
-  """All values less than or equal the given value."""
-  name_lte: String
-
-  """All values greater than the given value."""
-  name_gt: String
-
-  """All values greater than or equal the given value."""
-  name_gte: String
-
-  """All values containing the given string."""
-  name_contains: String
-
-  """All values not containing the given string."""
-  name_not_contains: String
-
-  """All values starting with the given string."""
-  name_starts_with: String
-
-  """All values not starting with the given string."""
-  name_not_starts_with: String
-
-  """All values ending with the given string."""
-  name_ends_with: String
-
-  """All values not ending with the given string."""
-  name_not_ends_with: String
-  amountGram: Float
-
-  """All values that are not equal to given value."""
-  amountGram_not: Float
-
-  """All values that are contained in given list."""
-  amountGram_in: [Float!]
-
-  """All values that are not contained in given list."""
-  amountGram_not_in: [Float!]
-
-  """All values less than the given value."""
-  amountGram_lt: Float
-
-  """All values less than or equal the given value."""
-  amountGram_lte: Float
-
-  """All values greater than the given value."""
-  amountGram_gt: Float
-
-  """All values greater than or equal the given value."""
-  amountGram_gte: Float
-  details: String
-
-  """All values that are not equal to given value."""
-  details_not: String
-
-  """All values that are contained in given list."""
-  details_in: [String!]
-
-  """All values that are not contained in given list."""
-  details_not_in: [String!]
-
-  """All values less than the given value."""
-  details_lt: String
-
-  """All values less than or equal the given value."""
-  details_lte: String
-
-  """All values greater than the given value."""
-  details_gt: String
-
-  """All values greater than or equal the given value."""
-  details_gte: String
-
-  """All values containing the given string."""
-  details_contains: String
-
-  """All values not containing the given string."""
-  details_not_contains: String
-
-  """All values starting with the given string."""
-  details_starts_with: String
-
-  """All values not starting with the given string."""
-  details_not_starts_with: String
-
-  """All values ending with the given string."""
-  details_ends_with: String
-
-  """All values not ending with the given string."""
-  details_not_ends_with: String
-}
-
-type MaltSubscriptionPayload {
-  mutation: MutationType!
-  node: Malt
-  updatedFields: [String!]
-  previousValues: MaltPreviousValues
-}
-
-input MaltSubscriptionWhereInput {
-  """Logical AND on all given filters."""
-  AND: [MaltSubscriptionWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [MaltSubscriptionWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [MaltSubscriptionWhereInput!]
-
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: MaltWhereInput
-}
-
-input MaltUpdateDataInput {
-  name: String
-  amountGram: Float
-  details: String
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input MaltUpdateInput {
-  name: String
-  amountGram: Float
-  details: String
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input MaltUpdateManyDataInput {
-  name: String
-  amountGram: Float
-  details: String
-}
-
-input MaltUpdateManyInput {
-  create: [MaltCreateInput!]
-  connect: [MaltWhereUniqueInput!]
-  set: [MaltWhereUniqueInput!]
-  disconnect: [MaltWhereUniqueInput!]
-  delete: [MaltWhereUniqueInput!]
-  update: [MaltUpdateWithWhereUniqueNestedInput!]
-  updateMany: [MaltUpdateManyWithWhereNestedInput!]
-  deleteMany: [MaltScalarWhereInput!]
-  upsert: [MaltUpsertWithWhereUniqueNestedInput!]
-}
-
-input MaltUpdateManyMutationInput {
-  name: String
-  amountGram: Float
-  details: String
-}
-
-input MaltUpdateManyWithWhereNestedInput {
-  where: MaltScalarWhereInput!
-  data: MaltUpdateManyDataInput!
-}
-
-input MaltUpdateWithWhereUniqueNestedInput {
-  where: MaltWhereUniqueInput!
-  data: MaltUpdateDataInput!
-}
-
-input MaltUpsertWithWhereUniqueNestedInput {
-  where: MaltWhereUniqueInput!
-  update: MaltUpdateDataInput!
-  create: MaltCreateInput!
-}
-
-input MaltWhereInput {
-  """Logical AND on all given filters."""
-  AND: [MaltWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [MaltWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [MaltWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  name: String
-
-  """All values that are not equal to given value."""
-  name_not: String
-
-  """All values that are contained in given list."""
-  name_in: [String!]
-
-  """All values that are not contained in given list."""
-  name_not_in: [String!]
-
-  """All values less than the given value."""
-  name_lt: String
-
-  """All values less than or equal the given value."""
-  name_lte: String
-
-  """All values greater than the given value."""
-  name_gt: String
-
-  """All values greater than or equal the given value."""
-  name_gte: String
-
-  """All values containing the given string."""
-  name_contains: String
-
-  """All values not containing the given string."""
-  name_not_contains: String
-
-  """All values starting with the given string."""
-  name_starts_with: String
-
-  """All values not starting with the given string."""
-  name_not_starts_with: String
-
-  """All values ending with the given string."""
-  name_ends_with: String
-
-  """All values not ending with the given string."""
-  name_not_ends_with: String
-  amountGram: Float
-
-  """All values that are not equal to given value."""
-  amountGram_not: Float
-
-  """All values that are contained in given list."""
-  amountGram_in: [Float!]
-
-  """All values that are not contained in given list."""
-  amountGram_not_in: [Float!]
-
-  """All values less than the given value."""
-  amountGram_lt: Float
-
-  """All values less than or equal the given value."""
-  amountGram_lte: Float
-
-  """All values greater than the given value."""
-  amountGram_gt: Float
-
-  """All values greater than or equal the given value."""
-  amountGram_gte: Float
-  details: String
-
-  """All values that are not equal to given value."""
-  details_not: String
-
-  """All values that are contained in given list."""
-  details_in: [String!]
-
-  """All values that are not contained in given list."""
-  details_not_in: [String!]
-
-  """All values less than the given value."""
-  details_lt: String
-
-  """All values less than or equal the given value."""
-  details_lte: String
-
-  """All values greater than the given value."""
-  details_gt: String
-
-  """All values greater than or equal the given value."""
-  details_gte: String
-
-  """All values containing the given string."""
-  details_contains: String
-
-  """All values not containing the given string."""
-  details_not_contains: String
-
-  """All values starting with the given string."""
-  details_starts_with: String
-
-  """All values not starting with the given string."""
-  details_not_starts_with: String
-
-  """All values ending with the given string."""
-  details_ends_with: String
-
-  """All values not ending with the given string."""
-  details_not_ends_with: String
-  brewingProcess: BrewingProcessWhereInput
-}
-
-input MaltWhereUniqueInput {
-  id: ID
-}
-
-type MashStep implements Node {
-  id: ID!
-  durationMinutes: Int!
-  temperature: Float!
-  brewingProcess: BrewingProcess!
-}
-
-"""A connection to a list of items."""
-type MashStepConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [MashStepEdge]!
-  aggregate: AggregateMashStep!
-}
-
-input MashStepCreateInput {
-  durationMinutes: Int!
-  temperature: Float!
-  brewingProcess: BrewingProcessCreateOneInput!
-}
-
-input MashStepCreateManyInput {
-  create: [MashStepCreateInput!]
-  connect: [MashStepWhereUniqueInput!]
-}
-
-"""An edge in a connection."""
-type MashStepEdge {
-  """The item at the end of the edge."""
-  node: MashStep!
-
-  """A cursor for use in pagination."""
-  cursor: String!
-}
-
-enum MashStepOrderByInput {
-  id_ASC
-  id_DESC
-  durationMinutes_ASC
-  durationMinutes_DESC
-  temperature_ASC
-  temperature_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
-}
-
-type MashStepPreviousValues {
-  id: ID!
-  durationMinutes: Int!
-  temperature: Float!
-}
-
-input MashStepScalarWhereInput {
-  """Logical AND on all given filters."""
-  AND: [MashStepScalarWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [MashStepScalarWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [MashStepScalarWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  durationMinutes: Int
-
-  """All values that are not equal to given value."""
-  durationMinutes_not: Int
-
-  """All values that are contained in given list."""
-  durationMinutes_in: [Int!]
-
-  """All values that are not contained in given list."""
-  durationMinutes_not_in: [Int!]
-
-  """All values less than the given value."""
-  durationMinutes_lt: Int
-
-  """All values less than or equal the given value."""
-  durationMinutes_lte: Int
-
-  """All values greater than the given value."""
-  durationMinutes_gt: Int
-
-  """All values greater than or equal the given value."""
-  durationMinutes_gte: Int
-  temperature: Float
-
-  """All values that are not equal to given value."""
-  temperature_not: Float
-
-  """All values that are contained in given list."""
-  temperature_in: [Float!]
-
-  """All values that are not contained in given list."""
-  temperature_not_in: [Float!]
-
-  """All values less than the given value."""
-  temperature_lt: Float
-
-  """All values less than or equal the given value."""
-  temperature_lte: Float
-
-  """All values greater than the given value."""
-  temperature_gt: Float
-
-  """All values greater than or equal the given value."""
-  temperature_gte: Float
-}
-
-type MashStepSubscriptionPayload {
-  mutation: MutationType!
-  node: MashStep
-  updatedFields: [String!]
-  previousValues: MashStepPreviousValues
-}
-
-input MashStepSubscriptionWhereInput {
-  """Logical AND on all given filters."""
-  AND: [MashStepSubscriptionWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [MashStepSubscriptionWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [MashStepSubscriptionWhereInput!]
-
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: MashStepWhereInput
-}
-
-input MashStepUpdateDataInput {
-  durationMinutes: Int
-  temperature: Float
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input MashStepUpdateInput {
-  durationMinutes: Int
-  temperature: Float
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input MashStepUpdateManyDataInput {
-  durationMinutes: Int
-  temperature: Float
-}
-
-input MashStepUpdateManyInput {
-  create: [MashStepCreateInput!]
-  connect: [MashStepWhereUniqueInput!]
-  set: [MashStepWhereUniqueInput!]
-  disconnect: [MashStepWhereUniqueInput!]
-  delete: [MashStepWhereUniqueInput!]
-  update: [MashStepUpdateWithWhereUniqueNestedInput!]
-  updateMany: [MashStepUpdateManyWithWhereNestedInput!]
-  deleteMany: [MashStepScalarWhereInput!]
-  upsert: [MashStepUpsertWithWhereUniqueNestedInput!]
-}
-
-input MashStepUpdateManyMutationInput {
-  durationMinutes: Int
-  temperature: Float
-}
-
-input MashStepUpdateManyWithWhereNestedInput {
-  where: MashStepScalarWhereInput!
-  data: MashStepUpdateManyDataInput!
-}
-
-input MashStepUpdateWithWhereUniqueNestedInput {
-  where: MashStepWhereUniqueInput!
-  data: MashStepUpdateDataInput!
-}
-
-input MashStepUpsertWithWhereUniqueNestedInput {
-  where: MashStepWhereUniqueInput!
-  update: MashStepUpdateDataInput!
-  create: MashStepCreateInput!
-}
-
-input MashStepWhereInput {
-  """Logical AND on all given filters."""
-  AND: [MashStepWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [MashStepWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [MashStepWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  durationMinutes: Int
-
-  """All values that are not equal to given value."""
-  durationMinutes_not: Int
-
-  """All values that are contained in given list."""
-  durationMinutes_in: [Int!]
-
-  """All values that are not contained in given list."""
-  durationMinutes_not_in: [Int!]
-
-  """All values less than the given value."""
-  durationMinutes_lt: Int
-
-  """All values less than or equal the given value."""
-  durationMinutes_lte: Int
-
-  """All values greater than the given value."""
-  durationMinutes_gt: Int
-
-  """All values greater than or equal the given value."""
-  durationMinutes_gte: Int
-  temperature: Float
-
-  """All values that are not equal to given value."""
-  temperature_not: Float
-
-  """All values that are contained in given list."""
-  temperature_in: [Float!]
-
-  """All values that are not contained in given list."""
-  temperature_not_in: [Float!]
-
-  """All values less than the given value."""
-  temperature_lt: Float
-
-  """All values less than or equal the given value."""
-  temperature_lte: Float
-
-  """All values greater than the given value."""
-  temperature_gt: Float
-
-  """All values greater than or equal the given value."""
-  temperature_gte: Float
-  brewingProcess: BrewingProcessWhereInput
-}
-
-input MashStepWhereUniqueInput {
-  id: ID
-}
-
 type Mutation {
   createUser(data: UserCreateInput!): User!
   createGraph(data: GraphCreateInput!): Graph!
   createGraphData(data: GraphDataCreateInput!): GraphData!
-  createBrewingProcessDetails(data: BrewingProcessDetailsCreateInput!): BrewingProcessDetails!
-  createdryHopAddition(data: dryHopAdditionCreateInput!): dryHopAddition!
-  createYeast(data: YeastCreateInput!): Yeast!
-  createboilHopAddition(data: boilHopAdditionCreateInput!): boilHopAddition!
-  createFermentationStep(data: FermentationStepCreateInput!): FermentationStep!
-  createHop(data: HopCreateInput!): Hop!
-  createMalt(data: MaltCreateInput!): Malt!
-  createMashStep(data: MashStepCreateInput!): MashStep!
   createBrewingProcess(data: BrewingProcessCreateInput!): BrewingProcess!
+  createdryHopAddition(data: dryHopAdditionCreateInput!): dryHopAddition!
+  createBrewingProcessDetails(data: BrewingProcessDetailsCreateInput!): BrewingProcessDetails!
+  createIngredient(data: IngredientCreateInput!): Ingredient!
+  createStep(data: StepCreateInput!): Step!
+  createboilHopAddition(data: boilHopAdditionCreateInput!): boilHopAddition!
   updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateGraph(data: GraphUpdateInput!, where: GraphWhereUniqueInput!): Graph
   updateGraphData(data: GraphDataUpdateInput!, where: GraphDataWhereUniqueInput!): GraphData
-  updateBrewingProcessDetails(data: BrewingProcessDetailsUpdateInput!, where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
-  updatedryHopAddition(data: dryHopAdditionUpdateInput!, where: dryHopAdditionWhereUniqueInput!): dryHopAddition
-  updateYeast(data: YeastUpdateInput!, where: YeastWhereUniqueInput!): Yeast
-  updateboilHopAddition(data: boilHopAdditionUpdateInput!, where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  updateFermentationStep(data: FermentationStepUpdateInput!, where: FermentationStepWhereUniqueInput!): FermentationStep
-  updateHop(data: HopUpdateInput!, where: HopWhereUniqueInput!): Hop
-  updateMalt(data: MaltUpdateInput!, where: MaltWhereUniqueInput!): Malt
-  updateMashStep(data: MashStepUpdateInput!, where: MashStepWhereUniqueInput!): MashStep
   updateBrewingProcess(data: BrewingProcessUpdateInput!, where: BrewingProcessWhereUniqueInput!): BrewingProcess
+  updatedryHopAddition(data: dryHopAdditionUpdateInput!, where: dryHopAdditionWhereUniqueInput!): dryHopAddition
+  updateBrewingProcessDetails(data: BrewingProcessDetailsUpdateInput!, where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
+  updateIngredient(data: IngredientUpdateInput!, where: IngredientWhereUniqueInput!): Ingredient
+  updateStep(data: StepUpdateInput!, where: StepWhereUniqueInput!): Step
+  updateboilHopAddition(data: boilHopAdditionUpdateInput!, where: boilHopAdditionWhereUniqueInput!): boilHopAddition
   deleteUser(where: UserWhereUniqueInput!): User
   deleteGraph(where: GraphWhereUniqueInput!): Graph
   deleteGraphData(where: GraphDataWhereUniqueInput!): GraphData
-  deleteBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
-  deletedryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
-  deleteYeast(where: YeastWhereUniqueInput!): Yeast
-  deleteboilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  deleteFermentationStep(where: FermentationStepWhereUniqueInput!): FermentationStep
-  deleteHop(where: HopWhereUniqueInput!): Hop
-  deleteMalt(where: MaltWhereUniqueInput!): Malt
-  deleteMashStep(where: MashStepWhereUniqueInput!): MashStep
   deleteBrewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
+  deletedryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
+  deleteBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
+  deleteIngredient(where: IngredientWhereUniqueInput!): Ingredient
+  deleteStep(where: StepWhereUniqueInput!): Step
+  deleteboilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
   upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertGraph(where: GraphWhereUniqueInput!, create: GraphCreateInput!, update: GraphUpdateInput!): Graph!
   upsertGraphData(where: GraphDataWhereUniqueInput!, create: GraphDataCreateInput!, update: GraphDataUpdateInput!): GraphData!
-  upsertBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!, create: BrewingProcessDetailsCreateInput!, update: BrewingProcessDetailsUpdateInput!): BrewingProcessDetails!
-  upsertdryHopAddition(where: dryHopAdditionWhereUniqueInput!, create: dryHopAdditionCreateInput!, update: dryHopAdditionUpdateInput!): dryHopAddition!
-  upsertYeast(where: YeastWhereUniqueInput!, create: YeastCreateInput!, update: YeastUpdateInput!): Yeast!
-  upsertboilHopAddition(where: boilHopAdditionWhereUniqueInput!, create: boilHopAdditionCreateInput!, update: boilHopAdditionUpdateInput!): boilHopAddition!
-  upsertFermentationStep(where: FermentationStepWhereUniqueInput!, create: FermentationStepCreateInput!, update: FermentationStepUpdateInput!): FermentationStep!
-  upsertHop(where: HopWhereUniqueInput!, create: HopCreateInput!, update: HopUpdateInput!): Hop!
-  upsertMalt(where: MaltWhereUniqueInput!, create: MaltCreateInput!, update: MaltUpdateInput!): Malt!
-  upsertMashStep(where: MashStepWhereUniqueInput!, create: MashStepCreateInput!, update: MashStepUpdateInput!): MashStep!
   upsertBrewingProcess(where: BrewingProcessWhereUniqueInput!, create: BrewingProcessCreateInput!, update: BrewingProcessUpdateInput!): BrewingProcess!
+  upsertdryHopAddition(where: dryHopAdditionWhereUniqueInput!, create: dryHopAdditionCreateInput!, update: dryHopAdditionUpdateInput!): dryHopAddition!
+  upsertBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!, create: BrewingProcessDetailsCreateInput!, update: BrewingProcessDetailsUpdateInput!): BrewingProcessDetails!
+  upsertIngredient(where: IngredientWhereUniqueInput!, create: IngredientCreateInput!, update: IngredientUpdateInput!): Ingredient!
+  upsertStep(where: StepWhereUniqueInput!, create: StepCreateInput!, update: StepUpdateInput!): Step!
+  upsertboilHopAddition(where: boilHopAdditionWhereUniqueInput!, create: boilHopAdditionCreateInput!, update: boilHopAdditionUpdateInput!): boilHopAddition!
   updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   updateManyGraphs(data: GraphUpdateManyMutationInput!, where: GraphWhereInput): BatchPayload!
   updateManyGraphDatas(data: GraphDataUpdateManyMutationInput!, where: GraphDataWhereInput): BatchPayload!
-  updateManyBrewingProcessDetailses(data: BrewingProcessDetailsUpdateManyMutationInput!, where: BrewingProcessDetailsWhereInput): BatchPayload!
-  updateManyDryHopAdditions(data: dryHopAdditionUpdateManyMutationInput!, where: dryHopAdditionWhereInput): BatchPayload!
-  updateManyYeasts(data: YeastUpdateManyMutationInput!, where: YeastWhereInput): BatchPayload!
-  updateManyBoilHopAdditions(data: boilHopAdditionUpdateManyMutationInput!, where: boilHopAdditionWhereInput): BatchPayload!
-  updateManyFermentationSteps(data: FermentationStepUpdateManyMutationInput!, where: FermentationStepWhereInput): BatchPayload!
-  updateManyHops(data: HopUpdateManyMutationInput!, where: HopWhereInput): BatchPayload!
-  updateManyMalts(data: MaltUpdateManyMutationInput!, where: MaltWhereInput): BatchPayload!
-  updateManyMashSteps(data: MashStepUpdateManyMutationInput!, where: MashStepWhereInput): BatchPayload!
   updateManyBrewingProcesses(data: BrewingProcessUpdateManyMutationInput!, where: BrewingProcessWhereInput): BatchPayload!
+  updateManyDryHopAdditions(data: dryHopAdditionUpdateManyMutationInput!, where: dryHopAdditionWhereInput): BatchPayload!
+  updateManyBrewingProcessDetailses(data: BrewingProcessDetailsUpdateManyMutationInput!, where: BrewingProcessDetailsWhereInput): BatchPayload!
+  updateManyIngredients(data: IngredientUpdateManyMutationInput!, where: IngredientWhereInput): BatchPayload!
+  updateManySteps(data: StepUpdateManyMutationInput!, where: StepWhereInput): BatchPayload!
+  updateManyBoilHopAdditions(data: boilHopAdditionUpdateManyMutationInput!, where: boilHopAdditionWhereInput): BatchPayload!
   deleteManyUsers(where: UserWhereInput): BatchPayload!
   deleteManyGraphs(where: GraphWhereInput): BatchPayload!
   deleteManyGraphDatas(where: GraphDataWhereInput): BatchPayload!
-  deleteManyBrewingProcessDetailses(where: BrewingProcessDetailsWhereInput): BatchPayload!
-  deleteManyDryHopAdditions(where: dryHopAdditionWhereInput): BatchPayload!
-  deleteManyYeasts(where: YeastWhereInput): BatchPayload!
-  deleteManyBoilHopAdditions(where: boilHopAdditionWhereInput): BatchPayload!
-  deleteManyFermentationSteps(where: FermentationStepWhereInput): BatchPayload!
-  deleteManyHops(where: HopWhereInput): BatchPayload!
-  deleteManyMalts(where: MaltWhereInput): BatchPayload!
-  deleteManyMashSteps(where: MashStepWhereInput): BatchPayload!
   deleteManyBrewingProcesses(where: BrewingProcessWhereInput): BatchPayload!
+  deleteManyDryHopAdditions(where: dryHopAdditionWhereInput): BatchPayload!
+  deleteManyBrewingProcessDetailses(where: BrewingProcessDetailsWhereInput): BatchPayload!
+  deleteManyIngredients(where: IngredientWhereInput): BatchPayload!
+  deleteManySteps(where: StepWhereInput): BatchPayload!
+  deleteManyBoilHopAdditions(where: boilHopAdditionWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -4504,39 +3149,30 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph]!
   graphDatas(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData]!
-  brewingProcessDetailses(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcessDetails]!
-  dryHopAdditions(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [dryHopAddition]!
-  yeasts(where: YeastWhereInput, orderBy: YeastOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Yeast]!
-  boilHopAdditions(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition]!
-  fermentationSteps(where: FermentationStepWhereInput, orderBy: FermentationStepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [FermentationStep]!
-  hops(where: HopWhereInput, orderBy: HopOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Hop]!
-  malts(where: MaltWhereInput, orderBy: MaltOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Malt]!
-  mashSteps(where: MashStepWhereInput, orderBy: MashStepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MashStep]!
   brewingProcesses(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcess]!
+  dryHopAdditions(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [dryHopAddition]!
+  brewingProcessDetailses(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcessDetails]!
+  ingredients(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Ingredient]!
+  steps(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Step]!
+  boilHopAdditions(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition]!
   user(where: UserWhereUniqueInput!): User
   graph(where: GraphWhereUniqueInput!): Graph
   graphData(where: GraphDataWhereUniqueInput!): GraphData
-  brewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
-  dryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
-  yeast(where: YeastWhereUniqueInput!): Yeast
-  boilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  fermentationStep(where: FermentationStepWhereUniqueInput!): FermentationStep
-  hop(where: HopWhereUniqueInput!): Hop
-  malt(where: MaltWhereUniqueInput!): Malt
-  mashStep(where: MashStepWhereUniqueInput!): MashStep
   brewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
+  dryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
+  brewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
+  ingredient(where: IngredientWhereUniqueInput!): Ingredient
+  step(where: StepWhereUniqueInput!): Step
+  boilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   graphsConnection(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphConnection!
   graphDatasConnection(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphDataConnection!
-  brewingProcessDetailsesConnection(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessDetailsConnection!
-  dryHopAdditionsConnection(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): dryHopAdditionConnection!
-  yeastsConnection(where: YeastWhereInput, orderBy: YeastOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): YeastConnection!
-  boilHopAdditionsConnection(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): boilHopAdditionConnection!
-  fermentationStepsConnection(where: FermentationStepWhereInput, orderBy: FermentationStepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FermentationStepConnection!
-  hopsConnection(where: HopWhereInput, orderBy: HopOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): HopConnection!
-  maltsConnection(where: MaltWhereInput, orderBy: MaltOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MaltConnection!
-  mashStepsConnection(where: MashStepWhereInput, orderBy: MashStepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MashStepConnection!
   brewingProcessesConnection(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessConnection!
+  dryHopAdditionsConnection(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): dryHopAdditionConnection!
+  brewingProcessDetailsesConnection(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessDetailsConnection!
+  ingredientsConnection(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): IngredientConnection!
+  stepsConnection(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): StepConnection!
+  boilHopAdditionsConnection(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): boilHopAdditionConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -4545,19 +3181,440 @@ type Query {
   ): Node
 }
 
+type Step implements Node {
+  id: ID!
+  durationMinutes: Int!
+  temperature: Float!
+  details: String
+}
+
+"""A connection to a list of items."""
+type StepConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [StepEdge]!
+  aggregate: AggregateStep!
+}
+
+input StepCreateInput {
+  durationMinutes: Int!
+  temperature: Float!
+  details: String
+}
+
+input StepCreateManyInput {
+  create: [StepCreateInput!]
+  connect: [StepWhereUniqueInput!]
+}
+
+"""An edge in a connection."""
+type StepEdge {
+  """The item at the end of the edge."""
+  node: Step!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum StepOrderByInput {
+  id_ASC
+  id_DESC
+  durationMinutes_ASC
+  durationMinutes_DESC
+  temperature_ASC
+  temperature_DESC
+  details_ASC
+  details_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+  createdAt_ASC
+  createdAt_DESC
+}
+
+type StepPreviousValues {
+  id: ID!
+  durationMinutes: Int!
+  temperature: Float!
+  details: String
+}
+
+input StepScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [StepScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [StepScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [StepScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  durationMinutes: Int
+
+  """All values that are not equal to given value."""
+  durationMinutes_not: Int
+
+  """All values that are contained in given list."""
+  durationMinutes_in: [Int!]
+
+  """All values that are not contained in given list."""
+  durationMinutes_not_in: [Int!]
+
+  """All values less than the given value."""
+  durationMinutes_lt: Int
+
+  """All values less than or equal the given value."""
+  durationMinutes_lte: Int
+
+  """All values greater than the given value."""
+  durationMinutes_gt: Int
+
+  """All values greater than or equal the given value."""
+  durationMinutes_gte: Int
+  temperature: Float
+
+  """All values that are not equal to given value."""
+  temperature_not: Float
+
+  """All values that are contained in given list."""
+  temperature_in: [Float!]
+
+  """All values that are not contained in given list."""
+  temperature_not_in: [Float!]
+
+  """All values less than the given value."""
+  temperature_lt: Float
+
+  """All values less than or equal the given value."""
+  temperature_lte: Float
+
+  """All values greater than the given value."""
+  temperature_gt: Float
+
+  """All values greater than or equal the given value."""
+  temperature_gte: Float
+  details: String
+
+  """All values that are not equal to given value."""
+  details_not: String
+
+  """All values that are contained in given list."""
+  details_in: [String!]
+
+  """All values that are not contained in given list."""
+  details_not_in: [String!]
+
+  """All values less than the given value."""
+  details_lt: String
+
+  """All values less than or equal the given value."""
+  details_lte: String
+
+  """All values greater than the given value."""
+  details_gt: String
+
+  """All values greater than or equal the given value."""
+  details_gte: String
+
+  """All values containing the given string."""
+  details_contains: String
+
+  """All values not containing the given string."""
+  details_not_contains: String
+
+  """All values starting with the given string."""
+  details_starts_with: String
+
+  """All values not starting with the given string."""
+  details_not_starts_with: String
+
+  """All values ending with the given string."""
+  details_ends_with: String
+
+  """All values not ending with the given string."""
+  details_not_ends_with: String
+}
+
+type StepSubscriptionPayload {
+  mutation: MutationType!
+  node: Step
+  updatedFields: [String!]
+  previousValues: StepPreviousValues
+}
+
+input StepSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [StepSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [StepSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [StepSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: StepWhereInput
+}
+
+input StepUpdateDataInput {
+  durationMinutes: Int
+  temperature: Float
+  details: String
+}
+
+input StepUpdateInput {
+  durationMinutes: Int
+  temperature: Float
+  details: String
+}
+
+input StepUpdateManyDataInput {
+  durationMinutes: Int
+  temperature: Float
+  details: String
+}
+
+input StepUpdateManyInput {
+  create: [StepCreateInput!]
+  connect: [StepWhereUniqueInput!]
+  set: [StepWhereUniqueInput!]
+  disconnect: [StepWhereUniqueInput!]
+  delete: [StepWhereUniqueInput!]
+  update: [StepUpdateWithWhereUniqueNestedInput!]
+  updateMany: [StepUpdateManyWithWhereNestedInput!]
+  deleteMany: [StepScalarWhereInput!]
+  upsert: [StepUpsertWithWhereUniqueNestedInput!]
+}
+
+input StepUpdateManyMutationInput {
+  durationMinutes: Int
+  temperature: Float
+  details: String
+}
+
+input StepUpdateManyWithWhereNestedInput {
+  where: StepScalarWhereInput!
+  data: StepUpdateManyDataInput!
+}
+
+input StepUpdateWithWhereUniqueNestedInput {
+  where: StepWhereUniqueInput!
+  data: StepUpdateDataInput!
+}
+
+input StepUpsertWithWhereUniqueNestedInput {
+  where: StepWhereUniqueInput!
+  update: StepUpdateDataInput!
+  create: StepCreateInput!
+}
+
+input StepWhereInput {
+  """Logical AND on all given filters."""
+  AND: [StepWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [StepWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [StepWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  durationMinutes: Int
+
+  """All values that are not equal to given value."""
+  durationMinutes_not: Int
+
+  """All values that are contained in given list."""
+  durationMinutes_in: [Int!]
+
+  """All values that are not contained in given list."""
+  durationMinutes_not_in: [Int!]
+
+  """All values less than the given value."""
+  durationMinutes_lt: Int
+
+  """All values less than or equal the given value."""
+  durationMinutes_lte: Int
+
+  """All values greater than the given value."""
+  durationMinutes_gt: Int
+
+  """All values greater than or equal the given value."""
+  durationMinutes_gte: Int
+  temperature: Float
+
+  """All values that are not equal to given value."""
+  temperature_not: Float
+
+  """All values that are contained in given list."""
+  temperature_in: [Float!]
+
+  """All values that are not contained in given list."""
+  temperature_not_in: [Float!]
+
+  """All values less than the given value."""
+  temperature_lt: Float
+
+  """All values less than or equal the given value."""
+  temperature_lte: Float
+
+  """All values greater than the given value."""
+  temperature_gt: Float
+
+  """All values greater than or equal the given value."""
+  temperature_gte: Float
+  details: String
+
+  """All values that are not equal to given value."""
+  details_not: String
+
+  """All values that are contained in given list."""
+  details_in: [String!]
+
+  """All values that are not contained in given list."""
+  details_not_in: [String!]
+
+  """All values less than the given value."""
+  details_lt: String
+
+  """All values less than or equal the given value."""
+  details_lte: String
+
+  """All values greater than the given value."""
+  details_gt: String
+
+  """All values greater than or equal the given value."""
+  details_gte: String
+
+  """All values containing the given string."""
+  details_contains: String
+
+  """All values not containing the given string."""
+  details_not_contains: String
+
+  """All values starting with the given string."""
+  details_starts_with: String
+
+  """All values not starting with the given string."""
+  details_not_starts_with: String
+
+  """All values ending with the given string."""
+  details_ends_with: String
+
+  """All values not ending with the given string."""
+  details_not_ends_with: String
+}
+
+input StepWhereUniqueInput {
+  id: ID
+}
+
 type Subscription {
   user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   graph(where: GraphSubscriptionWhereInput): GraphSubscriptionPayload
   graphData(where: GraphDataSubscriptionWhereInput): GraphDataSubscriptionPayload
-  brewingProcessDetails(where: BrewingProcessDetailsSubscriptionWhereInput): BrewingProcessDetailsSubscriptionPayload
-  dryHopAddition(where: dryHopAdditionSubscriptionWhereInput): dryHopAdditionSubscriptionPayload
-  yeast(where: YeastSubscriptionWhereInput): YeastSubscriptionPayload
-  boilHopAddition(where: boilHopAdditionSubscriptionWhereInput): boilHopAdditionSubscriptionPayload
-  fermentationStep(where: FermentationStepSubscriptionWhereInput): FermentationStepSubscriptionPayload
-  hop(where: HopSubscriptionWhereInput): HopSubscriptionPayload
-  malt(where: MaltSubscriptionWhereInput): MaltSubscriptionPayload
-  mashStep(where: MashStepSubscriptionWhereInput): MashStepSubscriptionPayload
   brewingProcess(where: BrewingProcessSubscriptionWhereInput): BrewingProcessSubscriptionPayload
+  dryHopAddition(where: dryHopAdditionSubscriptionWhereInput): dryHopAdditionSubscriptionPayload
+  brewingProcessDetails(where: BrewingProcessDetailsSubscriptionWhereInput): BrewingProcessDetailsSubscriptionPayload
+  ingredient(where: IngredientSubscriptionWhereInput): IngredientSubscriptionPayload
+  step(where: StepSubscriptionWhereInput): StepSubscriptionPayload
+  boilHopAddition(where: boilHopAdditionSubscriptionWhereInput): boilHopAdditionSubscriptionPayload
 }
 
 type User implements Node {
@@ -5083,296 +4140,4 @@ input UserWhereInput {
 input UserWhereUniqueInput {
   id: ID
   email: String
-}
-
-type Yeast implements Node {
-  id: ID!
-  name: String!
-  amountGram: Float!
-  details: String
-  brewingProcess: BrewingProcess!
-}
-
-"""A connection to a list of items."""
-type YeastConnection {
-  """Information to aid in pagination."""
-  pageInfo: PageInfo!
-
-  """A list of edges."""
-  edges: [YeastEdge]!
-  aggregate: AggregateYeast!
-}
-
-input YeastCreateInput {
-  name: String!
-  amountGram: Float!
-  details: String
-  brewingProcess: BrewingProcessCreateOneInput!
-}
-
-input YeastCreateOneInput {
-  create: YeastCreateInput
-  connect: YeastWhereUniqueInput
-}
-
-"""An edge in a connection."""
-type YeastEdge {
-  """The item at the end of the edge."""
-  node: Yeast!
-
-  """A cursor for use in pagination."""
-  cursor: String!
-}
-
-enum YeastOrderByInput {
-  id_ASC
-  id_DESC
-  name_ASC
-  name_DESC
-  amountGram_ASC
-  amountGram_DESC
-  details_ASC
-  details_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
-}
-
-type YeastPreviousValues {
-  id: ID!
-  name: String!
-  amountGram: Float!
-  details: String
-}
-
-type YeastSubscriptionPayload {
-  mutation: MutationType!
-  node: Yeast
-  updatedFields: [String!]
-  previousValues: YeastPreviousValues
-}
-
-input YeastSubscriptionWhereInput {
-  """Logical AND on all given filters."""
-  AND: [YeastSubscriptionWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [YeastSubscriptionWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [YeastSubscriptionWhereInput!]
-
-  """
-  The subscription event gets dispatched when it's listed in mutation_in
-  """
-  mutation_in: [MutationType!]
-
-  """
-  The subscription event gets only dispatched when one of the updated fields names is included in this list
-  """
-  updatedFields_contains: String
-
-  """
-  The subscription event gets only dispatched when all of the field names included in this list have been updated
-  """
-  updatedFields_contains_every: [String!]
-
-  """
-  The subscription event gets only dispatched when some of the field names included in this list have been updated
-  """
-  updatedFields_contains_some: [String!]
-  node: YeastWhereInput
-}
-
-input YeastUpdateDataInput {
-  name: String
-  amountGram: Float
-  details: String
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input YeastUpdateInput {
-  name: String
-  amountGram: Float
-  details: String
-  brewingProcess: BrewingProcessUpdateOneRequiredInput
-}
-
-input YeastUpdateManyMutationInput {
-  name: String
-  amountGram: Float
-  details: String
-}
-
-input YeastUpdateOneInput {
-  create: YeastCreateInput
-  connect: YeastWhereUniqueInput
-  disconnect: Boolean
-  delete: Boolean
-  update: YeastUpdateDataInput
-  upsert: YeastUpsertNestedInput
-}
-
-input YeastUpsertNestedInput {
-  update: YeastUpdateDataInput!
-  create: YeastCreateInput!
-}
-
-input YeastWhereInput {
-  """Logical AND on all given filters."""
-  AND: [YeastWhereInput!]
-
-  """Logical OR on all given filters."""
-  OR: [YeastWhereInput!]
-
-  """Logical NOT on all given filters combined by AND."""
-  NOT: [YeastWhereInput!]
-  id: ID
-
-  """All values that are not equal to given value."""
-  id_not: ID
-
-  """All values that are contained in given list."""
-  id_in: [ID!]
-
-  """All values that are not contained in given list."""
-  id_not_in: [ID!]
-
-  """All values less than the given value."""
-  id_lt: ID
-
-  """All values less than or equal the given value."""
-  id_lte: ID
-
-  """All values greater than the given value."""
-  id_gt: ID
-
-  """All values greater than or equal the given value."""
-  id_gte: ID
-
-  """All values containing the given string."""
-  id_contains: ID
-
-  """All values not containing the given string."""
-  id_not_contains: ID
-
-  """All values starting with the given string."""
-  id_starts_with: ID
-
-  """All values not starting with the given string."""
-  id_not_starts_with: ID
-
-  """All values ending with the given string."""
-  id_ends_with: ID
-
-  """All values not ending with the given string."""
-  id_not_ends_with: ID
-  name: String
-
-  """All values that are not equal to given value."""
-  name_not: String
-
-  """All values that are contained in given list."""
-  name_in: [String!]
-
-  """All values that are not contained in given list."""
-  name_not_in: [String!]
-
-  """All values less than the given value."""
-  name_lt: String
-
-  """All values less than or equal the given value."""
-  name_lte: String
-
-  """All values greater than the given value."""
-  name_gt: String
-
-  """All values greater than or equal the given value."""
-  name_gte: String
-
-  """All values containing the given string."""
-  name_contains: String
-
-  """All values not containing the given string."""
-  name_not_contains: String
-
-  """All values starting with the given string."""
-  name_starts_with: String
-
-  """All values not starting with the given string."""
-  name_not_starts_with: String
-
-  """All values ending with the given string."""
-  name_ends_with: String
-
-  """All values not ending with the given string."""
-  name_not_ends_with: String
-  amountGram: Float
-
-  """All values that are not equal to given value."""
-  amountGram_not: Float
-
-  """All values that are contained in given list."""
-  amountGram_in: [Float!]
-
-  """All values that are not contained in given list."""
-  amountGram_not_in: [Float!]
-
-  """All values less than the given value."""
-  amountGram_lt: Float
-
-  """All values less than or equal the given value."""
-  amountGram_lte: Float
-
-  """All values greater than the given value."""
-  amountGram_gt: Float
-
-  """All values greater than or equal the given value."""
-  amountGram_gte: Float
-  details: String
-
-  """All values that are not equal to given value."""
-  details_not: String
-
-  """All values that are contained in given list."""
-  details_in: [String!]
-
-  """All values that are not contained in given list."""
-  details_not_in: [String!]
-
-  """All values less than the given value."""
-  details_lt: String
-
-  """All values less than or equal the given value."""
-  details_lte: String
-
-  """All values greater than the given value."""
-  details_gt: String
-
-  """All values greater than or equal the given value."""
-  details_gte: String
-
-  """All values containing the given string."""
-  details_contains: String
-
-  """All values not containing the given string."""
-  details_not_contains: String
-
-  """All values starting with the given string."""
-  details_starts_with: String
-
-  """All values not starting with the given string."""
-  details_not_starts_with: String
-
-  """All values ending with the given string."""
-  details_ends_with: String
-
-  """All values not ending with the given string."""
-  details_not_ends_with: String
-  brewingProcess: BrewingProcessWhereInput
-}
-
-input YeastWhereUniqueInput {
-  id: ID
 }

@@ -4,34 +4,35 @@ const graphDataMutations = {
   async addGraphData(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     // fetch from cache
-    var activeBrewingProcesses = await activeGraphCache(ctx);
+    var activeGraphs = await activeGraphCache(ctx);
     // get active graph with matching sensor name
     // (local comparisons, no additional queries here)
     var activeGraph;
     var oldEnoughLatestGraphData;
-    for (var i = 0; i < activeBrewingProcesses.length; i++) {
-      for (var j = 0; j < activeBrewingProcesses[i].graphs.length; j++) {
-        let graph = activeBrewingProcesses[i].graphs[j];
-        if (graph.active && !graph.sensorName.localeCompare(args.sensorName)) {
-          // first active graph should be the only active graph..
-          activeGraph = graph;
-          // if found, get latest graph data and compare timestamp to
-          // determine if it has to be inserted
-          const earliestDate =
+    for (var i = 0; i < activeGraphs.length; i++) {
+      let graph = activeGraphs[i];
+      if (graph.active && !graph.sensorName.localeCompare(args.sensorName)) {
+        // first active graph should be the only active graph..
+        activeGraph = graph;
+        // if found, get latest graph data and compare timestamp to
+        // determine if it has to be inserted
+        const earliestDate =
             new Date(args.sensorTimeStamp).getTime() -
             activeGraph.updateFrequency * 1000; // last entry must be at least this old
           // now fetch the latest entry's timestamp
-          oldEnoughLatestGraphData = await ctx.db.query.graphDatas(
-            { where: {
+        oldEnoughLatestGraphData = await ctx.db.query.graphDatas(
+          {
+            where: {
               AND: [
                 { graph: { id: activeGraph.id } },
                 { time_gt: new Date(earliestDate).toJSON() }
-              ] }, first: 1
+              ]
             },
-            '{ id, time }'
-          );
-          break;
-        }
+            first: 1
+          },
+          '{ id, time }'
+        );
+        break;
       }
     }
     // check if graph was found

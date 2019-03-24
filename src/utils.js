@@ -19,7 +19,7 @@ function checkUserPermissions(ctx, permissionsNeeded) {
 /* Helper function that caches active graphs (to speed up inserts). */
 var cachedActiveGraphs = [];
 async function activeGraphCache(ctx, update) {
-  if (cachedActiveGraphs.length == 0 || update) {
+  if (!cachedActiveGraphs || cachedActiveGraphs.length == 0 || update) {
     console.log('refreshing active graph list...');
     cachedActiveGraphs = await ctx.db.query.graphs(
       { where: { active: true } },

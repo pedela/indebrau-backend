@@ -40,18 +40,28 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
     return graphData;
   }
   var reducedData = [];
-  var nthElement = Math.floor(graphData.length / dataPoints);
+  var nthElement = Math.ceil(graphData.length / dataPoints);
   for (var j = 0; j < dataPoints; j++) {
     let pickPoint = j * nthElement;
-    // edge case, last one is most recent one
+    // don't overshoot, just take the value between the previous and last one
     if (pickPoint >= graphData.length) {
-      pickPoint = graphData.length - 1;
+      pickPoint = graphData.length - nthElement / 2;
     }
-    reducedData[j] = {
+    reducedData[j - 1] = {
       time: graphData[pickPoint].time,
       value: graphData[pickPoint].value
     };
   }
+  // edge cases, don't modify first and last entry
+  reducedData[0] = {
+    time: graphData[0].time,
+    value: graphData[0].value
+  };
+  reducedData[dataPoints - 1] = {
+    time: graphData[graphData.length - 1].time,
+    value: graphData[graphData.length - 1].value
+  };
+
   return reducedData;
 }
 

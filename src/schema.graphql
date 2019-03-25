@@ -30,7 +30,7 @@ type Mutation {
   # admin
   createBrewingProcess(
     name: String!
-    start: DateTime # default: now
+    start: DateTime # default: none
     description: String!
     brewingProcessDetails: DetailsInput!
   ): BrewingProcess!

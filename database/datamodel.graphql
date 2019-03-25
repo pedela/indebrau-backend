@@ -38,7 +38,7 @@ type GraphData {
 type BrewingProcess {
   id: ID! @unique
   name: String!
-  start: DateTime! # default: now
+  start: DateTime
   end: DateTime
   description: String!
   brewingProcessDetails: BrewingProcessDetails!

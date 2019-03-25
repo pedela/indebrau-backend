@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Sun Mar 24 2019 12:23:17 GMT+0100 (Central European Standard Time)
+# timestamp: Mon Mar 25 2019 18:20:27 GMT+0100 (Central European Standard Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -332,7 +332,7 @@ input boilHopAdditionWhereUniqueInput {
 type BrewingProcess implements Node {
   id: ID!
   name: String!
-  start: DateTime!
+  start: DateTime
   end: DateTime
   description: String!
   brewingProcessDetails: BrewingProcessDetails!
@@ -352,7 +352,7 @@ type BrewingProcessConnection {
 
 input BrewingProcessCreateInput {
   name: String!
-  start: DateTime!
+  start: DateTime
   end: DateTime
   description: String!
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
@@ -372,7 +372,7 @@ input BrewingProcessCreateOneWithoutGraphsInput {
 
 input BrewingProcessCreateWithoutGraphsInput {
   name: String!
-  start: DateTime!
+  start: DateTime
   end: DateTime
   description: String!
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
@@ -381,7 +381,7 @@ input BrewingProcessCreateWithoutGraphsInput {
 
 input BrewingProcessCreateWithoutUsersInput {
   name: String!
-  start: DateTime!
+  start: DateTime
   end: DateTime
   description: String!
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
@@ -944,7 +944,7 @@ enum BrewingProcessOrderByInput {
 type BrewingProcessPreviousValues {
   id: ID!
   name: String!
-  start: DateTime!
+  start: DateTime
   end: DateTime
   description: String!
 }

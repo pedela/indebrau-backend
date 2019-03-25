@@ -36,27 +36,22 @@ async function activeGraphCache(ctx, update) {
 /* reduce datapoints evenly across time (every nth element) */
 async function reduceGraphDataEvenly(graphData, dataPoints) {
   // check if graphData present and longer than desired
-  if (
-    !graphData ||
-    !graphData[0].time ||
-    !graphData[0].value ||
-    graphData.length < dataPoints
-  ) {
+  if (!graphData || graphData.length < dataPoints) {
     return graphData;
   }
   var reducedData = [];
   var nthElement = Math.floor(graphData.length / dataPoints);
-  for (var j = 0; j < dataPoints - 1; j++) {
+  for (var j = 0; j < dataPoints; j++) {
+    let pickPoint = j * nthElement;
+    // edge case, last one is most recent one
+    if (pickPoint >= graphData.length) {
+      pickPoint = graphData.length - 1;
+    }
     reducedData[j] = {
-      time: graphData[j * nthElement].time,
-      value: graphData[j * nthElement].value
+      time: graphData[pickPoint].time,
+      value: graphData[pickPoint].value
     };
   }
-  // last one should be most recent one (because we want that...)
-  reducedData[dataPoints - 1] = {
-    time: graphData[graphData.length - 1].time,
-    value: graphData[graphData.length - 1].value
-  };
   return reducedData;
 }
 

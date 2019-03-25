@@ -4,7 +4,7 @@ const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     // provide default start date
-    let start = new Date().toJSON();
+    let start = null;
     if (args.start) {
       start = args.start;
     }

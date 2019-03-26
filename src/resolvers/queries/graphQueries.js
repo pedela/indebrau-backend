@@ -1,24 +1,25 @@
 const { checkUserPermissions, reduceGraphDataEvenly } = require('../../utils');
 
 const graphQueries = {
-  async activeGraphs(parent, { sensorNames, dataPoints }, ctx, info) {
+  async graphs(parent, { sensorNames, dataPoints, active }, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
-    var graphs = null;
-    if (!sensorNames) {
-      graphs = await ctx.db.query.graphs(
-        {
-          where: { active: true, sensorName_in: sensorNames }
-        },
-        info
-      );
-    } else {
-      graphs = await ctx.db.query.graphs(
-        {
-          where: { active: true, sensorName_in: sensorNames }
-        },
-        info
-      );
+
+    let activeGraphs = null;
+    let sensors = null;
+    if (active) {
+      activeGraphs = { active: active };
     }
+    if(sensorNames){
+      sensors = { sensorNames: sensorNames };
+    }
+
+    const graphs = await ctx.db.query.graphs(
+      {
+        where: { ...activeGraphs, ...sensors }
+      },
+      info
+    );
+
     // reduce returned graph data evenly across time
     graphs.map(graph => {
       graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);

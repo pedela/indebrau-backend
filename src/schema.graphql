@@ -2,7 +2,12 @@
 
 type Query {
   me: User
-  activeGraphs(sensorNames: [String], dataPoints: Int): [Graph!]! # admin
+  # admin
+  graphs(
+    sensorNames: [String]
+    dataPoints: Int
+    active: Boolean # default false
+  ): [Graph!]!
   graph(id: ID!): Graph # admin
   brewingProcesses: [BrewingProcess!]! # admin
 }

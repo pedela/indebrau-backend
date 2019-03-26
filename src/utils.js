@@ -35,8 +35,8 @@ async function activeGraphCache(ctx, update) {
 
 /* reduce datapoints evenly across time (every nth element) */
 async function reduceGraphDataEvenly(graphData, dataPoints) {
-  // check if graphData present and longer than desired
-  if (!graphData || graphData.length < dataPoints) {
+  // check if variables present and graphData longer than desired
+  if (!graphData || !dataPoints || graphData.length < dataPoints) {
     return graphData;
   }
   var reducedData = [];

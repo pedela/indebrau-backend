@@ -15,8 +15,14 @@ const brewingProcessMutations = {
         hop: { create: details.dryHopping.hop }
       };
     }
+    let start = null;
+    if(args.startNow){
+      start = new Date().toJSON();
+    }
     let input = {
-      ...args,
+      name: args.name,
+      description: args.description,
+      start: start,
       brewingProcessDetails: {
         create: {
           ...details,

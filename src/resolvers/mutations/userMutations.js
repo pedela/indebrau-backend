@@ -12,6 +12,7 @@ const userMutations = {
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     ctx.response.cookie('token', token, {
       httpOnly: true,
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
     return {
@@ -32,6 +33,7 @@ const userMutations = {
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     ctx.response.cookie('token', token, {
       httpOnly: true,
+      secure: true,
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
     return {

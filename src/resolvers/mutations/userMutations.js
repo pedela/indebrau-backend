@@ -33,7 +33,7 @@ const userMutations = {
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     ctx.response.cookie('token', token, {
       httpOnly: true,
-      domain: 'indebrau-frontend.herokuapp.com',
+      domain: 'https://indebrau-frontend.herokuapp.com',
       //      secure: true, // add in deployment to ensure https
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });

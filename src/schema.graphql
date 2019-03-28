@@ -81,7 +81,7 @@ input StepInput {
 
 input HopAddition {
   hop: IngredientInput! # add hops here
-  minutesAfterBoilStart: Int! # null for dryhopping
+  minutesAfterBoilStart: Int # null for dryhopping
 }
 
 type User {

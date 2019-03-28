@@ -3,24 +3,20 @@ const { checkUserPermissions } = require('../../utils');
 const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    // provide default start date
-    let start = null;
-    if (args.start) {
-      start = args.start;
-    }
     // a bit of hickhack to get the format right..
     let details = args.brewingProcessDetails;
-    for (var i = 0 ; i < details.boilHopAdditions.length; i++) {
+    for (var i = 0; i < details.boilHopAdditions.length; i++) {
       details.boilHopAdditions[i] = {
         minutesAfterBoilStart:
           details.boilHopAdditions[i].minutesAfterBoilStart,
         hop: { create: details.boilHopAdditions[i].hop }
       };
+      details.dryHopping = {
+        hop: { create: details.dryHopping.hop }
+      };
     }
     let input = {
-      name: args.name,
-      start: start,
-      description: args.description,
+      ...args,
       brewingProcessDetails: {
         create: {
           ...details,
@@ -28,7 +24,8 @@ const brewingProcessMutations = {
           yeast: { create: details.yeast },
           mashSteps: { create: details.mashSteps },
           fermentationSteps: { create: details.fermentationSteps },
-          boilHopAdditions: { create: details.boilHopAdditions }
+          boilHopAdditions: { create: details.boilHopAdditions },
+          dryHopping: { create: details.dryHopAdditions }
         }
       }
     };

@@ -58,7 +58,7 @@ type BrewingProcessDetails {
   yeast: Ingredient! @relation(name: "Yeast", onDelete: CASCADE)
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
-  yieldsLiter: Int!
+  yieldsLiter: Float!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
   mashSteps: [Step!]! @relation(name: "MashSteps", onDelete: CASCADE)

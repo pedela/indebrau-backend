@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Mon Mar 25 2019 18:20:27 GMT+0100 (Central European Standard Time)
+# timestamp: Fri Mar 29 2019 15:06:49 GMT+0100 (Central European Standard Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -394,7 +394,7 @@ type BrewingProcessDetails implements Node {
   yeast: Ingredient!
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
-  yieldsLiter: Int!
+  yieldsLiter: Float!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
   mashSteps(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Step!]
@@ -422,7 +422,7 @@ type BrewingProcessDetailsConnection {
 input BrewingProcessDetailsCreateInput {
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
-  yieldsLiter: Int!
+  yieldsLiter: Float!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
   spargingTemperature: Float!
@@ -488,7 +488,7 @@ type BrewingProcessDetailsPreviousValues {
   id: ID!
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
-  yieldsLiter: Int!
+  yieldsLiter: Float!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
   spargingTemperature: Float!
@@ -541,7 +541,7 @@ input BrewingProcessDetailsSubscriptionWhereInput {
 input BrewingProcessDetailsUpdateDataInput {
   mashWaterLiter: Float
   spargingWaterLiter: Float
-  yieldsLiter: Int
+  yieldsLiter: Float
   carbonizationGramPerLiter: Float
   mashInTemperature: Float
   spargingTemperature: Float
@@ -561,7 +561,7 @@ input BrewingProcessDetailsUpdateDataInput {
 input BrewingProcessDetailsUpdateInput {
   mashWaterLiter: Float
   spargingWaterLiter: Float
-  yieldsLiter: Int
+  yieldsLiter: Float
   carbonizationGramPerLiter: Float
   mashInTemperature: Float
   spargingTemperature: Float
@@ -581,7 +581,7 @@ input BrewingProcessDetailsUpdateInput {
 input BrewingProcessDetailsUpdateManyMutationInput {
   mashWaterLiter: Float
   spargingWaterLiter: Float
-  yieldsLiter: Int
+  yieldsLiter: Float
   carbonizationGramPerLiter: Float
   mashInTemperature: Float
   spargingTemperature: Float
@@ -697,28 +697,28 @@ input BrewingProcessDetailsWhereInput {
 
   """All values greater than or equal the given value."""
   spargingWaterLiter_gte: Float
-  yieldsLiter: Int
+  yieldsLiter: Float
 
   """All values that are not equal to given value."""
-  yieldsLiter_not: Int
+  yieldsLiter_not: Float
 
   """All values that are contained in given list."""
-  yieldsLiter_in: [Int!]
+  yieldsLiter_in: [Float!]
 
   """All values that are not contained in given list."""
-  yieldsLiter_not_in: [Int!]
+  yieldsLiter_not_in: [Float!]
 
   """All values less than the given value."""
-  yieldsLiter_lt: Int
+  yieldsLiter_lt: Float
 
   """All values less than or equal the given value."""
-  yieldsLiter_lte: Int
+  yieldsLiter_lte: Float
 
   """All values greater than the given value."""
-  yieldsLiter_gt: Int
+  yieldsLiter_gt: Float
 
   """All values greater than or equal the given value."""
-  yieldsLiter_gte: Int
+  yieldsLiter_gte: Float
   carbonizationGramPerLiter: Float
 
   """All values that are not equal to given value."""

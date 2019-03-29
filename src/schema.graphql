@@ -49,7 +49,7 @@ input DetailsInput {
 
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
-  yieldsLiter: Int!
+  yieldsLiter: Float!
   carbonizationGramPerLiter: Float!
   mashInTemperature: Float!
   mashSteps: [StepInput!]!

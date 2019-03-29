@@ -33,7 +33,8 @@ async function activeGraphCache(ctx, update) {
   return cachedActiveGraphs;
 }
 
-/* reduce datapoints evenly across time (every nth element) */
+/* reduce datapoints evenly across time (every nth element)
+   Return: (datapoints - (graphData % dataPoints)) entries */
 async function reduceGraphDataEvenly(graphData, dataPoints) {
   // check if variables present and graphData longer than desired
   if (!graphData || !dataPoints || graphData.length < dataPoints) {
@@ -41,26 +42,27 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
   }
   var reducedData = [];
   var nthElement = Math.ceil(graphData.length / dataPoints);
+
   for (var j = 0; j < dataPoints; j++) {
     let pickPoint = j * nthElement;
-    // don't overshoot, just take the value between the previous and last one
-    if (pickPoint >= graphData.length) {
-      pickPoint = graphData.length - nthElement / 2;
+    // don't overshoot
+    if (pickPoint > graphData.length - 1) {
+      reducedData[j] = {
+        time: graphData[graphData.length - 1].time,
+        value: graphData[graphData.length - 1].value
+      };
+      break;
+    } else {
+      reducedData[j] = {
+        time: graphData[pickPoint].time,
+        value: graphData[pickPoint].value
+      };
     }
-    reducedData[j - 1] = {
-      time: graphData[pickPoint].time,
-      value: graphData[pickPoint].value
-    };
+    // edge case, we already got the latest datapoint included
+    if (pickPoint == graphData.length - 1) {
+      break;
+    }
   }
-  // edge cases, don't modify first and last entry
-  reducedData[0] = {
-    time: graphData[0].time,
-    value: graphData[0].value
-  };
-  reducedData[dataPoints - 1] = {
-    time: graphData[graphData.length - 1].time,
-    value: graphData[graphData.length - 1].value
-  };
 
   return reducedData;
 }

@@ -11,9 +11,6 @@ const brewingProcessMutations = {
           details.boilHopAdditions[i].minutesAfterBoilStart,
         hop: { create: details.boilHopAdditions[i].hop }
       };
-      details.dryHopping = {
-        hop: { create: details.dryHopping.hop }
-      };
     }
     let start = null;
     if(args.startNow){

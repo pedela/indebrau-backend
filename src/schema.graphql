@@ -56,7 +56,7 @@ input DetailsInput {
   spargingTemperature: Float!
   boilingMinutes: Int!
   boilHopAdditions: [HopAddition!]!
-  dryHopping: HopAddition # can be set to null for no dry hopping
+  dryHopping: IngredientInput
   fermentationSteps: [StepInput!]!
 
   # to be added during/after brewing
@@ -81,7 +81,7 @@ input StepInput {
 
 input HopAddition {
   hop: IngredientInput! # add hops here
-  minutesAfterBoilStart: Int # null for dryhopping
+  minutesAfterBoilStart: Int!
 }
 
 type User {

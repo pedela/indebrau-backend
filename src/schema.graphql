@@ -28,7 +28,7 @@ type Mutation {
   createGraph(
     name: String!
     sensorName: String!
-    updateInterval: Int
+    updateFrequency: Int
     brewingProcessId: ID!
   ): Graph!
 

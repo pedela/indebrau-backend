@@ -1,4 +1,4 @@
-const { checkUserPermissions } = require('../../utils');
+const { activeGraphCache, checkUserPermissions } = require('../../utils');
 
 const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
@@ -13,7 +13,7 @@ const brewingProcessMutations = {
       };
     }
     let start = null;
-    if(args.startNow){
+    if (args.startNow) {
       start = new Date().toJSON();
     }
     let input = {
@@ -43,6 +43,18 @@ const brewingProcessMutations = {
       throw new Error('problem creating brewing process');
     }
     return createdBrewingProcess;
+  },
+
+  async deleteBrewingProcess(parent, args, ctx, info) {
+    checkUserPermissions(ctx, ['ADMIN']);
+    const where = { id: args.id };
+    const deletedBrewingProcess = ctx.db.mutation.deleteBrewingProcess({ where }, info);
+    // update cache (associated graphs might be deleted cascadingly)
+    await activeGraphCache(ctx, true);
+    if (!deletedBrewingProcess) {
+      throw new Error('Problem deleting brewing process');
+    }
+    return deletedBrewingProcess;
   }
 };
 

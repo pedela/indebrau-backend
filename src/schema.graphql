@@ -33,12 +33,18 @@ type Mutation {
   ): Graph!
 
   # admin
+  deleteGraph(id: ID!): Graph!
+
+  # admin
   createBrewingProcess(
     name: String!
     startNow: Boolean # default: no
     description: String!
     brewingProcessDetails: DetailsInput!
   ): BrewingProcess!
+
+  # admin
+  deleteBrewingProcess(id: ID!): BrewingProcess!
 }
 
 input DetailsInput {

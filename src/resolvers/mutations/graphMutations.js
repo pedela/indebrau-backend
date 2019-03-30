@@ -35,6 +35,18 @@ const graphMutations = {
     return {
       id: createdGraph.id
     };
+  },
+
+  async deleteGraph(parent, args, ctx, info) {
+    checkUserPermissions(ctx, ['ADMIN']);
+    const where = { id: args.id };
+    const deletedGraphReturn = ctx.db.mutation.deleteGraph({ where }, info);
+    // update cache
+    await activeGraphCache(ctx, true);
+    if (!deletedGraphReturn) {
+      throw new Error('Problem deleting graph');
+    }
+    return deletedGraphReturn;
   }
 };
 

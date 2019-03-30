@@ -24,15 +24,17 @@ type Graph {
   sensorName: String! # mqtt topic
   active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
   updateFrequency: Int! # in seconds
-  brewingProcess: BrewingProcess! # to which brewing process does this Graph belong...
-  graphData: [GraphData!]! # its "content"
+  brewingProcess: BrewingProcess!
+    @relation(name: "BrewingProcessToGraph", onDelete: SET_NULL) # to which brewing process does this Graph belong...
+  graphData: [GraphData!]!
+    @relation(name: "GraphToGraphData", onDelete: CASCADE) # its "content"
 }
 
 type GraphData {
   id: ID! @unique
   time: DateTime!
   value: String!
-  graph: Graph!
+  graph: Graph! @relation(name: "GraphToGraphData", onDelete: SET_NULL)
 }
 
 type BrewingProcess {
@@ -45,7 +47,7 @@ type BrewingProcess {
     @relation(name: "BrewingProcessDetails", onDelete: CASCADE)
 
   # graphs linked to this brewing process
-  graphs: [Graph!]!
+  graphs: [Graph!]! @relation(name: "BrewingProcessToGraph", onDelete: CASCADE)
   # participating users
   users: [User!]!
 }

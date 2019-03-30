@@ -9,16 +9,12 @@ const graphMutations = {
       where: { active: true, sensorName: args.sensorName },
       data: { active: false }
     });
-    var updateFrequency = 60; // default to one minute
-    if (args.updateFrequency) {
-      updateFrequency = args.updateFrequency;
-    }
     // 2. create graph
     const createdGraph = await ctx.db.mutation.createGraph({
       data: {
         name: args.name,
         sensorName: args.sensorName,
-        updateFrequency: updateFrequency,
+        updateFrequency: args.updateFrequency,
         active: true,
         brewingProcess: {
           connect: {

@@ -7,8 +7,8 @@ const graphDataMutations = {
     var activeGraphs = await activeGraphCache(ctx);
     // get active graph with matching sensor name
     // (local comparisons, no additional queries here)
-    var activeGraph;
-    var oldEnoughLatestGraphData;
+    var activeGraph = null;
+    var oldEnoughLatestGraphData = null;
     for (var i = 0; i < activeGraphs.length; i++) {
       let graph = activeGraphs[i];
       if (graph.active && !graph.sensorName.localeCompare(args.sensorName)) {
@@ -17,9 +17,9 @@ const graphDataMutations = {
         // if found, get latest graph data and compare timestamp to
         // determine if it has to be inserted
         const earliestDate =
-            new Date(args.sensorTimeStamp).getTime() -
-            activeGraph.updateFrequency * 1000; // last entry must be at least this old
-          // now fetch the latest entry's timestamp
+          new Date(args.sensorTimeStamp).getTime() -
+          activeGraph.updateFrequency * 1000; // last entry must be at least this old
+        // now fetch the latest entry's timestamp
         oldEnoughLatestGraphData = await ctx.db.query.graphDatas(
           {
             where: {
@@ -36,12 +36,13 @@ const graphDataMutations = {
       }
     }
     // check if graph was found
-    if (typeof activeGraph == 'undefined') {
+    if (!activeGraph == null) {
       throw new Error(
         'Did not find active graph for sensor ' + args.sensorName
       );
     }
     // check if old graph data was found (=> new data too recent)
+    // cannot be null since activeGraph is not null
     if (oldEnoughLatestGraphData.length == 1) {
       throw new Error(
         'Sensor data too recent, not updating ' + args.sensorName

@@ -20,6 +20,7 @@ const graphDataMutations = {
           new Date(args.sensorTimeStamp).getTime() -
           activeGraph.updateFrequency * 1000; // last entry must be at least this old
         // now fetch the latest entry's timestamp
+
         oldEnoughLatestGraphData = await ctx.db.query.graphDatas(
           {
             where: {
@@ -42,8 +43,7 @@ const graphDataMutations = {
       );
     }
     // check if old graph data was found (=> new data too recent)
-    // cannot be null since activeGraph is not null
-    if (oldEnoughLatestGraphData.length == 1) {
+    if (oldEnoughLatestGraphData != null && !oldEnoughLatestGraphData.length == 0) {
       throw new Error(
         'Sensor data too recent, not updating ' + args.sensorName
       );

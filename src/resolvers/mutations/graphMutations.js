@@ -36,7 +36,7 @@ const graphMutations = {
   async deleteGraph(parent, args, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: args.id };
-    const deletedGraphReturn = ctx.db.mutation.deleteGraph({ where }, info);
+    const deletedGraphReturn = await ctx.db.mutation.deleteGraph({ where }, info);
     // update cache
     await activeGraphCache(ctx, true);
     if (!deletedGraphReturn) {

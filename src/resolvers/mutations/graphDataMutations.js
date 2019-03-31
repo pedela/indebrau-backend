@@ -36,7 +36,7 @@ const graphDataMutations = {
       }
     }
     // check if graph was found
-    if (!activeGraph == null) {
+    if (activeGraph == null) {
       throw new Error(
         'Did not find active graph for sensor ' + args.sensorName
       );

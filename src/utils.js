@@ -41,12 +41,12 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
     return graphData;
   }
   var reducedData = [];
-  var nthElement = Math.ceil(graphData.length / dataPoints);
+  var nthElement = graphData.length / dataPoints;
 
   for (var j = 0; j < dataPoints; j++) {
-    let pickPoint = j * nthElement;
-    // don't overshoot
-    if (pickPoint > graphData.length - 1) {
+    let pickPoint = Math.ceil(j * nthElement);
+    // prevent overshoot and put last graphData entry into last reduced data entry
+    if ((pickPoint > graphData.length - 1) || (j == dataPoints - 1)) {
       reducedData[j] = {
         time: graphData[graphData.length - 1].time,
         value: graphData[graphData.length - 1].value
@@ -57,10 +57,6 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
         time: graphData[pickPoint].time,
         value: graphData[pickPoint].value
       };
-    }
-    // edge case, we already got the latest datapoint included
-    if (pickPoint == graphData.length - 1) {
-      break;
     }
   }
 

@@ -10,6 +10,7 @@ type Query {
   ): [Graph!]!
   graph(id: ID!): Graph # admin
   brewingProcesses: [BrewingProcess!]! # admin
+  brewingProcess(id: ID!): BrewingProcess
 }
 
 type Mutation {

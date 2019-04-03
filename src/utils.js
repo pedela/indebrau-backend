@@ -1,5 +1,5 @@
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
-function checkUserPermissions(ctx, permissionsNeeded) {
+function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId) {
   if (!ctx.request.user) {
     throw new Error('You must be logged in to do that!');
   }
@@ -7,12 +7,31 @@ function checkUserPermissions(ctx, permissionsNeeded) {
   const matchedPermissions = ctx.request.user.permissions.filter(
     permissionTheyHave => permissionsNeeded.includes(permissionTheyHave)
   );
+
+  // not the needed user role
   if (!matchedPermissions.length) {
     throw new Error(
       `You do not have sufficient permissions: ${permissionsNeeded}, You Have: ${
         ctx.request.user.permissions
       }`
     );
+  }
+
+  // user tries to access brewing process, check if she participates
+  if (brewingProcessId && !ctx.request.user.permissions.includes('ADMIN')) {
+    let found = false;
+    ctx.request.user.participatingBrewingProcesses.map(brewingProcess => {
+      if (brewingProcess.id == brewingProcessId) {
+        // user has permission
+        found = true;
+      }
+    });
+    // no permission
+    if(!found){
+      throw new Error(
+        `You do not have the right to access brewing process: ${brewingProcessId}`
+      );
+    }
   }
 }
 
@@ -46,7 +65,7 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
   for (var j = 0; j < dataPoints; j++) {
     let pickPoint = Math.ceil(j * nthElement);
     // prevent overshoot and put last graphData entry into last reduced data entry
-    if ((pickPoint > graphData.length - 1) || (j == dataPoints - 1)) {
+    if (pickPoint > graphData.length - 1 || j == dataPoints - 1) {
       reducedData[j] = {
         time: graphData[graphData.length - 1].time,
         value: graphData[graphData.length - 1].value

@@ -9,7 +9,7 @@ enum IngredientType {
   YEAST
 }
 
-enum ActiveStep {
+enum BrewingStep {
   MALT_CRUSHING
   HEATING_UP
   MASH_IN
@@ -55,7 +55,7 @@ type BrewingProcess {
   id: ID! @unique
   name: String!
   description: String!
-  activeSteps: [ActiveStep!]!
+  activeSteps: [BrewingStep!]!
   brewingProcessDetails: BrewingProcessDetails!
     @relation(name: "BrewingProcessDetails", onDelete: CASCADE)
 

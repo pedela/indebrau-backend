@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Fri Mar 29 2019 15:06:49 GMT+0100 (Central European Standard Time)
+# timestamp: Tue Apr 09 2019 17:18:14 GMT+0200 (Central European Summer Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -59,6 +59,7 @@ type boilHopAdditionConnection {
 }
 
 input boilHopAdditionCreateInput {
+  id: ID
   minutesAfterBoilStart: Int!
   hop: IngredientCreateOneInput!
 }
@@ -332,12 +333,17 @@ input boilHopAdditionWhereUniqueInput {
 type BrewingProcess implements Node {
   id: ID!
   name: String!
-  start: DateTime
-  end: DateTime
   description: String!
+  activeSteps: [BrewingStep!]!
   brewingProcessDetails: BrewingProcessDetails!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph!]
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+  start: DateTime
+  end: DateTime
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
 }
 
 """A connection to a list of items."""
@@ -350,11 +356,21 @@ type BrewingProcessConnection {
   aggregate: AggregateBrewingProcess!
 }
 
+input BrewingProcessCreateactiveStepsInput {
+  set: [BrewingStep!]
+}
+
 input BrewingProcessCreateInput {
+  id: ID
   name: String!
+  description: String!
   start: DateTime
   end: DateTime
-  description: String!
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   graphs: GraphCreateManyWithoutBrewingProcessInput
   users: UserCreateManyWithoutParticipatingBrewingProcessesInput
@@ -371,19 +387,31 @@ input BrewingProcessCreateOneWithoutGraphsInput {
 }
 
 input BrewingProcessCreateWithoutGraphsInput {
+  id: ID
   name: String!
+  description: String!
   start: DateTime
   end: DateTime
-  description: String!
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   users: UserCreateManyWithoutParticipatingBrewingProcessesInput
 }
 
 input BrewingProcessCreateWithoutUsersInput {
+  id: ID
   name: String!
+  description: String!
   start: DateTime
   end: DateTime
-  description: String!
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   graphs: GraphCreateManyWithoutBrewingProcessInput
 }
@@ -420,6 +448,7 @@ type BrewingProcessDetailsConnection {
 }
 
 input BrewingProcessDetailsCreateInput {
+  id: ID
   mashWaterLiter: Float!
   spargingWaterLiter: Float!
   yieldsLiter: Float!
@@ -929,12 +958,20 @@ enum BrewingProcessOrderByInput {
   id_DESC
   name_ASC
   name_DESC
+  description_ASC
+  description_DESC
   start_ASC
   start_DESC
   end_ASC
   end_DESC
-  description_ASC
-  description_DESC
+  heatingUpStart_ASC
+  heatingUpStart_DESC
+  mashIn_ASC
+  mashIn_DESC
+  boilingStart_ASC
+  boilingStart_DESC
+  fermentationStart_ASC
+  fermentationStart_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -944,9 +981,14 @@ enum BrewingProcessOrderByInput {
 type BrewingProcessPreviousValues {
   id: ID!
   name: String!
+  description: String!
+  activeSteps: [BrewingStep!]!
   start: DateTime
   end: DateTime
-  description: String!
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
 }
 
 input BrewingProcessScalarWhereInput {
@@ -1038,6 +1080,46 @@ input BrewingProcessScalarWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  description: String
+
+  """All values that are not equal to given value."""
+  description_not: String
+
+  """All values that are contained in given list."""
+  description_in: [String!]
+
+  """All values that are not contained in given list."""
+  description_not_in: [String!]
+
+  """All values less than the given value."""
+  description_lt: String
+
+  """All values less than or equal the given value."""
+  description_lte: String
+
+  """All values greater than the given value."""
+  description_gt: String
+
+  """All values greater than or equal the given value."""
+  description_gte: String
+
+  """All values containing the given string."""
+  description_contains: String
+
+  """All values not containing the given string."""
+  description_not_contains: String
+
+  """All values starting with the given string."""
+  description_starts_with: String
+
+  """All values not starting with the given string."""
+  description_not_starts_with: String
+
+  """All values ending with the given string."""
+  description_ends_with: String
+
+  """All values not ending with the given string."""
+  description_not_ends_with: String
   start: DateTime
 
   """All values that are not equal to given value."""
@@ -1082,46 +1164,94 @@ input BrewingProcessScalarWhereInput {
 
   """All values greater than or equal the given value."""
   end_gte: DateTime
-  description: String
+  heatingUpStart: DateTime
 
   """All values that are not equal to given value."""
-  description_not: String
+  heatingUpStart_not: DateTime
 
   """All values that are contained in given list."""
-  description_in: [String!]
+  heatingUpStart_in: [DateTime!]
 
   """All values that are not contained in given list."""
-  description_not_in: [String!]
+  heatingUpStart_not_in: [DateTime!]
 
   """All values less than the given value."""
-  description_lt: String
+  heatingUpStart_lt: DateTime
 
   """All values less than or equal the given value."""
-  description_lte: String
+  heatingUpStart_lte: DateTime
 
   """All values greater than the given value."""
-  description_gt: String
+  heatingUpStart_gt: DateTime
 
   """All values greater than or equal the given value."""
-  description_gte: String
+  heatingUpStart_gte: DateTime
+  mashIn: DateTime
 
-  """All values containing the given string."""
-  description_contains: String
+  """All values that are not equal to given value."""
+  mashIn_not: DateTime
 
-  """All values not containing the given string."""
-  description_not_contains: String
+  """All values that are contained in given list."""
+  mashIn_in: [DateTime!]
 
-  """All values starting with the given string."""
-  description_starts_with: String
+  """All values that are not contained in given list."""
+  mashIn_not_in: [DateTime!]
 
-  """All values not starting with the given string."""
-  description_not_starts_with: String
+  """All values less than the given value."""
+  mashIn_lt: DateTime
 
-  """All values ending with the given string."""
-  description_ends_with: String
+  """All values less than or equal the given value."""
+  mashIn_lte: DateTime
 
-  """All values not ending with the given string."""
-  description_not_ends_with: String
+  """All values greater than the given value."""
+  mashIn_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  mashIn_gte: DateTime
+  boilingStart: DateTime
+
+  """All values that are not equal to given value."""
+  boilingStart_not: DateTime
+
+  """All values that are contained in given list."""
+  boilingStart_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  boilingStart_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  boilingStart_lt: DateTime
+
+  """All values less than or equal the given value."""
+  boilingStart_lte: DateTime
+
+  """All values greater than the given value."""
+  boilingStart_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  boilingStart_gte: DateTime
+  fermentationStart: DateTime
+
+  """All values that are not equal to given value."""
+  fermentationStart_not: DateTime
+
+  """All values that are contained in given list."""
+  fermentationStart_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  fermentationStart_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  fermentationStart_lt: DateTime
+
+  """All values less than or equal the given value."""
+  fermentationStart_lte: DateTime
+
+  """All values greater than the given value."""
+  fermentationStart_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  fermentationStart_gte: DateTime
 }
 
 type BrewingProcessSubscriptionPayload {
@@ -1163,11 +1293,20 @@ input BrewingProcessSubscriptionWhereInput {
   node: BrewingProcessWhereInput
 }
 
+input BrewingProcessUpdateactiveStepsInput {
+  set: [BrewingStep!]
+}
+
 input BrewingProcessUpdateInput {
   name: String
+  description: String
   start: DateTime
   end: DateTime
-  description: String
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   graphs: GraphUpdateManyWithoutBrewingProcessInput
   users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
@@ -1175,16 +1314,26 @@ input BrewingProcessUpdateInput {
 
 input BrewingProcessUpdateManyDataInput {
   name: String
+  description: String
   start: DateTime
   end: DateTime
-  description: String
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
 }
 
 input BrewingProcessUpdateManyMutationInput {
   name: String
+  description: String
   start: DateTime
   end: DateTime
-  description: String
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
 }
 
 input BrewingProcessUpdateManyWithoutUsersInput {
@@ -1213,18 +1362,28 @@ input BrewingProcessUpdateOneRequiredWithoutGraphsInput {
 
 input BrewingProcessUpdateWithoutGraphsDataInput {
   name: String
+  description: String
   start: DateTime
   end: DateTime
-  description: String
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
 }
 
 input BrewingProcessUpdateWithoutUsersDataInput {
   name: String
+  description: String
   start: DateTime
   end: DateTime
-  description: String
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   graphs: GraphUpdateManyWithoutBrewingProcessInput
 }
@@ -1334,6 +1493,46 @@ input BrewingProcessWhereInput {
 
   """All values not ending with the given string."""
   name_not_ends_with: String
+  description: String
+
+  """All values that are not equal to given value."""
+  description_not: String
+
+  """All values that are contained in given list."""
+  description_in: [String!]
+
+  """All values that are not contained in given list."""
+  description_not_in: [String!]
+
+  """All values less than the given value."""
+  description_lt: String
+
+  """All values less than or equal the given value."""
+  description_lte: String
+
+  """All values greater than the given value."""
+  description_gt: String
+
+  """All values greater than or equal the given value."""
+  description_gte: String
+
+  """All values containing the given string."""
+  description_contains: String
+
+  """All values not containing the given string."""
+  description_not_contains: String
+
+  """All values starting with the given string."""
+  description_starts_with: String
+
+  """All values not starting with the given string."""
+  description_not_starts_with: String
+
+  """All values ending with the given string."""
+  description_ends_with: String
+
+  """All values not ending with the given string."""
+  description_not_ends_with: String
   start: DateTime
 
   """All values that are not equal to given value."""
@@ -1378,46 +1577,94 @@ input BrewingProcessWhereInput {
 
   """All values greater than or equal the given value."""
   end_gte: DateTime
-  description: String
+  heatingUpStart: DateTime
 
   """All values that are not equal to given value."""
-  description_not: String
+  heatingUpStart_not: DateTime
 
   """All values that are contained in given list."""
-  description_in: [String!]
+  heatingUpStart_in: [DateTime!]
 
   """All values that are not contained in given list."""
-  description_not_in: [String!]
+  heatingUpStart_not_in: [DateTime!]
 
   """All values less than the given value."""
-  description_lt: String
+  heatingUpStart_lt: DateTime
 
   """All values less than or equal the given value."""
-  description_lte: String
+  heatingUpStart_lte: DateTime
 
   """All values greater than the given value."""
-  description_gt: String
+  heatingUpStart_gt: DateTime
 
   """All values greater than or equal the given value."""
-  description_gte: String
+  heatingUpStart_gte: DateTime
+  mashIn: DateTime
 
-  """All values containing the given string."""
-  description_contains: String
+  """All values that are not equal to given value."""
+  mashIn_not: DateTime
 
-  """All values not containing the given string."""
-  description_not_contains: String
+  """All values that are contained in given list."""
+  mashIn_in: [DateTime!]
 
-  """All values starting with the given string."""
-  description_starts_with: String
+  """All values that are not contained in given list."""
+  mashIn_not_in: [DateTime!]
 
-  """All values not starting with the given string."""
-  description_not_starts_with: String
+  """All values less than the given value."""
+  mashIn_lt: DateTime
 
-  """All values ending with the given string."""
-  description_ends_with: String
+  """All values less than or equal the given value."""
+  mashIn_lte: DateTime
 
-  """All values not ending with the given string."""
-  description_not_ends_with: String
+  """All values greater than the given value."""
+  mashIn_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  mashIn_gte: DateTime
+  boilingStart: DateTime
+
+  """All values that are not equal to given value."""
+  boilingStart_not: DateTime
+
+  """All values that are contained in given list."""
+  boilingStart_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  boilingStart_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  boilingStart_lt: DateTime
+
+  """All values less than or equal the given value."""
+  boilingStart_lte: DateTime
+
+  """All values greater than the given value."""
+  boilingStart_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  boilingStart_gte: DateTime
+  fermentationStart: DateTime
+
+  """All values that are not equal to given value."""
+  fermentationStart_not: DateTime
+
+  """All values that are contained in given list."""
+  fermentationStart_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  fermentationStart_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  fermentationStart_lt: DateTime
+
+  """All values less than or equal the given value."""
+  fermentationStart_lte: DateTime
+
+  """All values greater than the given value."""
+  fermentationStart_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  fermentationStart_gte: DateTime
   brewingProcessDetails: BrewingProcessDetailsWhereInput
   graphs_every: GraphWhereInput
   graphs_some: GraphWhereInput
@@ -1429,6 +1676,20 @@ input BrewingProcessWhereInput {
 
 input BrewingProcessWhereUniqueInput {
   id: ID
+}
+
+enum BrewingStep {
+  MALT_CRUSHING
+  HEATING_UP
+  MASH_IN
+  MASHING
+  LAUTERING
+  SPARGING
+  BOILING
+  CHILLING
+  FERMENTING
+  CONDITIONING
+  BOTTLED
 }
 
 scalar DateTime
@@ -1450,6 +1711,7 @@ type dryHopAdditionConnection {
 }
 
 input dryHopAdditionCreateInput {
+  id: ID
   addedOn: DateTime
   hop: IngredientCreateOneInput!
 }
@@ -1650,6 +1912,7 @@ type GraphConnection {
 }
 
 input GraphCreateInput {
+  id: ID
   name: String!
   sensorName: String!
   active: Boolean!
@@ -1669,6 +1932,7 @@ input GraphCreateOneWithoutGraphDataInput {
 }
 
 input GraphCreateWithoutBrewingProcessInput {
+  id: ID
   name: String!
   sensorName: String!
   active: Boolean!
@@ -1677,6 +1941,7 @@ input GraphCreateWithoutBrewingProcessInput {
 }
 
 input GraphCreateWithoutGraphDataInput {
+  id: ID
   name: String!
   sensorName: String!
   active: Boolean!
@@ -1702,6 +1967,7 @@ type GraphDataConnection {
 }
 
 input GraphDataCreateInput {
+  id: ID
   time: DateTime!
   value: String!
   graph: GraphCreateOneWithoutGraphDataInput!
@@ -1713,6 +1979,7 @@ input GraphDataCreateManyWithoutGraphInput {
 }
 
 input GraphDataCreateWithoutGraphInput {
+  id: ID
   time: DateTime!
   value: String!
 }
@@ -2557,6 +2824,7 @@ type IngredientConnection {
 }
 
 input IngredientCreateInput {
+  id: ID
   type: IngredientType!
   name: String!
   amountGram: Float!
@@ -3186,6 +3454,8 @@ type Step implements Node {
   durationMinutes: Int!
   temperature: Float!
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 """A connection to a list of items."""
@@ -3199,9 +3469,12 @@ type StepConnection {
 }
 
 input StepCreateInput {
+  id: ID
   durationMinutes: Int!
   temperature: Float!
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 input StepCreateManyInput {
@@ -3227,6 +3500,10 @@ enum StepOrderByInput {
   temperature_DESC
   details_ASC
   details_DESC
+  start_ASC
+  start_DESC
+  end_ASC
+  end_DESC
   updatedAt_ASC
   updatedAt_DESC
   createdAt_ASC
@@ -3238,6 +3515,8 @@ type StepPreviousValues {
   durationMinutes: Int!
   temperature: Float!
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 input StepScalarWhereInput {
@@ -3373,6 +3652,50 @@ input StepScalarWhereInput {
 
   """All values not ending with the given string."""
   details_not_ends_with: String
+  start: DateTime
+
+  """All values that are not equal to given value."""
+  start_not: DateTime
+
+  """All values that are contained in given list."""
+  start_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  start_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  start_lt: DateTime
+
+  """All values less than or equal the given value."""
+  start_lte: DateTime
+
+  """All values greater than the given value."""
+  start_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  start_gte: DateTime
+  end: DateTime
+
+  """All values that are not equal to given value."""
+  end_not: DateTime
+
+  """All values that are contained in given list."""
+  end_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  end_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  end_lt: DateTime
+
+  """All values less than or equal the given value."""
+  end_lte: DateTime
+
+  """All values greater than the given value."""
+  end_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  end_gte: DateTime
 }
 
 type StepSubscriptionPayload {
@@ -3418,18 +3741,24 @@ input StepUpdateDataInput {
   durationMinutes: Int
   temperature: Float
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 input StepUpdateInput {
   durationMinutes: Int
   temperature: Float
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 input StepUpdateManyDataInput {
   durationMinutes: Int
   temperature: Float
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 input StepUpdateManyInput {
@@ -3448,6 +3777,8 @@ input StepUpdateManyMutationInput {
   durationMinutes: Int
   temperature: Float
   details: String
+  start: DateTime
+  end: DateTime
 }
 
 input StepUpdateManyWithWhereNestedInput {
@@ -3599,6 +3930,50 @@ input StepWhereInput {
 
   """All values not ending with the given string."""
   details_not_ends_with: String
+  start: DateTime
+
+  """All values that are not equal to given value."""
+  start_not: DateTime
+
+  """All values that are contained in given list."""
+  start_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  start_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  start_lt: DateTime
+
+  """All values less than or equal the given value."""
+  start_lte: DateTime
+
+  """All values greater than the given value."""
+  start_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  start_gte: DateTime
+  end: DateTime
+
+  """All values that are not equal to given value."""
+  end_not: DateTime
+
+  """All values that are contained in given list."""
+  end_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  end_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  end_lt: DateTime
+
+  """All values less than or equal the given value."""
+  end_lte: DateTime
+
+  """All values greater than the given value."""
+  end_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  end_gte: DateTime
 }
 
 input StepWhereUniqueInput {
@@ -3637,6 +4012,7 @@ type UserConnection {
 }
 
 input UserCreateInput {
+  id: ID
   email: String!
   name: String!
   password: String!
@@ -3654,6 +4030,7 @@ input UserCreatepermissionsInput {
 }
 
 input UserCreateWithoutParticipatingBrewingProcessesInput {
+  id: ID
   email: String!
   name: String!
   password: String!

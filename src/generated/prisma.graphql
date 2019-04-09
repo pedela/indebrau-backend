@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Tue Apr 09 2019 17:18:14 GMT+0200 (Central European Summer Time)
+# timestamp: Tue Apr 09 2019 21:55:09 GMT+0200 (Central European Summer Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -1683,6 +1683,7 @@ enum BrewingStep {
   HEATING_UP
   MASH_IN
   MASHING
+  HEATING_SPARGE
   LAUTERING
   SPARGING
   BOILING

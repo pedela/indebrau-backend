@@ -9,6 +9,20 @@ enum IngredientType {
   YEAST
 }
 
+enum ActiveStep {
+  MALT_CRUSHING
+  HEATING_UP
+  MASH_IN
+  MASHING
+  LAUTERING
+  SPARGING
+  BOILING
+  CHILLING
+  FERMENTING
+  CONDITIONING
+  BOTTLED
+}
+
 type User {
   id: ID! @unique
   email: String! @unique
@@ -40,9 +54,8 @@ type GraphData {
 type BrewingProcess {
   id: ID! @unique
   name: String!
-  start: DateTime
-  end: DateTime
   description: String!
+  activeSteps: [ActiveStep!]!
   brewingProcessDetails: BrewingProcessDetails!
     @relation(name: "BrewingProcessDetails", onDelete: CASCADE)
 
@@ -50,6 +63,13 @@ type BrewingProcess {
   graphs: [Graph!]! @relation(name: "BrewingProcessToGraph", onDelete: CASCADE)
   # participating users
   users: [User!]!
+  # some timestamps
+  start: DateTime # null -> not yet started
+  end: DateTime # null -> not ended yet
+  heatingUpStart: DateTime # null -> not yet started
+  mashIn: DateTime # null -> not yet started
+  boilingStart: DateTime # null -> not yet started
+  fermentationStart: DateTime # null -> not yet started
 }
 
 type BrewingProcessDetails {
@@ -94,6 +114,9 @@ type Step {
   durationMinutes: Int!
   temperature: Float!
   details: String
+  # filled out during process
+  start: DateTime
+  end: DateTime
 }
 
 type boilHopAddition {

@@ -68,7 +68,8 @@ const brewingProcessMutations = {
       if (newActiveSteps.includes(finishedSteps[i])) {
         throw new Error('Cannot remove and add same step ' + finishedSteps[i]);
       }
-      activeSteps.splice(i, 1);
+
+      activeSteps.splice(activeSteps.indexOf(finishedSteps[i]), 1);
     }
     for (let i = 0; i < newActiveSteps.length; i++) {
       if (activeSteps.includes(newActiveSteps[i])) {
@@ -78,10 +79,7 @@ const brewingProcessMutations = {
     }
     console.log(activeSteps);
     const data = { activeSteps: { set: activeSteps } };
-    return await ctx.db.mutation.updateBrewingProcess(
-      { where, data },
-      info
-    );
+    return await ctx.db.mutation.updateBrewingProcess({ where, data }, info);
   },
 
   async deleteBrewingProcess(parent, args, ctx, info) {

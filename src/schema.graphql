@@ -4,11 +4,10 @@ type Query {
   me: User
   # admin
   graphs(
-    sensorNames: [String]
     dataPoints: Int
-    active: Boolean # default false
+    active: Boolean # default false (if not set, return all graphs)
   ): [Graph!]!
-  graph(id: ID!): Graph # admin and participating user
+  graph(id: ID!, dataPoints: Int): Graph # admin and participating user
   brewingProcesses: [BrewingProcess!]! # admin
   brewingProcess(id: ID!): BrewingProcess # admin and participating users
 }

@@ -44,40 +44,32 @@ const brewingProcessMutations = {
     }
     return createdBrewingProcess;
   },
-  async advanceBrewingProcess(parent, args, ctx, info) {
+  async advanceBrewingProcess(parent, { id, newActiveSteps }, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
-    const where = { id: args.id };
-    let { activeSteps } = await ctx.db.query.brewingProcess(
-      { where: { id: args.id } },
+    const where = { id: id };
+    let activeStepsQueryResult = await ctx.db.query.brewingProcess(
+      { where: { id: id } },
       '{ activeSteps }'
     );
-    let newActiveSteps = args.newActiveSteps;
-    let finishedSteps = args.finishedSteps;
-    // I guess here has to be a lot of logic (and additional arguments passed in the mutation)
-    // for now, let's settle by updating the steps alone
-    if (!newActiveSteps) {
-      newActiveSteps = [];
+    if (!activeStepsQueryResult) {
+      throw new Error('Cannot find brewing process with id ' + id);
     }
-    if (!finishedSteps) {
-      finishedSteps = [];
-    }
-    for (let i = 0; i < finishedSteps.length; i++) {
-      if (!activeSteps.includes(finishedSteps[i])) {
-        throw new Error('Step was not active ' + finishedSteps[i]);
-      }
-      if (newActiveSteps.includes(finishedSteps[i])) {
-        throw new Error('Cannot remove and add same step ' + finishedSteps[i]);
-      }
+    let { activeSteps } = activeStepsQueryResult;
 
-      activeSteps.splice(activeSteps.indexOf(finishedSteps[i]), 1);
-    }
-    for (let i = 0; i < newActiveSteps.length; i++) {
-      if (activeSteps.includes(newActiveSteps[i])) {
-        throw new Error('Step was already active ' + newActiveSteps[i]);
+    // I guess here has to be a lot of logic (and additional arguments passed in the mutation)
+    // for now, let's settle by only updating the steps
+    // 1. remove finished steps
+    for (let i = 0; i < activeSteps.length; i++) {
+      if (!newActiveSteps.includes(activeSteps[i])) {
+        activeSteps.splice(activeSteps.indexOf(activeSteps[i]), 1);
       }
-      activeSteps.push(newActiveSteps[i]);
     }
-    console.log(activeSteps);
+    // 2. add new active steps
+    for (let i = 0; i < newActiveSteps.length; i++) {
+      if (!activeSteps.includes(newActiveSteps[i])) {
+        activeSteps.push(newActiveSteps[i]);
+      }
+    }
     const data = { activeSteps: { set: activeSteps } };
     return await ctx.db.mutation.updateBrewingProcess({ where, data }, info);
   },

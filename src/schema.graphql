@@ -46,8 +46,7 @@ type Mutation {
   # admin
   advanceBrewingProcess(
     id: ID!
-    finishedSteps: [BrewingStep!]
-    newActiveSteps: [BrewingStep!]
+    newActiveSteps: [BrewingStep!]!
   ): BrewingProcess!
 
   # admin

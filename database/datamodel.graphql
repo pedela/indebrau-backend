@@ -25,16 +25,19 @@ enum BrewingStep {
 }
 
 type User {
-  id: ID! @unique
+  id: ID! @id
   email: String! @unique
   name: String!
   password: String!
   permissions: [Permission!]!
+    @scalarList(strategy: RELATION)
+    @default(value: USER)
   participatingBrewingProcesses: [BrewingProcess!]!
+    @relation(name: "UserToBrewingProcesses", onDelete: SET_NULL, link: TABLE)
 }
 
 type Graph {
-  id: ID! @unique
+  id: ID! @id
   name: String!
   sensorName: String! # mqtt topic
   active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
@@ -46,24 +49,24 @@ type Graph {
 }
 
 type GraphData {
-  id: ID! @unique
+  id: ID! @id
   time: DateTime!
   value: String!
   graph: Graph! @relation(name: "GraphToGraphData", onDelete: SET_NULL)
 }
 
 type BrewingProcess {
-  id: ID! @unique
+  id: ID! @id
   name: String!
   description: String!
-  activeSteps: [BrewingStep!]!
+  activeSteps: [BrewingStep!]! @scalarList(strategy: RELATION)
   brewingProcessDetails: BrewingProcessDetails!
-    @relation(name: "BrewingProcessDetails", onDelete: CASCADE)
+    @relation(name: "BrewingProcessDetails", link: INLINE, onDelete: CASCADE)
 
   # graphs linked to this brewing process
   graphs: [Graph!]! @relation(name: "BrewingProcessToGraph", onDelete: CASCADE)
   # participating users
-  users: [User!]!
+  users: [User!]! @relation(name: "BrewingProcessToUser", onDelete: SET_NULL)
   # some timestamps
   start: DateTime # null -> not yet started
   end: DateTime # null -> not ended yet
@@ -74,7 +77,7 @@ type BrewingProcess {
 }
 
 type BrewingProcessDetails {
-  id: ID! @unique
+  id: ID! @id
 
   # predetermined recipe values
   malts: [Ingredient!]! @relation(name: "Malts", onDelete: CASCADE)
@@ -103,7 +106,7 @@ type BrewingProcessDetails {
 }
 
 type Ingredient {
-  id: ID! @unique
+  id: ID! @id
   type: IngredientType!
   name: String!
   amountGram: Float!
@@ -111,7 +114,7 @@ type Ingredient {
 }
 
 type Step {
-  id: ID! @unique
+  id: ID! @id
   durationMinutes: Int!
   temperature: Float!
   details: String
@@ -121,13 +124,13 @@ type Step {
 }
 
 type boilHopAddition {
-  id: ID! @unique
+  id: ID! @id
   hop: Ingredient! @relation(name: "BoilHop", onDelete: CASCADE)
   minutesAfterBoilStart: Int!
 }
 
 type dryHopAddition {
-  id: ID! @unique
+  id: ID! @id
   hop: Ingredient! @relation(name: "DryHop", onDelete: CASCADE)
   addedOn: DateTime # to be edited when actually added
 }

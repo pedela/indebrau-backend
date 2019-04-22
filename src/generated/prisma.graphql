@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Tue Apr 09 2019 21:55:09 GMT+0200 (Central European Summer Time)
+# timestamp: Mon Apr 22 2019 22:52:16 GMT+0200 (Central European Summer Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -83,10 +83,6 @@ enum boilHopAdditionOrderByInput {
   id_DESC
   minutesAfterBoilStart_ASC
   minutesAfterBoilStart_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type boilHopAdditionPreviousValues {
@@ -373,11 +369,11 @@ input BrewingProcessCreateInput {
   activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   graphs: GraphCreateManyWithoutBrewingProcessInput
-  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
+  users: UserCreateManyInput
 }
 
-input BrewingProcessCreateManyWithoutUsersInput {
-  create: [BrewingProcessCreateWithoutUsersInput!]
+input BrewingProcessCreateManyInput {
+  create: [BrewingProcessCreateInput!]
   connect: [BrewingProcessWhereUniqueInput!]
 }
 
@@ -398,22 +394,7 @@ input BrewingProcessCreateWithoutGraphsInput {
   fermentationStart: DateTime
   activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
-  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
-}
-
-input BrewingProcessCreateWithoutUsersInput {
-  id: ID
-  name: String!
-  description: String!
-  start: DateTime
-  end: DateTime
-  heatingUpStart: DateTime
-  mashIn: DateTime
-  boilingStart: DateTime
-  fermentationStart: DateTime
-  activeSteps: BrewingProcessCreateactiveStepsInput
-  brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
-  graphs: GraphCreateManyWithoutBrewingProcessInput
+  users: UserCreateManyInput
 }
 
 type BrewingProcessDetails implements Node {
@@ -507,10 +488,6 @@ enum BrewingProcessDetailsOrderByInput {
   alcoholPercent_DESC
   conditioningDays_ASC
   conditioningDays_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type BrewingProcessDetailsPreviousValues {
@@ -972,10 +949,6 @@ enum BrewingProcessOrderByInput {
   boilingStart_DESC
   fermentationStart_ASC
   fermentationStart_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type BrewingProcessPreviousValues {
@@ -1297,6 +1270,21 @@ input BrewingProcessUpdateactiveStepsInput {
   set: [BrewingStep!]
 }
 
+input BrewingProcessUpdateDataInput {
+  name: String
+  description: String
+  start: DateTime
+  end: DateTime
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
+  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
+  graphs: GraphUpdateManyWithoutBrewingProcessInput
+  users: UserUpdateManyInput
+}
+
 input BrewingProcessUpdateInput {
   name: String
   description: String
@@ -1309,7 +1297,7 @@ input BrewingProcessUpdateInput {
   activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   graphs: GraphUpdateManyWithoutBrewingProcessInput
-  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
+  users: UserUpdateManyInput
 }
 
 input BrewingProcessUpdateManyDataInput {
@@ -1324,6 +1312,18 @@ input BrewingProcessUpdateManyDataInput {
   activeSteps: BrewingProcessUpdateactiveStepsInput
 }
 
+input BrewingProcessUpdateManyInput {
+  create: [BrewingProcessCreateInput!]
+  connect: [BrewingProcessWhereUniqueInput!]
+  set: [BrewingProcessWhereUniqueInput!]
+  disconnect: [BrewingProcessWhereUniqueInput!]
+  delete: [BrewingProcessWhereUniqueInput!]
+  update: [BrewingProcessUpdateWithWhereUniqueNestedInput!]
+  updateMany: [BrewingProcessUpdateManyWithWhereNestedInput!]
+  deleteMany: [BrewingProcessScalarWhereInput!]
+  upsert: [BrewingProcessUpsertWithWhereUniqueNestedInput!]
+}
+
 input BrewingProcessUpdateManyMutationInput {
   name: String
   description: String
@@ -1334,18 +1334,6 @@ input BrewingProcessUpdateManyMutationInput {
   boilingStart: DateTime
   fermentationStart: DateTime
   activeSteps: BrewingProcessUpdateactiveStepsInput
-}
-
-input BrewingProcessUpdateManyWithoutUsersInput {
-  create: [BrewingProcessCreateWithoutUsersInput!]
-  connect: [BrewingProcessWhereUniqueInput!]
-  set: [BrewingProcessWhereUniqueInput!]
-  disconnect: [BrewingProcessWhereUniqueInput!]
-  delete: [BrewingProcessWhereUniqueInput!]
-  update: [BrewingProcessUpdateWithWhereUniqueWithoutUsersInput!]
-  updateMany: [BrewingProcessUpdateManyWithWhereNestedInput!]
-  deleteMany: [BrewingProcessScalarWhereInput!]
-  upsert: [BrewingProcessUpsertWithWhereUniqueWithoutUsersInput!]
 }
 
 input BrewingProcessUpdateManyWithWhereNestedInput {
@@ -1371,26 +1359,12 @@ input BrewingProcessUpdateWithoutGraphsDataInput {
   fermentationStart: DateTime
   activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
-  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
+  users: UserUpdateManyInput
 }
 
-input BrewingProcessUpdateWithoutUsersDataInput {
-  name: String
-  description: String
-  start: DateTime
-  end: DateTime
-  heatingUpStart: DateTime
-  mashIn: DateTime
-  boilingStart: DateTime
-  fermentationStart: DateTime
-  activeSteps: BrewingProcessUpdateactiveStepsInput
-  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
-  graphs: GraphUpdateManyWithoutBrewingProcessInput
-}
-
-input BrewingProcessUpdateWithWhereUniqueWithoutUsersInput {
+input BrewingProcessUpdateWithWhereUniqueNestedInput {
   where: BrewingProcessWhereUniqueInput!
-  data: BrewingProcessUpdateWithoutUsersDataInput!
+  data: BrewingProcessUpdateDataInput!
 }
 
 input BrewingProcessUpsertWithoutGraphsInput {
@@ -1398,10 +1372,10 @@ input BrewingProcessUpsertWithoutGraphsInput {
   create: BrewingProcessCreateWithoutGraphsInput!
 }
 
-input BrewingProcessUpsertWithWhereUniqueWithoutUsersInput {
+input BrewingProcessUpsertWithWhereUniqueNestedInput {
   where: BrewingProcessWhereUniqueInput!
-  update: BrewingProcessUpdateWithoutUsersDataInput!
-  create: BrewingProcessCreateWithoutUsersInput!
+  update: BrewingProcessUpdateDataInput!
+  create: BrewingProcessCreateInput!
 }
 
 input BrewingProcessWhereInput {
@@ -1736,10 +1710,6 @@ enum dryHopAdditionOrderByInput {
   id_DESC
   addedOn_ASC
   addedOn_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type dryHopAdditionPreviousValues {
@@ -2001,10 +1971,6 @@ enum GraphDataOrderByInput {
   time_DESC
   value_ASC
   value_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type GraphDataPreviousValues {
@@ -2352,10 +2318,6 @@ enum GraphOrderByInput {
   active_DESC
   updateFrequency_ASC
   updateFrequency_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type GraphPreviousValues {
@@ -2862,10 +2824,6 @@ enum IngredientOrderByInput {
   amountGram_DESC
   details_ASC
   details_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type IngredientPreviousValues {
@@ -3326,60 +3284,60 @@ Long can represent values between -(2^63) and 2^63 - 1.
 scalar Long
 
 type Mutation {
-  createUser(data: UserCreateInput!): User!
   createGraph(data: GraphCreateInput!): Graph!
   createGraphData(data: GraphDataCreateInput!): GraphData!
   createBrewingProcess(data: BrewingProcessCreateInput!): BrewingProcess!
-  createdryHopAddition(data: dryHopAdditionCreateInput!): dryHopAddition!
+  createboilHopAddition(data: boilHopAdditionCreateInput!): boilHopAddition!
+  createUser(data: UserCreateInput!): User!
   createBrewingProcessDetails(data: BrewingProcessDetailsCreateInput!): BrewingProcessDetails!
   createIngredient(data: IngredientCreateInput!): Ingredient!
+  createdryHopAddition(data: dryHopAdditionCreateInput!): dryHopAddition!
   createStep(data: StepCreateInput!): Step!
-  createboilHopAddition(data: boilHopAdditionCreateInput!): boilHopAddition!
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateGraph(data: GraphUpdateInput!, where: GraphWhereUniqueInput!): Graph
   updateGraphData(data: GraphDataUpdateInput!, where: GraphDataWhereUniqueInput!): GraphData
   updateBrewingProcess(data: BrewingProcessUpdateInput!, where: BrewingProcessWhereUniqueInput!): BrewingProcess
-  updatedryHopAddition(data: dryHopAdditionUpdateInput!, where: dryHopAdditionWhereUniqueInput!): dryHopAddition
+  updateboilHopAddition(data: boilHopAdditionUpdateInput!, where: boilHopAdditionWhereUniqueInput!): boilHopAddition
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateBrewingProcessDetails(data: BrewingProcessDetailsUpdateInput!, where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
   updateIngredient(data: IngredientUpdateInput!, where: IngredientWhereUniqueInput!): Ingredient
+  updatedryHopAddition(data: dryHopAdditionUpdateInput!, where: dryHopAdditionWhereUniqueInput!): dryHopAddition
   updateStep(data: StepUpdateInput!, where: StepWhereUniqueInput!): Step
-  updateboilHopAddition(data: boilHopAdditionUpdateInput!, where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  deleteUser(where: UserWhereUniqueInput!): User
   deleteGraph(where: GraphWhereUniqueInput!): Graph
   deleteGraphData(where: GraphDataWhereUniqueInput!): GraphData
   deleteBrewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
-  deletedryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
+  deleteboilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
+  deleteUser(where: UserWhereUniqueInput!): User
   deleteBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
   deleteIngredient(where: IngredientWhereUniqueInput!): Ingredient
+  deletedryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
   deleteStep(where: StepWhereUniqueInput!): Step
-  deleteboilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertGraph(where: GraphWhereUniqueInput!, create: GraphCreateInput!, update: GraphUpdateInput!): Graph!
   upsertGraphData(where: GraphDataWhereUniqueInput!, create: GraphDataCreateInput!, update: GraphDataUpdateInput!): GraphData!
   upsertBrewingProcess(where: BrewingProcessWhereUniqueInput!, create: BrewingProcessCreateInput!, update: BrewingProcessUpdateInput!): BrewingProcess!
-  upsertdryHopAddition(where: dryHopAdditionWhereUniqueInput!, create: dryHopAdditionCreateInput!, update: dryHopAdditionUpdateInput!): dryHopAddition!
+  upsertboilHopAddition(where: boilHopAdditionWhereUniqueInput!, create: boilHopAdditionCreateInput!, update: boilHopAdditionUpdateInput!): boilHopAddition!
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!, create: BrewingProcessDetailsCreateInput!, update: BrewingProcessDetailsUpdateInput!): BrewingProcessDetails!
   upsertIngredient(where: IngredientWhereUniqueInput!, create: IngredientCreateInput!, update: IngredientUpdateInput!): Ingredient!
+  upsertdryHopAddition(where: dryHopAdditionWhereUniqueInput!, create: dryHopAdditionCreateInput!, update: dryHopAdditionUpdateInput!): dryHopAddition!
   upsertStep(where: StepWhereUniqueInput!, create: StepCreateInput!, update: StepUpdateInput!): Step!
-  upsertboilHopAddition(where: boilHopAdditionWhereUniqueInput!, create: boilHopAdditionCreateInput!, update: boilHopAdditionUpdateInput!): boilHopAddition!
-  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   updateManyGraphs(data: GraphUpdateManyMutationInput!, where: GraphWhereInput): BatchPayload!
   updateManyGraphDatas(data: GraphDataUpdateManyMutationInput!, where: GraphDataWhereInput): BatchPayload!
   updateManyBrewingProcesses(data: BrewingProcessUpdateManyMutationInput!, where: BrewingProcessWhereInput): BatchPayload!
-  updateManyDryHopAdditions(data: dryHopAdditionUpdateManyMutationInput!, where: dryHopAdditionWhereInput): BatchPayload!
+  updateManyBoilHopAdditions(data: boilHopAdditionUpdateManyMutationInput!, where: boilHopAdditionWhereInput): BatchPayload!
+  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   updateManyBrewingProcessDetailses(data: BrewingProcessDetailsUpdateManyMutationInput!, where: BrewingProcessDetailsWhereInput): BatchPayload!
   updateManyIngredients(data: IngredientUpdateManyMutationInput!, where: IngredientWhereInput): BatchPayload!
+  updateManyDryHopAdditions(data: dryHopAdditionUpdateManyMutationInput!, where: dryHopAdditionWhereInput): BatchPayload!
   updateManySteps(data: StepUpdateManyMutationInput!, where: StepWhereInput): BatchPayload!
-  updateManyBoilHopAdditions(data: boilHopAdditionUpdateManyMutationInput!, where: boilHopAdditionWhereInput): BatchPayload!
-  deleteManyUsers(where: UserWhereInput): BatchPayload!
   deleteManyGraphs(where: GraphWhereInput): BatchPayload!
   deleteManyGraphDatas(where: GraphDataWhereInput): BatchPayload!
   deleteManyBrewingProcesses(where: BrewingProcessWhereInput): BatchPayload!
-  deleteManyDryHopAdditions(where: dryHopAdditionWhereInput): BatchPayload!
+  deleteManyBoilHopAdditions(where: boilHopAdditionWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
   deleteManyBrewingProcessDetailses(where: BrewingProcessDetailsWhereInput): BatchPayload!
   deleteManyIngredients(where: IngredientWhereInput): BatchPayload!
+  deleteManyDryHopAdditions(where: dryHopAdditionWhereInput): BatchPayload!
   deleteManySteps(where: StepWhereInput): BatchPayload!
-  deleteManyBoilHopAdditions(where: boilHopAdditionWhereInput): BatchPayload!
 }
 
 enum MutationType {
@@ -3415,33 +3373,33 @@ enum Permission {
 }
 
 type Query {
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph]!
   graphDatas(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData]!
   brewingProcesses(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcess]!
-  dryHopAdditions(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [dryHopAddition]!
+  boilHopAdditions(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition]!
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   brewingProcessDetailses(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcessDetails]!
   ingredients(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Ingredient]!
+  dryHopAdditions(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [dryHopAddition]!
   steps(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Step]!
-  boilHopAdditions(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition]!
-  user(where: UserWhereUniqueInput!): User
   graph(where: GraphWhereUniqueInput!): Graph
   graphData(where: GraphDataWhereUniqueInput!): GraphData
   brewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
-  dryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
+  boilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
+  user(where: UserWhereUniqueInput!): User
   brewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
   ingredient(where: IngredientWhereUniqueInput!): Ingredient
+  dryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
   step(where: StepWhereUniqueInput!): Step
-  boilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   graphsConnection(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphConnection!
   graphDatasConnection(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphDataConnection!
   brewingProcessesConnection(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessConnection!
-  dryHopAdditionsConnection(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): dryHopAdditionConnection!
+  boilHopAdditionsConnection(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): boilHopAdditionConnection!
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   brewingProcessDetailsesConnection(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessDetailsConnection!
   ingredientsConnection(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): IngredientConnection!
+  dryHopAdditionsConnection(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): dryHopAdditionConnection!
   stepsConnection(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): StepConnection!
-  boilHopAdditionsConnection(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): boilHopAdditionConnection!
 
   """Fetches an object given its ID"""
   node(
@@ -3505,10 +3463,6 @@ enum StepOrderByInput {
   start_DESC
   end_ASC
   end_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type StepPreviousValues {
@@ -3982,15 +3936,15 @@ input StepWhereUniqueInput {
 }
 
 type Subscription {
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   graph(where: GraphSubscriptionWhereInput): GraphSubscriptionPayload
   graphData(where: GraphDataSubscriptionWhereInput): GraphDataSubscriptionPayload
   brewingProcess(where: BrewingProcessSubscriptionWhereInput): BrewingProcessSubscriptionPayload
-  dryHopAddition(where: dryHopAdditionSubscriptionWhereInput): dryHopAdditionSubscriptionPayload
+  boilHopAddition(where: boilHopAdditionSubscriptionWhereInput): boilHopAdditionSubscriptionPayload
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   brewingProcessDetails(where: BrewingProcessDetailsSubscriptionWhereInput): BrewingProcessDetailsSubscriptionPayload
   ingredient(where: IngredientSubscriptionWhereInput): IngredientSubscriptionPayload
+  dryHopAddition(where: dryHopAdditionSubscriptionWhereInput): dryHopAdditionSubscriptionPayload
   step(where: StepSubscriptionWhereInput): StepSubscriptionPayload
-  boilHopAddition(where: boilHopAdditionSubscriptionWhereInput): boilHopAdditionSubscriptionPayload
 }
 
 type User implements Node {
@@ -4018,24 +3972,16 @@ input UserCreateInput {
   name: String!
   password: String!
   permissions: UserCreatepermissionsInput
-  participatingBrewingProcesses: BrewingProcessCreateManyWithoutUsersInput
+  participatingBrewingProcesses: BrewingProcessCreateManyInput
 }
 
-input UserCreateManyWithoutParticipatingBrewingProcessesInput {
-  create: [UserCreateWithoutParticipatingBrewingProcessesInput!]
+input UserCreateManyInput {
+  create: [UserCreateInput!]
   connect: [UserWhereUniqueInput!]
 }
 
 input UserCreatepermissionsInput {
   set: [Permission!]
-}
-
-input UserCreateWithoutParticipatingBrewingProcessesInput {
-  id: ID
-  email: String!
-  name: String!
-  password: String!
-  permissions: UserCreatepermissionsInput
 }
 
 """An edge in a connection."""
@@ -4056,10 +4002,6 @@ enum UserOrderByInput {
   name_DESC
   password_ASC
   password_DESC
-  updatedAt_ASC
-  updatedAt_DESC
-  createdAt_ASC
-  createdAt_DESC
 }
 
 type UserPreviousValues {
@@ -4280,12 +4222,20 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
+input UserUpdateDataInput {
+  email: String
+  name: String
+  password: String
+  permissions: UserUpdatepermissionsInput
+  participatingBrewingProcesses: BrewingProcessUpdateManyInput
+}
+
 input UserUpdateInput {
   email: String
   name: String
   password: String
   permissions: UserUpdatepermissionsInput
-  participatingBrewingProcesses: BrewingProcessUpdateManyWithoutUsersInput
+  participatingBrewingProcesses: BrewingProcessUpdateManyInput
 }
 
 input UserUpdateManyDataInput {
@@ -4295,23 +4245,23 @@ input UserUpdateManyDataInput {
   permissions: UserUpdatepermissionsInput
 }
 
+input UserUpdateManyInput {
+  create: [UserCreateInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  delete: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueNestedInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
+  deleteMany: [UserScalarWhereInput!]
+  upsert: [UserUpsertWithWhereUniqueNestedInput!]
+}
+
 input UserUpdateManyMutationInput {
   email: String
   name: String
   password: String
   permissions: UserUpdatepermissionsInput
-}
-
-input UserUpdateManyWithoutParticipatingBrewingProcessesInput {
-  create: [UserCreateWithoutParticipatingBrewingProcessesInput!]
-  connect: [UserWhereUniqueInput!]
-  set: [UserWhereUniqueInput!]
-  disconnect: [UserWhereUniqueInput!]
-  delete: [UserWhereUniqueInput!]
-  update: [UserUpdateWithWhereUniqueWithoutParticipatingBrewingProcessesInput!]
-  updateMany: [UserUpdateManyWithWhereNestedInput!]
-  deleteMany: [UserScalarWhereInput!]
-  upsert: [UserUpsertWithWhereUniqueWithoutParticipatingBrewingProcessesInput!]
 }
 
 input UserUpdateManyWithWhereNestedInput {
@@ -4323,22 +4273,15 @@ input UserUpdatepermissionsInput {
   set: [Permission!]
 }
 
-input UserUpdateWithoutParticipatingBrewingProcessesDataInput {
-  email: String
-  name: String
-  password: String
-  permissions: UserUpdatepermissionsInput
+input UserUpdateWithWhereUniqueNestedInput {
+  where: UserWhereUniqueInput!
+  data: UserUpdateDataInput!
 }
 
-input UserUpdateWithWhereUniqueWithoutParticipatingBrewingProcessesInput {
+input UserUpsertWithWhereUniqueNestedInput {
   where: UserWhereUniqueInput!
-  data: UserUpdateWithoutParticipatingBrewingProcessesDataInput!
-}
-
-input UserUpsertWithWhereUniqueWithoutParticipatingBrewingProcessesInput {
-  where: UserWhereUniqueInput!
-  update: UserUpdateWithoutParticipatingBrewingProcessesDataInput!
-  create: UserCreateWithoutParticipatingBrewingProcessesInput!
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserWhereInput {

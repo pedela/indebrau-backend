@@ -2,7 +2,8 @@ const { GraphQLServer } = require('graphql-yoga');
 const { Prisma } = require('prisma-binding');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-
+const bodyParser = require('body-parser');
+var crypto = require('crypto');
 const resolvers = require('./resolvers');
 
 const db = new Prisma({
@@ -43,6 +44,26 @@ server.express.use(async (req, res, next) => {
     req.user = user;
   }
   next();
+});
+
+server.express.use(bodyParser.json());
+
+// webhook called by cloudinary, triggers entry (and possible recalc of media sending)
+server.express.use('/imageUploadedWebhook', (req, res) => {
+  // Validate webhook signature:
+  // https://cloudinary.com/blog/webhooks_upload_notifications_and_background_image_processing
+  let toBeSigned = JSON.stringify(req.body).concat(
+    req.get('X-Cld-Timestamp').concat(process.env.CLOUDINARY_API_SECRET)
+  );
+  let signedPayload = crypto
+    .createHash('sha1')
+    .update(toBeSigned)
+    .digest('hex');
+  if (signedPayload != req.get('x-cld-signature')) {
+    return res.status(403).end();
+  }
+  // Webhook call verified, continue...
+  return res.status(200).end();
 });
 
 server.start(

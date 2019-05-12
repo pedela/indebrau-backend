@@ -12,7 +12,7 @@ type User {
     @scalarList(strategy: RELATION)
     @default(value: USER)
   participatingBrewingProcesses: [BrewingProcess!]!
-    @relation(name: "UserToBrewingProcesses", onDelete: SET_NULL, link: TABLE)
+    @relation(name: "BrewingProcessToUser", onDelete: SET_NULL, link: TABLE)
 }
 
 ################### BrewingProcess ###################
@@ -130,7 +130,7 @@ type Graph {
   active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
   updateFrequency: Int! # in seconds
   brewingProcess: BrewingProcess!
-    @relation(name: "GraphToBrewingProcess", onDelete: SET_NULL) # link to brewing process
+    @relation(name: "BrewingProcessToGraph", onDelete: SET_NULL) # link to brewing process
   graphData: [GraphData!]!
     @relation(name: "GraphToGraphData", onDelete: CASCADE) # its "content"
 }
@@ -139,7 +139,7 @@ type GraphData {
   id: ID! @id
   time: DateTime!
   value: String!
-  graph: Graph! @relation(name: "GraphDataToGraph", onDelete: SET_NULL)
+  graph: Graph! @relation(name: "GraphToGraphData", onDelete: SET_NULL)
 }
 
 ################### Media ###################
@@ -154,7 +154,7 @@ type MediaStream {
   active: Boolean! # if false, media stream does not record any images anymore
   updateFrequency: Int! # in seconds currently -> no real video support yet
   brewingProcess: BrewingProcess!
-    @relation(name: "MediaStreamToBrewingProcess", onDelete: SET_NULL) # link to brewing process
+    @relation(name: "BrewingProcessToMediaStream", onDelete: SET_NULL) # link to brewing process
   mediaFiles: [MediaFile!]!
     @relation(name: "MediaStreamToMediaFile", onDelete: CASCADE) # its "content"
 }
@@ -164,5 +164,5 @@ type MediaFile {
   time: DateTime!
   url: String! # currently cloudinary
   mediaStream: MediaStream!
-    @relation(name: "MediaFileToMediaStream", onDelete: SET_NULL)
+    @relation(name: "MediaStreamToMediaFile", onDelete: SET_NULL)
 }

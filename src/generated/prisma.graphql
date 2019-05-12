@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Mon Apr 22 2019 22:52:16 GMT+0200 (Central European Summer Time)
+# timestamp: Sun May 12 2019 14:50:57 GMT+0200 (Central European Summer Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -26,6 +26,14 @@ type AggregateGraphData {
 }
 
 type AggregateIngredient {
+  count: Int!
+}
+
+type AggregateMediaFile {
+  count: Int!
+}
+
+type AggregateMediaStream {
   count: Int!
 }
 
@@ -334,6 +342,7 @@ type BrewingProcess implements Node {
   brewingProcessDetails: BrewingProcessDetails!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph!]
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User!]
+  mediaStreams(where: MediaStreamWhereInput, orderBy: MediaStreamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MediaStream!]
   start: DateTime
   end: DateTime
   heatingUpStart: DateTime
@@ -369,16 +378,22 @@ input BrewingProcessCreateInput {
   activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
   graphs: GraphCreateManyWithoutBrewingProcessInput
-  users: UserCreateManyInput
+  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
+  mediaStreams: MediaStreamCreateManyWithoutBrewingProcessInput
 }
 
-input BrewingProcessCreateManyInput {
-  create: [BrewingProcessCreateInput!]
+input BrewingProcessCreateManyWithoutUsersInput {
+  create: [BrewingProcessCreateWithoutUsersInput!]
   connect: [BrewingProcessWhereUniqueInput!]
 }
 
 input BrewingProcessCreateOneWithoutGraphsInput {
   create: BrewingProcessCreateWithoutGraphsInput
+  connect: BrewingProcessWhereUniqueInput
+}
+
+input BrewingProcessCreateOneWithoutMediaStreamsInput {
+  create: BrewingProcessCreateWithoutMediaStreamsInput
   connect: BrewingProcessWhereUniqueInput
 }
 
@@ -394,7 +409,40 @@ input BrewingProcessCreateWithoutGraphsInput {
   fermentationStart: DateTime
   activeSteps: BrewingProcessCreateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
-  users: UserCreateManyInput
+  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
+  mediaStreams: MediaStreamCreateManyWithoutBrewingProcessInput
+}
+
+input BrewingProcessCreateWithoutMediaStreamsInput {
+  id: ID
+  name: String!
+  description: String!
+  start: DateTime
+  end: DateTime
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessCreateactiveStepsInput
+  brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
+  graphs: GraphCreateManyWithoutBrewingProcessInput
+  users: UserCreateManyWithoutParticipatingBrewingProcessesInput
+}
+
+input BrewingProcessCreateWithoutUsersInput {
+  id: ID
+  name: String!
+  description: String!
+  start: DateTime
+  end: DateTime
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessCreateactiveStepsInput
+  brewingProcessDetails: BrewingProcessDetailsCreateOneInput!
+  graphs: GraphCreateManyWithoutBrewingProcessInput
+  mediaStreams: MediaStreamCreateManyWithoutBrewingProcessInput
 }
 
 type BrewingProcessDetails implements Node {
@@ -1270,21 +1318,6 @@ input BrewingProcessUpdateactiveStepsInput {
   set: [BrewingStep!]
 }
 
-input BrewingProcessUpdateDataInput {
-  name: String
-  description: String
-  start: DateTime
-  end: DateTime
-  heatingUpStart: DateTime
-  mashIn: DateTime
-  boilingStart: DateTime
-  fermentationStart: DateTime
-  activeSteps: BrewingProcessUpdateactiveStepsInput
-  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
-  graphs: GraphUpdateManyWithoutBrewingProcessInput
-  users: UserUpdateManyInput
-}
-
 input BrewingProcessUpdateInput {
   name: String
   description: String
@@ -1297,7 +1330,8 @@ input BrewingProcessUpdateInput {
   activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
   graphs: GraphUpdateManyWithoutBrewingProcessInput
-  users: UserUpdateManyInput
+  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
+  mediaStreams: MediaStreamUpdateManyWithoutBrewingProcessInput
 }
 
 input BrewingProcessUpdateManyDataInput {
@@ -1312,18 +1346,6 @@ input BrewingProcessUpdateManyDataInput {
   activeSteps: BrewingProcessUpdateactiveStepsInput
 }
 
-input BrewingProcessUpdateManyInput {
-  create: [BrewingProcessCreateInput!]
-  connect: [BrewingProcessWhereUniqueInput!]
-  set: [BrewingProcessWhereUniqueInput!]
-  disconnect: [BrewingProcessWhereUniqueInput!]
-  delete: [BrewingProcessWhereUniqueInput!]
-  update: [BrewingProcessUpdateWithWhereUniqueNestedInput!]
-  updateMany: [BrewingProcessUpdateManyWithWhereNestedInput!]
-  deleteMany: [BrewingProcessScalarWhereInput!]
-  upsert: [BrewingProcessUpsertWithWhereUniqueNestedInput!]
-}
-
 input BrewingProcessUpdateManyMutationInput {
   name: String
   description: String
@@ -1334,6 +1356,18 @@ input BrewingProcessUpdateManyMutationInput {
   boilingStart: DateTime
   fermentationStart: DateTime
   activeSteps: BrewingProcessUpdateactiveStepsInput
+}
+
+input BrewingProcessUpdateManyWithoutUsersInput {
+  create: [BrewingProcessCreateWithoutUsersInput!]
+  connect: [BrewingProcessWhereUniqueInput!]
+  set: [BrewingProcessWhereUniqueInput!]
+  disconnect: [BrewingProcessWhereUniqueInput!]
+  delete: [BrewingProcessWhereUniqueInput!]
+  update: [BrewingProcessUpdateWithWhereUniqueWithoutUsersInput!]
+  updateMany: [BrewingProcessUpdateManyWithWhereNestedInput!]
+  deleteMany: [BrewingProcessScalarWhereInput!]
+  upsert: [BrewingProcessUpsertWithWhereUniqueWithoutUsersInput!]
 }
 
 input BrewingProcessUpdateManyWithWhereNestedInput {
@@ -1348,6 +1382,13 @@ input BrewingProcessUpdateOneRequiredWithoutGraphsInput {
   upsert: BrewingProcessUpsertWithoutGraphsInput
 }
 
+input BrewingProcessUpdateOneRequiredWithoutMediaStreamsInput {
+  create: BrewingProcessCreateWithoutMediaStreamsInput
+  connect: BrewingProcessWhereUniqueInput
+  update: BrewingProcessUpdateWithoutMediaStreamsDataInput
+  upsert: BrewingProcessUpsertWithoutMediaStreamsInput
+}
+
 input BrewingProcessUpdateWithoutGraphsDataInput {
   name: String
   description: String
@@ -1359,12 +1400,43 @@ input BrewingProcessUpdateWithoutGraphsDataInput {
   fermentationStart: DateTime
   activeSteps: BrewingProcessUpdateactiveStepsInput
   brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
-  users: UserUpdateManyInput
+  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
+  mediaStreams: MediaStreamUpdateManyWithoutBrewingProcessInput
 }
 
-input BrewingProcessUpdateWithWhereUniqueNestedInput {
+input BrewingProcessUpdateWithoutMediaStreamsDataInput {
+  name: String
+  description: String
+  start: DateTime
+  end: DateTime
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
+  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
+  graphs: GraphUpdateManyWithoutBrewingProcessInput
+  users: UserUpdateManyWithoutParticipatingBrewingProcessesInput
+}
+
+input BrewingProcessUpdateWithoutUsersDataInput {
+  name: String
+  description: String
+  start: DateTime
+  end: DateTime
+  heatingUpStart: DateTime
+  mashIn: DateTime
+  boilingStart: DateTime
+  fermentationStart: DateTime
+  activeSteps: BrewingProcessUpdateactiveStepsInput
+  brewingProcessDetails: BrewingProcessDetailsUpdateOneRequiredInput
+  graphs: GraphUpdateManyWithoutBrewingProcessInput
+  mediaStreams: MediaStreamUpdateManyWithoutBrewingProcessInput
+}
+
+input BrewingProcessUpdateWithWhereUniqueWithoutUsersInput {
   where: BrewingProcessWhereUniqueInput!
-  data: BrewingProcessUpdateDataInput!
+  data: BrewingProcessUpdateWithoutUsersDataInput!
 }
 
 input BrewingProcessUpsertWithoutGraphsInput {
@@ -1372,10 +1444,15 @@ input BrewingProcessUpsertWithoutGraphsInput {
   create: BrewingProcessCreateWithoutGraphsInput!
 }
 
-input BrewingProcessUpsertWithWhereUniqueNestedInput {
+input BrewingProcessUpsertWithoutMediaStreamsInput {
+  update: BrewingProcessUpdateWithoutMediaStreamsDataInput!
+  create: BrewingProcessCreateWithoutMediaStreamsInput!
+}
+
+input BrewingProcessUpsertWithWhereUniqueWithoutUsersInput {
   where: BrewingProcessWhereUniqueInput!
-  update: BrewingProcessUpdateDataInput!
-  create: BrewingProcessCreateInput!
+  update: BrewingProcessUpdateWithoutUsersDataInput!
+  create: BrewingProcessCreateWithoutUsersInput!
 }
 
 input BrewingProcessWhereInput {
@@ -1646,6 +1723,9 @@ input BrewingProcessWhereInput {
   users_every: UserWhereInput
   users_some: UserWhereInput
   users_none: UserWhereInput
+  mediaStreams_every: MediaStreamWhereInput
+  mediaStreams_some: MediaStreamWhereInput
+  mediaStreams_none: MediaStreamWhereInput
 }
 
 input BrewingProcessWhereUniqueInput {
@@ -3283,57 +3363,883 @@ Long can represent values between -(2^63) and 2^63 - 1.
 """
 scalar Long
 
+type MediaFile implements Node {
+  id: ID!
+  time: DateTime!
+  url: String!
+  mediaStream: MediaStream!
+}
+
+"""A connection to a list of items."""
+type MediaFileConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [MediaFileEdge]!
+  aggregate: AggregateMediaFile!
+}
+
+input MediaFileCreateInput {
+  id: ID
+  time: DateTime!
+  url: String!
+  mediaStream: MediaStreamCreateOneWithoutMediaFilesInput!
+}
+
+input MediaFileCreateManyWithoutMediaStreamInput {
+  create: [MediaFileCreateWithoutMediaStreamInput!]
+  connect: [MediaFileWhereUniqueInput!]
+}
+
+input MediaFileCreateWithoutMediaStreamInput {
+  id: ID
+  time: DateTime!
+  url: String!
+}
+
+"""An edge in a connection."""
+type MediaFileEdge {
+  """The item at the end of the edge."""
+  node: MediaFile!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum MediaFileOrderByInput {
+  id_ASC
+  id_DESC
+  time_ASC
+  time_DESC
+  url_ASC
+  url_DESC
+}
+
+type MediaFilePreviousValues {
+  id: ID!
+  time: DateTime!
+  url: String!
+}
+
+input MediaFileScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [MediaFileScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [MediaFileScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [MediaFileScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  time: DateTime
+
+  """All values that are not equal to given value."""
+  time_not: DateTime
+
+  """All values that are contained in given list."""
+  time_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  time_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  time_lt: DateTime
+
+  """All values less than or equal the given value."""
+  time_lte: DateTime
+
+  """All values greater than the given value."""
+  time_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  time_gte: DateTime
+  url: String
+
+  """All values that are not equal to given value."""
+  url_not: String
+
+  """All values that are contained in given list."""
+  url_in: [String!]
+
+  """All values that are not contained in given list."""
+  url_not_in: [String!]
+
+  """All values less than the given value."""
+  url_lt: String
+
+  """All values less than or equal the given value."""
+  url_lte: String
+
+  """All values greater than the given value."""
+  url_gt: String
+
+  """All values greater than or equal the given value."""
+  url_gte: String
+
+  """All values containing the given string."""
+  url_contains: String
+
+  """All values not containing the given string."""
+  url_not_contains: String
+
+  """All values starting with the given string."""
+  url_starts_with: String
+
+  """All values not starting with the given string."""
+  url_not_starts_with: String
+
+  """All values ending with the given string."""
+  url_ends_with: String
+
+  """All values not ending with the given string."""
+  url_not_ends_with: String
+}
+
+type MediaFileSubscriptionPayload {
+  mutation: MutationType!
+  node: MediaFile
+  updatedFields: [String!]
+  previousValues: MediaFilePreviousValues
+}
+
+input MediaFileSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [MediaFileSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [MediaFileSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [MediaFileSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: MediaFileWhereInput
+}
+
+input MediaFileUpdateInput {
+  time: DateTime
+  url: String
+  mediaStream: MediaStreamUpdateOneRequiredWithoutMediaFilesInput
+}
+
+input MediaFileUpdateManyDataInput {
+  time: DateTime
+  url: String
+}
+
+input MediaFileUpdateManyMutationInput {
+  time: DateTime
+  url: String
+}
+
+input MediaFileUpdateManyWithoutMediaStreamInput {
+  create: [MediaFileCreateWithoutMediaStreamInput!]
+  connect: [MediaFileWhereUniqueInput!]
+  set: [MediaFileWhereUniqueInput!]
+  disconnect: [MediaFileWhereUniqueInput!]
+  delete: [MediaFileWhereUniqueInput!]
+  update: [MediaFileUpdateWithWhereUniqueWithoutMediaStreamInput!]
+  updateMany: [MediaFileUpdateManyWithWhereNestedInput!]
+  deleteMany: [MediaFileScalarWhereInput!]
+  upsert: [MediaFileUpsertWithWhereUniqueWithoutMediaStreamInput!]
+}
+
+input MediaFileUpdateManyWithWhereNestedInput {
+  where: MediaFileScalarWhereInput!
+  data: MediaFileUpdateManyDataInput!
+}
+
+input MediaFileUpdateWithoutMediaStreamDataInput {
+  time: DateTime
+  url: String
+}
+
+input MediaFileUpdateWithWhereUniqueWithoutMediaStreamInput {
+  where: MediaFileWhereUniqueInput!
+  data: MediaFileUpdateWithoutMediaStreamDataInput!
+}
+
+input MediaFileUpsertWithWhereUniqueWithoutMediaStreamInput {
+  where: MediaFileWhereUniqueInput!
+  update: MediaFileUpdateWithoutMediaStreamDataInput!
+  create: MediaFileCreateWithoutMediaStreamInput!
+}
+
+input MediaFileWhereInput {
+  """Logical AND on all given filters."""
+  AND: [MediaFileWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [MediaFileWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [MediaFileWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  time: DateTime
+
+  """All values that are not equal to given value."""
+  time_not: DateTime
+
+  """All values that are contained in given list."""
+  time_in: [DateTime!]
+
+  """All values that are not contained in given list."""
+  time_not_in: [DateTime!]
+
+  """All values less than the given value."""
+  time_lt: DateTime
+
+  """All values less than or equal the given value."""
+  time_lte: DateTime
+
+  """All values greater than the given value."""
+  time_gt: DateTime
+
+  """All values greater than or equal the given value."""
+  time_gte: DateTime
+  url: String
+
+  """All values that are not equal to given value."""
+  url_not: String
+
+  """All values that are contained in given list."""
+  url_in: [String!]
+
+  """All values that are not contained in given list."""
+  url_not_in: [String!]
+
+  """All values less than the given value."""
+  url_lt: String
+
+  """All values less than or equal the given value."""
+  url_lte: String
+
+  """All values greater than the given value."""
+  url_gt: String
+
+  """All values greater than or equal the given value."""
+  url_gte: String
+
+  """All values containing the given string."""
+  url_contains: String
+
+  """All values not containing the given string."""
+  url_not_contains: String
+
+  """All values starting with the given string."""
+  url_starts_with: String
+
+  """All values not starting with the given string."""
+  url_not_starts_with: String
+
+  """All values ending with the given string."""
+  url_ends_with: String
+
+  """All values not ending with the given string."""
+  url_not_ends_with: String
+  mediaStream: MediaStreamWhereInput
+}
+
+input MediaFileWhereUniqueInput {
+  id: ID
+}
+
+type MediaStream implements Node {
+  id: ID!
+  name: String!
+  active: Boolean!
+  updateFrequency: Int!
+  brewingProcess: BrewingProcess!
+  mediaFiles(where: MediaFileWhereInput, orderBy: MediaFileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MediaFile!]
+}
+
+"""A connection to a list of items."""
+type MediaStreamConnection {
+  """Information to aid in pagination."""
+  pageInfo: PageInfo!
+
+  """A list of edges."""
+  edges: [MediaStreamEdge]!
+  aggregate: AggregateMediaStream!
+}
+
+input MediaStreamCreateInput {
+  id: ID
+  name: String!
+  active: Boolean!
+  updateFrequency: Int!
+  brewingProcess: BrewingProcessCreateOneWithoutMediaStreamsInput!
+  mediaFiles: MediaFileCreateManyWithoutMediaStreamInput
+}
+
+input MediaStreamCreateManyWithoutBrewingProcessInput {
+  create: [MediaStreamCreateWithoutBrewingProcessInput!]
+  connect: [MediaStreamWhereUniqueInput!]
+}
+
+input MediaStreamCreateOneWithoutMediaFilesInput {
+  create: MediaStreamCreateWithoutMediaFilesInput
+  connect: MediaStreamWhereUniqueInput
+}
+
+input MediaStreamCreateWithoutBrewingProcessInput {
+  id: ID
+  name: String!
+  active: Boolean!
+  updateFrequency: Int!
+  mediaFiles: MediaFileCreateManyWithoutMediaStreamInput
+}
+
+input MediaStreamCreateWithoutMediaFilesInput {
+  id: ID
+  name: String!
+  active: Boolean!
+  updateFrequency: Int!
+  brewingProcess: BrewingProcessCreateOneWithoutMediaStreamsInput!
+}
+
+"""An edge in a connection."""
+type MediaStreamEdge {
+  """The item at the end of the edge."""
+  node: MediaStream!
+
+  """A cursor for use in pagination."""
+  cursor: String!
+}
+
+enum MediaStreamOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  active_ASC
+  active_DESC
+  updateFrequency_ASC
+  updateFrequency_DESC
+}
+
+type MediaStreamPreviousValues {
+  id: ID!
+  name: String!
+  active: Boolean!
+  updateFrequency: Int!
+}
+
+input MediaStreamScalarWhereInput {
+  """Logical AND on all given filters."""
+  AND: [MediaStreamScalarWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [MediaStreamScalarWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [MediaStreamScalarWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  active: Boolean
+
+  """All values that are not equal to given value."""
+  active_not: Boolean
+  updateFrequency: Int
+
+  """All values that are not equal to given value."""
+  updateFrequency_not: Int
+
+  """All values that are contained in given list."""
+  updateFrequency_in: [Int!]
+
+  """All values that are not contained in given list."""
+  updateFrequency_not_in: [Int!]
+
+  """All values less than the given value."""
+  updateFrequency_lt: Int
+
+  """All values less than or equal the given value."""
+  updateFrequency_lte: Int
+
+  """All values greater than the given value."""
+  updateFrequency_gt: Int
+
+  """All values greater than or equal the given value."""
+  updateFrequency_gte: Int
+}
+
+type MediaStreamSubscriptionPayload {
+  mutation: MutationType!
+  node: MediaStream
+  updatedFields: [String!]
+  previousValues: MediaStreamPreviousValues
+}
+
+input MediaStreamSubscriptionWhereInput {
+  """Logical AND on all given filters."""
+  AND: [MediaStreamSubscriptionWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [MediaStreamSubscriptionWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [MediaStreamSubscriptionWhereInput!]
+
+  """
+  The subscription event gets dispatched when it's listed in mutation_in
+  """
+  mutation_in: [MutationType!]
+
+  """
+  The subscription event gets only dispatched when one of the updated fields names is included in this list
+  """
+  updatedFields_contains: String
+
+  """
+  The subscription event gets only dispatched when all of the field names included in this list have been updated
+  """
+  updatedFields_contains_every: [String!]
+
+  """
+  The subscription event gets only dispatched when some of the field names included in this list have been updated
+  """
+  updatedFields_contains_some: [String!]
+  node: MediaStreamWhereInput
+}
+
+input MediaStreamUpdateInput {
+  name: String
+  active: Boolean
+  updateFrequency: Int
+  brewingProcess: BrewingProcessUpdateOneRequiredWithoutMediaStreamsInput
+  mediaFiles: MediaFileUpdateManyWithoutMediaStreamInput
+}
+
+input MediaStreamUpdateManyDataInput {
+  name: String
+  active: Boolean
+  updateFrequency: Int
+}
+
+input MediaStreamUpdateManyMutationInput {
+  name: String
+  active: Boolean
+  updateFrequency: Int
+}
+
+input MediaStreamUpdateManyWithoutBrewingProcessInput {
+  create: [MediaStreamCreateWithoutBrewingProcessInput!]
+  connect: [MediaStreamWhereUniqueInput!]
+  set: [MediaStreamWhereUniqueInput!]
+  disconnect: [MediaStreamWhereUniqueInput!]
+  delete: [MediaStreamWhereUniqueInput!]
+  update: [MediaStreamUpdateWithWhereUniqueWithoutBrewingProcessInput!]
+  updateMany: [MediaStreamUpdateManyWithWhereNestedInput!]
+  deleteMany: [MediaStreamScalarWhereInput!]
+  upsert: [MediaStreamUpsertWithWhereUniqueWithoutBrewingProcessInput!]
+}
+
+input MediaStreamUpdateManyWithWhereNestedInput {
+  where: MediaStreamScalarWhereInput!
+  data: MediaStreamUpdateManyDataInput!
+}
+
+input MediaStreamUpdateOneRequiredWithoutMediaFilesInput {
+  create: MediaStreamCreateWithoutMediaFilesInput
+  connect: MediaStreamWhereUniqueInput
+  update: MediaStreamUpdateWithoutMediaFilesDataInput
+  upsert: MediaStreamUpsertWithoutMediaFilesInput
+}
+
+input MediaStreamUpdateWithoutBrewingProcessDataInput {
+  name: String
+  active: Boolean
+  updateFrequency: Int
+  mediaFiles: MediaFileUpdateManyWithoutMediaStreamInput
+}
+
+input MediaStreamUpdateWithoutMediaFilesDataInput {
+  name: String
+  active: Boolean
+  updateFrequency: Int
+  brewingProcess: BrewingProcessUpdateOneRequiredWithoutMediaStreamsInput
+}
+
+input MediaStreamUpdateWithWhereUniqueWithoutBrewingProcessInput {
+  where: MediaStreamWhereUniqueInput!
+  data: MediaStreamUpdateWithoutBrewingProcessDataInput!
+}
+
+input MediaStreamUpsertWithoutMediaFilesInput {
+  update: MediaStreamUpdateWithoutMediaFilesDataInput!
+  create: MediaStreamCreateWithoutMediaFilesInput!
+}
+
+input MediaStreamUpsertWithWhereUniqueWithoutBrewingProcessInput {
+  where: MediaStreamWhereUniqueInput!
+  update: MediaStreamUpdateWithoutBrewingProcessDataInput!
+  create: MediaStreamCreateWithoutBrewingProcessInput!
+}
+
+input MediaStreamWhereInput {
+  """Logical AND on all given filters."""
+  AND: [MediaStreamWhereInput!]
+
+  """Logical OR on all given filters."""
+  OR: [MediaStreamWhereInput!]
+
+  """Logical NOT on all given filters combined by AND."""
+  NOT: [MediaStreamWhereInput!]
+  id: ID
+
+  """All values that are not equal to given value."""
+  id_not: ID
+
+  """All values that are contained in given list."""
+  id_in: [ID!]
+
+  """All values that are not contained in given list."""
+  id_not_in: [ID!]
+
+  """All values less than the given value."""
+  id_lt: ID
+
+  """All values less than or equal the given value."""
+  id_lte: ID
+
+  """All values greater than the given value."""
+  id_gt: ID
+
+  """All values greater than or equal the given value."""
+  id_gte: ID
+
+  """All values containing the given string."""
+  id_contains: ID
+
+  """All values not containing the given string."""
+  id_not_contains: ID
+
+  """All values starting with the given string."""
+  id_starts_with: ID
+
+  """All values not starting with the given string."""
+  id_not_starts_with: ID
+
+  """All values ending with the given string."""
+  id_ends_with: ID
+
+  """All values not ending with the given string."""
+  id_not_ends_with: ID
+  name: String
+
+  """All values that are not equal to given value."""
+  name_not: String
+
+  """All values that are contained in given list."""
+  name_in: [String!]
+
+  """All values that are not contained in given list."""
+  name_not_in: [String!]
+
+  """All values less than the given value."""
+  name_lt: String
+
+  """All values less than or equal the given value."""
+  name_lte: String
+
+  """All values greater than the given value."""
+  name_gt: String
+
+  """All values greater than or equal the given value."""
+  name_gte: String
+
+  """All values containing the given string."""
+  name_contains: String
+
+  """All values not containing the given string."""
+  name_not_contains: String
+
+  """All values starting with the given string."""
+  name_starts_with: String
+
+  """All values not starting with the given string."""
+  name_not_starts_with: String
+
+  """All values ending with the given string."""
+  name_ends_with: String
+
+  """All values not ending with the given string."""
+  name_not_ends_with: String
+  active: Boolean
+
+  """All values that are not equal to given value."""
+  active_not: Boolean
+  updateFrequency: Int
+
+  """All values that are not equal to given value."""
+  updateFrequency_not: Int
+
+  """All values that are contained in given list."""
+  updateFrequency_in: [Int!]
+
+  """All values that are not contained in given list."""
+  updateFrequency_not_in: [Int!]
+
+  """All values less than the given value."""
+  updateFrequency_lt: Int
+
+  """All values less than or equal the given value."""
+  updateFrequency_lte: Int
+
+  """All values greater than the given value."""
+  updateFrequency_gt: Int
+
+  """All values greater than or equal the given value."""
+  updateFrequency_gte: Int
+  brewingProcess: BrewingProcessWhereInput
+  mediaFiles_every: MediaFileWhereInput
+  mediaFiles_some: MediaFileWhereInput
+  mediaFiles_none: MediaFileWhereInput
+}
+
+input MediaStreamWhereUniqueInput {
+  id: ID
+}
+
 type Mutation {
+  createUser(data: UserCreateInput!): User!
+  createBrewingProcess(data: BrewingProcessCreateInput!): BrewingProcess!
   createGraph(data: GraphCreateInput!): Graph!
   createGraphData(data: GraphDataCreateInput!): GraphData!
-  createBrewingProcess(data: BrewingProcessCreateInput!): BrewingProcess!
+  createMediaStream(data: MediaStreamCreateInput!): MediaStream!
+  createMediaFile(data: MediaFileCreateInput!): MediaFile!
   createboilHopAddition(data: boilHopAdditionCreateInput!): boilHopAddition!
-  createUser(data: UserCreateInput!): User!
   createBrewingProcessDetails(data: BrewingProcessDetailsCreateInput!): BrewingProcessDetails!
   createIngredient(data: IngredientCreateInput!): Ingredient!
   createdryHopAddition(data: dryHopAdditionCreateInput!): dryHopAddition!
   createStep(data: StepCreateInput!): Step!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateBrewingProcess(data: BrewingProcessUpdateInput!, where: BrewingProcessWhereUniqueInput!): BrewingProcess
   updateGraph(data: GraphUpdateInput!, where: GraphWhereUniqueInput!): Graph
   updateGraphData(data: GraphDataUpdateInput!, where: GraphDataWhereUniqueInput!): GraphData
-  updateBrewingProcess(data: BrewingProcessUpdateInput!, where: BrewingProcessWhereUniqueInput!): BrewingProcess
+  updateMediaStream(data: MediaStreamUpdateInput!, where: MediaStreamWhereUniqueInput!): MediaStream
+  updateMediaFile(data: MediaFileUpdateInput!, where: MediaFileWhereUniqueInput!): MediaFile
   updateboilHopAddition(data: boilHopAdditionUpdateInput!, where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
   updateBrewingProcessDetails(data: BrewingProcessDetailsUpdateInput!, where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
   updateIngredient(data: IngredientUpdateInput!, where: IngredientWhereUniqueInput!): Ingredient
   updatedryHopAddition(data: dryHopAdditionUpdateInput!, where: dryHopAdditionWhereUniqueInput!): dryHopAddition
   updateStep(data: StepUpdateInput!, where: StepWhereUniqueInput!): Step
+  deleteUser(where: UserWhereUniqueInput!): User
+  deleteBrewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
   deleteGraph(where: GraphWhereUniqueInput!): Graph
   deleteGraphData(where: GraphDataWhereUniqueInput!): GraphData
-  deleteBrewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
+  deleteMediaStream(where: MediaStreamWhereUniqueInput!): MediaStream
+  deleteMediaFile(where: MediaFileWhereUniqueInput!): MediaFile
   deleteboilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  deleteUser(where: UserWhereUniqueInput!): User
   deleteBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
   deleteIngredient(where: IngredientWhereUniqueInput!): Ingredient
   deletedryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
   deleteStep(where: StepWhereUniqueInput!): Step
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  upsertBrewingProcess(where: BrewingProcessWhereUniqueInput!, create: BrewingProcessCreateInput!, update: BrewingProcessUpdateInput!): BrewingProcess!
   upsertGraph(where: GraphWhereUniqueInput!, create: GraphCreateInput!, update: GraphUpdateInput!): Graph!
   upsertGraphData(where: GraphDataWhereUniqueInput!, create: GraphDataCreateInput!, update: GraphDataUpdateInput!): GraphData!
-  upsertBrewingProcess(where: BrewingProcessWhereUniqueInput!, create: BrewingProcessCreateInput!, update: BrewingProcessUpdateInput!): BrewingProcess!
+  upsertMediaStream(where: MediaStreamWhereUniqueInput!, create: MediaStreamCreateInput!, update: MediaStreamUpdateInput!): MediaStream!
+  upsertMediaFile(where: MediaFileWhereUniqueInput!, create: MediaFileCreateInput!, update: MediaFileUpdateInput!): MediaFile!
   upsertboilHopAddition(where: boilHopAdditionWhereUniqueInput!, create: boilHopAdditionCreateInput!, update: boilHopAdditionUpdateInput!): boilHopAddition!
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
   upsertBrewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!, create: BrewingProcessDetailsCreateInput!, update: BrewingProcessDetailsUpdateInput!): BrewingProcessDetails!
   upsertIngredient(where: IngredientWhereUniqueInput!, create: IngredientCreateInput!, update: IngredientUpdateInput!): Ingredient!
   upsertdryHopAddition(where: dryHopAdditionWhereUniqueInput!, create: dryHopAdditionCreateInput!, update: dryHopAdditionUpdateInput!): dryHopAddition!
   upsertStep(where: StepWhereUniqueInput!, create: StepCreateInput!, update: StepUpdateInput!): Step!
+  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  updateManyBrewingProcesses(data: BrewingProcessUpdateManyMutationInput!, where: BrewingProcessWhereInput): BatchPayload!
   updateManyGraphs(data: GraphUpdateManyMutationInput!, where: GraphWhereInput): BatchPayload!
   updateManyGraphDatas(data: GraphDataUpdateManyMutationInput!, where: GraphDataWhereInput): BatchPayload!
-  updateManyBrewingProcesses(data: BrewingProcessUpdateManyMutationInput!, where: BrewingProcessWhereInput): BatchPayload!
+  updateManyMediaStreams(data: MediaStreamUpdateManyMutationInput!, where: MediaStreamWhereInput): BatchPayload!
+  updateManyMediaFiles(data: MediaFileUpdateManyMutationInput!, where: MediaFileWhereInput): BatchPayload!
   updateManyBoilHopAdditions(data: boilHopAdditionUpdateManyMutationInput!, where: boilHopAdditionWhereInput): BatchPayload!
-  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
   updateManyBrewingProcessDetailses(data: BrewingProcessDetailsUpdateManyMutationInput!, where: BrewingProcessDetailsWhereInput): BatchPayload!
   updateManyIngredients(data: IngredientUpdateManyMutationInput!, where: IngredientWhereInput): BatchPayload!
   updateManyDryHopAdditions(data: dryHopAdditionUpdateManyMutationInput!, where: dryHopAdditionWhereInput): BatchPayload!
   updateManySteps(data: StepUpdateManyMutationInput!, where: StepWhereInput): BatchPayload!
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+  deleteManyBrewingProcesses(where: BrewingProcessWhereInput): BatchPayload!
   deleteManyGraphs(where: GraphWhereInput): BatchPayload!
   deleteManyGraphDatas(where: GraphDataWhereInput): BatchPayload!
-  deleteManyBrewingProcesses(where: BrewingProcessWhereInput): BatchPayload!
+  deleteManyMediaStreams(where: MediaStreamWhereInput): BatchPayload!
+  deleteManyMediaFiles(where: MediaFileWhereInput): BatchPayload!
   deleteManyBoilHopAdditions(where: boilHopAdditionWhereInput): BatchPayload!
-  deleteManyUsers(where: UserWhereInput): BatchPayload!
   deleteManyBrewingProcessDetailses(where: BrewingProcessDetailsWhereInput): BatchPayload!
   deleteManyIngredients(where: IngredientWhereInput): BatchPayload!
   deleteManyDryHopAdditions(where: dryHopAdditionWhereInput): BatchPayload!
@@ -3373,29 +4279,35 @@ enum Permission {
 }
 
 type Query {
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  brewingProcesses(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcess]!
   graphs(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Graph]!
   graphDatas(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [GraphData]!
-  brewingProcesses(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcess]!
+  mediaStreams(where: MediaStreamWhereInput, orderBy: MediaStreamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MediaStream]!
+  mediaFiles(where: MediaFileWhereInput, orderBy: MediaFileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [MediaFile]!
   boilHopAdditions(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [boilHopAddition]!
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   brewingProcessDetailses(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [BrewingProcessDetails]!
   ingredients(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Ingredient]!
   dryHopAdditions(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [dryHopAddition]!
   steps(where: StepWhereInput, orderBy: StepOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Step]!
+  user(where: UserWhereUniqueInput!): User
+  brewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
   graph(where: GraphWhereUniqueInput!): Graph
   graphData(where: GraphDataWhereUniqueInput!): GraphData
-  brewingProcess(where: BrewingProcessWhereUniqueInput!): BrewingProcess
+  mediaStream(where: MediaStreamWhereUniqueInput!): MediaStream
+  mediaFile(where: MediaFileWhereUniqueInput!): MediaFile
   boilHopAddition(where: boilHopAdditionWhereUniqueInput!): boilHopAddition
-  user(where: UserWhereUniqueInput!): User
   brewingProcessDetails(where: BrewingProcessDetailsWhereUniqueInput!): BrewingProcessDetails
   ingredient(where: IngredientWhereUniqueInput!): Ingredient
   dryHopAddition(where: dryHopAdditionWhereUniqueInput!): dryHopAddition
   step(where: StepWhereUniqueInput!): Step
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  brewingProcessesConnection(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessConnection!
   graphsConnection(where: GraphWhereInput, orderBy: GraphOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphConnection!
   graphDatasConnection(where: GraphDataWhereInput, orderBy: GraphDataOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): GraphDataConnection!
-  brewingProcessesConnection(where: BrewingProcessWhereInput, orderBy: BrewingProcessOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessConnection!
+  mediaStreamsConnection(where: MediaStreamWhereInput, orderBy: MediaStreamOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MediaStreamConnection!
+  mediaFilesConnection(where: MediaFileWhereInput, orderBy: MediaFileOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MediaFileConnection!
   boilHopAdditionsConnection(where: boilHopAdditionWhereInput, orderBy: boilHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): boilHopAdditionConnection!
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   brewingProcessDetailsesConnection(where: BrewingProcessDetailsWhereInput, orderBy: BrewingProcessDetailsOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): BrewingProcessDetailsConnection!
   ingredientsConnection(where: IngredientWhereInput, orderBy: IngredientOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): IngredientConnection!
   dryHopAdditionsConnection(where: dryHopAdditionWhereInput, orderBy: dryHopAdditionOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): dryHopAdditionConnection!
@@ -3936,11 +4848,13 @@ input StepWhereUniqueInput {
 }
 
 type Subscription {
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+  brewingProcess(where: BrewingProcessSubscriptionWhereInput): BrewingProcessSubscriptionPayload
   graph(where: GraphSubscriptionWhereInput): GraphSubscriptionPayload
   graphData(where: GraphDataSubscriptionWhereInput): GraphDataSubscriptionPayload
-  brewingProcess(where: BrewingProcessSubscriptionWhereInput): BrewingProcessSubscriptionPayload
+  mediaStream(where: MediaStreamSubscriptionWhereInput): MediaStreamSubscriptionPayload
+  mediaFile(where: MediaFileSubscriptionWhereInput): MediaFileSubscriptionPayload
   boilHopAddition(where: boilHopAdditionSubscriptionWhereInput): boilHopAdditionSubscriptionPayload
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
   brewingProcessDetails(where: BrewingProcessDetailsSubscriptionWhereInput): BrewingProcessDetailsSubscriptionPayload
   ingredient(where: IngredientSubscriptionWhereInput): IngredientSubscriptionPayload
   dryHopAddition(where: dryHopAdditionSubscriptionWhereInput): dryHopAdditionSubscriptionPayload
@@ -3972,16 +4886,24 @@ input UserCreateInput {
   name: String!
   password: String!
   permissions: UserCreatepermissionsInput
-  participatingBrewingProcesses: BrewingProcessCreateManyInput
+  participatingBrewingProcesses: BrewingProcessCreateManyWithoutUsersInput
 }
 
-input UserCreateManyInput {
-  create: [UserCreateInput!]
+input UserCreateManyWithoutParticipatingBrewingProcessesInput {
+  create: [UserCreateWithoutParticipatingBrewingProcessesInput!]
   connect: [UserWhereUniqueInput!]
 }
 
 input UserCreatepermissionsInput {
   set: [Permission!]
+}
+
+input UserCreateWithoutParticipatingBrewingProcessesInput {
+  id: ID
+  email: String!
+  name: String!
+  password: String!
+  permissions: UserCreatepermissionsInput
 }
 
 """An edge in a connection."""
@@ -4222,20 +5144,12 @@ input UserSubscriptionWhereInput {
   node: UserWhereInput
 }
 
-input UserUpdateDataInput {
-  email: String
-  name: String
-  password: String
-  permissions: UserUpdatepermissionsInput
-  participatingBrewingProcesses: BrewingProcessUpdateManyInput
-}
-
 input UserUpdateInput {
   email: String
   name: String
   password: String
   permissions: UserUpdatepermissionsInput
-  participatingBrewingProcesses: BrewingProcessUpdateManyInput
+  participatingBrewingProcesses: BrewingProcessUpdateManyWithoutUsersInput
 }
 
 input UserUpdateManyDataInput {
@@ -4245,23 +5159,23 @@ input UserUpdateManyDataInput {
   permissions: UserUpdatepermissionsInput
 }
 
-input UserUpdateManyInput {
-  create: [UserCreateInput!]
-  connect: [UserWhereUniqueInput!]
-  set: [UserWhereUniqueInput!]
-  disconnect: [UserWhereUniqueInput!]
-  delete: [UserWhereUniqueInput!]
-  update: [UserUpdateWithWhereUniqueNestedInput!]
-  updateMany: [UserUpdateManyWithWhereNestedInput!]
-  deleteMany: [UserScalarWhereInput!]
-  upsert: [UserUpsertWithWhereUniqueNestedInput!]
-}
-
 input UserUpdateManyMutationInput {
   email: String
   name: String
   password: String
   permissions: UserUpdatepermissionsInput
+}
+
+input UserUpdateManyWithoutParticipatingBrewingProcessesInput {
+  create: [UserCreateWithoutParticipatingBrewingProcessesInput!]
+  connect: [UserWhereUniqueInput!]
+  set: [UserWhereUniqueInput!]
+  disconnect: [UserWhereUniqueInput!]
+  delete: [UserWhereUniqueInput!]
+  update: [UserUpdateWithWhereUniqueWithoutParticipatingBrewingProcessesInput!]
+  updateMany: [UserUpdateManyWithWhereNestedInput!]
+  deleteMany: [UserScalarWhereInput!]
+  upsert: [UserUpsertWithWhereUniqueWithoutParticipatingBrewingProcessesInput!]
 }
 
 input UserUpdateManyWithWhereNestedInput {
@@ -4273,15 +5187,22 @@ input UserUpdatepermissionsInput {
   set: [Permission!]
 }
 
-input UserUpdateWithWhereUniqueNestedInput {
-  where: UserWhereUniqueInput!
-  data: UserUpdateDataInput!
+input UserUpdateWithoutParticipatingBrewingProcessesDataInput {
+  email: String
+  name: String
+  password: String
+  permissions: UserUpdatepermissionsInput
 }
 
-input UserUpsertWithWhereUniqueNestedInput {
+input UserUpdateWithWhereUniqueWithoutParticipatingBrewingProcessesInput {
   where: UserWhereUniqueInput!
-  update: UserUpdateDataInput!
-  create: UserCreateInput!
+  data: UserUpdateWithoutParticipatingBrewingProcessesDataInput!
+}
+
+input UserUpsertWithWhereUniqueWithoutParticipatingBrewingProcessesInput {
+  where: UserWhereUniqueInput!
+  update: UserUpdateWithoutParticipatingBrewingProcessesDataInput!
+  create: UserCreateWithoutParticipatingBrewingProcessesInput!
 }
 
 input UserWhereInput {

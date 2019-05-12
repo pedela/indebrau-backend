@@ -3,27 +3,6 @@ enum Permission {
   USER
 }
 
-enum IngredientType {
-  MALT
-  HOP
-  YEAST
-}
-
-enum BrewingStep {
-  MALT_CRUSHING
-  HEATING_UP
-  MASH_IN
-  MASHING
-  HEATING_SPARGE
-  LAUTERING
-  SPARGING
-  BOILING
-  CHILLING
-  FERMENTING
-  CONDITIONING
-  BOTTLED
-}
-
 type User {
   id: ID! @id
   email: String! @unique
@@ -36,24 +15,7 @@ type User {
     @relation(name: "UserToBrewingProcesses", onDelete: SET_NULL, link: TABLE)
 }
 
-type Graph {
-  id: ID! @id
-  name: String!
-  sensorName: String! # mqtt topic
-  active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
-  updateFrequency: Int! # in seconds
-  brewingProcess: BrewingProcess!
-    @relation(name: "BrewingProcessToGraph", onDelete: SET_NULL) # to which brewing process does this Graph belong...
-  graphData: [GraphData!]!
-    @relation(name: "GraphToGraphData", onDelete: CASCADE) # its "content"
-}
-
-type GraphData {
-  id: ID! @id
-  time: DateTime!
-  value: String!
-  graph: Graph! @relation(name: "GraphToGraphData", onDelete: SET_NULL)
-}
+################### BrewingProcess ###################
 
 type BrewingProcess {
   id: ID! @id
@@ -67,6 +29,10 @@ type BrewingProcess {
   graphs: [Graph!]! @relation(name: "BrewingProcessToGraph", onDelete: CASCADE)
   # participating users
   users: [User!]! @relation(name: "BrewingProcessToUser", onDelete: SET_NULL)
+  # corresponding media streams
+  mediaStreams: [MediaStream!]!
+    @relation(name: "BrewingProcessToMediaStream", onDelete: CASCADE)
+
   # some timestamps
   start: DateTime # null -> not yet started
   end: DateTime # null -> not ended yet
@@ -93,8 +59,7 @@ type BrewingProcessDetails {
   boilHopAdditions: [boilHopAddition!]!
     @relation(name: "BoilHopAddition", onDelete: CASCADE)
   dryHopping: dryHopAddition
-    @relation(name: "DryHopAddition", onDelete: CASCADE)
-  # can be set to null for no dry hopping
+    @relation(name: "DryHopAddition", onDelete: CASCADE) # can be set to null for no dry hopping
   fermentationSteps: [Step!]!
     @relation(name: "FermentationSteps", onDelete: CASCADE)
 
@@ -133,4 +98,71 @@ type dryHopAddition {
   id: ID! @id
   hop: Ingredient! @relation(name: "DryHop", onDelete: CASCADE)
   addedOn: DateTime # to be edited when actually added
+}
+
+enum IngredientType {
+  MALT
+  HOP
+  YEAST
+}
+
+enum BrewingStep {
+  MALT_CRUSHING
+  HEATING_UP
+  MASH_IN
+  MASHING
+  HEATING_SPARGE
+  LAUTERING
+  SPARGING
+  BOILING
+  CHILLING
+  FERMENTING
+  CONDITIONING
+  BOTTLED
+}
+
+################### Graph ###################
+
+type Graph {
+  id: ID! @id
+  name: String!
+  sensorName: String! # mqtt topic
+  active: Boolean! # only one active graph per sensor, while there can be multiple brewing processes active..
+  updateFrequency: Int! # in seconds
+  brewingProcess: BrewingProcess!
+    @relation(name: "GraphToBrewingProcess", onDelete: SET_NULL) # link to brewing process
+  graphData: [GraphData!]!
+    @relation(name: "GraphToGraphData", onDelete: CASCADE) # its "content"
+}
+
+type GraphData {
+  id: ID! @id
+  time: DateTime!
+  value: String!
+  graph: Graph! @relation(name: "GraphDataToGraph", onDelete: SET_NULL)
+}
+
+################### Media ###################
+
+# MediaStreams currently support near real-time only. It's more of a
+# documentation of the recent progress than it is a "live stream" of camera images.
+# While technically possible, live streaming with multiple cameras produces huge
+# data that has to be stored somewhere -> expensive
+type MediaStream {
+  id: ID! @id
+  name: String!
+  active: Boolean! # if false, media stream does not record any images anymore
+  updateFrequency: Int! # in seconds currently -> no real video support yet
+  brewingProcess: BrewingProcess!
+    @relation(name: "MediaStreamToBrewingProcess", onDelete: SET_NULL) # link to brewing process
+  mediaFiles: [MediaFile!]!
+    @relation(name: "MediaStreamToMediaFile", onDelete: CASCADE) # its "content"
+}
+
+type MediaFile {
+  id: ID! @id
+  time: DateTime!
+  url: String! # currently cloudinary
+  mediaStream: MediaStream!
+    @relation(name: "MediaFileToMediaStream", onDelete: SET_NULL)
 }

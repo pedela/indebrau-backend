@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 var crypto = require('crypto');
 const resolvers = require('./resolvers');
+const { handleMediaUpload } = require('./utils');
 
 const db = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',
@@ -61,9 +62,20 @@ server.express.use('/imageUploadedWebhook', (req, res) => {
     .digest('hex');
   if (signedPayload != req.get('x-cld-signature')) {
     return res.status(403).end();
+  } else {
+    // Webhook call verified, continue...
+    // 1. Extract needed metadata from webhook payload
+    let mediaMetaData = {
+      cloudinaryId: req.body.public_id,
+      createdAt: req.body.created_at,
+      url: req.body.secure_url
+    };
+    // 2. Call an util function that will check where the posted meda should live
+    // and take further consequences
+    // (e.g. delete it if it is not needed, adjust timing of new images etc..)
+    handleMediaUpload(db, mediaMetaData);
+    return res.status(200).end();
   }
-  // Webhook call verified, continue...
-  return res.status(200).end();
 });
 
 server.start(

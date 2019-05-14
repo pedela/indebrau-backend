@@ -148,10 +148,11 @@ type GraphData {
 # documentation of the recent progress than it is a "live stream" of camera images.
 # While technically possible, live streaming with multiple cameras produces huge
 # data that has to be stored somewhere -> expensive
+# So, a media stream holds a collection of media (links). Which could of course be videos..
 type MediaStream {
   id: ID! @id
-  name: String!
-  active: Boolean! # if false, media stream does not record any images anymore
+  name: String! # example: brewingProcesses/liveImages/mainView (Cloudinary id subset)
+  active: Boolean! # if false, media stream does not record any media anymore
   updateFrequency: Int! # in seconds currently -> no real video support yet
   brewingProcess: BrewingProcess!
     @relation(name: "BrewingProcessToMediaStream", onDelete: SET_NULL) # link to brewing process
@@ -162,7 +163,7 @@ type MediaStream {
 type MediaFile {
   id: ID! @id
   time: DateTime!
-  url: String! # currently cloudinary
+  url: String! # Cloudinary
   mediaStream: MediaStream!
     @relation(name: "MediaStreamToMediaFile", onDelete: SET_NULL)
 }

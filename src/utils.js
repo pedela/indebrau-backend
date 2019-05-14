@@ -1,5 +1,10 @@
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
-function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId) {
+function checkUserPermissions(
+  ctx,
+  permissionsNeeded,
+  brewingProcessId,
+  graphId
+) {
   if (!ctx.request.user) {
     throw new Error('You must be logged in to do that!');
   }
@@ -27,7 +32,7 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
       }
     });
     // no permission
-    if(!found){
+    if (!found) {
       throw new Error(
         `You do not have the right to access brewing process: ${brewingProcessId}`
       );
@@ -46,9 +51,7 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
     });
     // no permission
     if (!found) {
-      throw new Error(
-        `You do not have the right to access graph: ${graphId}`
-      );
+      throw new Error(`You do not have the right to access graph: ${graphId}`);
     }
   }
 }
@@ -68,6 +71,22 @@ async function activeGraphCache(ctx, update) {
     console.log('using active graph cache...');
   }
   return cachedActiveGraphs;
+}
+/* Helper function that caches active media streams (to speed up inserts). */
+var cachedMediaStreams = null;
+async function activeMediaStreamsCache(ctx, update) {
+  if (cachedMediaStreams == null || update) {
+    console.log('refreshing active media stream list...');
+    cachedMediaStreams = await ctx.db.query.mediaStreams(
+      { where: { active: true } },
+      `{
+      id, name, active, updateFrequency
+      }`
+    );
+  } else {
+    console.log('using active media stream cache...');
+  }
+  return cachedMediaStreams;
 }
 
 /* reduce datapoints evenly across time (every nth element)
@@ -100,8 +119,87 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
   return reducedData;
 }
 
+/*
+Handle incoming media Urls.
+Returns false if Url is not persisted and Cloudinary media deletion request was send.
+mediaMetaData object: cloudinaryId, createdAt, url
+*/
+async function handleMediaUpload(db, mediaMetaData) {
+  let activeMediaStreams = await activeMediaStreamsCache({ db });
+  // get active media stream with matching id
+  // format id entry (convention.. original looks like "ID_randomNumber")
+  mediaMetaData.cloudinaryId = mediaMetaData.cloudinaryId.substring(
+    0,
+    mediaMetaData.cloudinaryId.lastIndexOf('/')
+  );
+  var activeMediaStream = null;
+  var oldEnoughLatestMediaFile = null;
+  for (var i = 0; i < activeMediaStreams.length; i++) {
+    let mediaStream = activeMediaStreams[i];
+    if (
+      mediaStream.active &&
+      !mediaStream.name.localeCompare(mediaMetaData.cloudinaryId)
+    ) {
+      // first active media stream should be the only active media stream..
+      activeMediaStream = mediaStream;
+      // if found, get latest media file and compare timestamp to
+      // determine if new one has to be inserted
+      const earliestDate =
+        new Date(mediaMetaData.createdAt).getTime() -
+        activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
+      // now fetch the latest entry's timestamp
+      oldEnoughLatestMediaFile = await db.query.mediaFiles(
+        {
+          where: {
+            AND: [
+              { mediaStream: { id: activeMediaStream.id } },
+              { time_gt: new Date(earliestDate).toJSON() }
+            ]
+          },
+          first: 1
+        },
+        '{ id, time }'
+      );
+      break;
+    }
+  }
+  // check if active media stream was found
+  if (activeMediaStream == null) {
+    // TODO delete file from Cloudinary!
+    return false;
+  }
+  // check if old media file was found (=> new data too recent)
+  if (
+    oldEnoughLatestMediaFile != null &&
+    !oldEnoughLatestMediaFile.length == 0
+  ) {
+    // TODO delete file from Cloudinary!
+    return false;
+  }
+
+  // if all checks passed until here, insert data
+  const data = await db.mutation.createMediaFile({
+    data: {
+      time: mediaMetaData.createdAt,
+      url: mediaMetaData.url,
+      mediaStream: {
+        connect: {
+          id: activeMediaStream.id
+        }
+      }
+    }
+  });
+  if (!data) {
+    // TODO delete file from Cloudinary!
+    return false;
+  }
+  return true;
+}
+
 module.exports = {
   checkUserPermissions,
   activeGraphCache,
-  reduceGraphDataEvenly
+  activeMediaStreamsCache,
+  reduceGraphDataEvenly,
+  handleMediaUpload
 };

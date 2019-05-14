@@ -177,7 +177,7 @@ async function handleMediaUpload(db, mediaMetaData) {
   ) {
     // TODO delete file from Cloudinary!
     console.log('too recent data available');
-    return false;
+    //return false;
   }
 
   // if all checks passed until here, insert data

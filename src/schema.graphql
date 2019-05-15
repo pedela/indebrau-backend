@@ -8,6 +8,11 @@ type Query {
     active: Boolean # default false (if not set, return all graphs)
   ): [Graph!]!
   graph(id: ID!, dataPoints: Int): Graph # admin and participating user
+  # admin
+  mediaStreams(
+    active: Boolean # default false (if not set, return all mediaStreams)
+  ): [MediaStream!]!
+  mediaStream(id: ID!): MediaStream # admin and participating user
   brewingProcesses: [BrewingProcess!]! # admin
   brewingProcess(id: ID!): BrewingProcess # admin and participating users
 }

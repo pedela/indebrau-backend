@@ -51,9 +51,6 @@ server.express.use(bodyParser.json());
 
 // webhook called by cloudinary, triggers entry (and possible recalc of media sending)
 server.express.use('/imageUploadedWebhook', (req, res) => {
-  console.log('incoming webhook');
-  console.log(JSON.stringify(req.body));
-
   // Validate webhook signature:
   // https://cloudinary.com/blog/webhooks_upload_notifications_and_background_image_processing
   let toBeSigned = JSON.stringify(req.body).concat(
@@ -64,10 +61,9 @@ server.express.use('/imageUploadedWebhook', (req, res) => {
     .update(toBeSigned)
     .digest('hex');
   if (signedPayload != req.get('x-cld-signature')) {
-    console.log('webhook not verified');
     return res.status(403).end();
   } else {
-    // Webhook call verified, continue...
+    // Webhook call verified
     // 1. Extract needed metadata from webhook payload
     let mediaMetaData = {
       cloudinaryId: req.body.public_id,
@@ -77,7 +73,6 @@ server.express.use('/imageUploadedWebhook', (req, res) => {
     // 2. Call an util function that will check where the posted meda should live
     // and take further consequences
     // (e.g. delete it if it is not needed, adjust timing of new images etc..)
-    console.log('verified...');
     handleMediaUpload(db, mediaMetaData);
     return res.status(200).end();
   }

@@ -67,8 +67,6 @@ async function activeGraphCache(ctx, update) {
       id, sensorName, active, updateFrequency
       }`
     );
-  } else {
-    console.log('using active graph cache...');
   }
   return cachedActiveGraphs;
 }
@@ -83,8 +81,6 @@ async function activeMediaStreamsCache(ctx, update) {
       id, name, active, updateFrequency
       }`
     );
-  } else {
-    console.log('using active media stream cache...');
   }
   return cachedMediaStreams;
 }
@@ -165,8 +161,6 @@ async function handleMediaUpload(db, mediaMetaData) {
   }
   // check if active media stream was found
   if (activeMediaStream == null) {
-    console.log('no active stream for' + mediaMetaData.cloudinaryId);
-
     // TODO delete file from Cloudinary!
     return false;
   }
@@ -176,8 +170,7 @@ async function handleMediaUpload(db, mediaMetaData) {
     !oldEnoughLatestMediaFile.length == 0
   ) {
     // TODO delete file from Cloudinary!
-    console.log('too recent data available');
-    //return false;
+    return false;
   }
 
   // if all checks passed until here, insert data
@@ -194,7 +187,6 @@ async function handleMediaUpload(db, mediaMetaData) {
   });
   if (!data) {
     // TODO delete file from Cloudinary!
-    console.log('storing went wrong');
     return false;
   }
   return true;

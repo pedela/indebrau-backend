@@ -116,26 +116,21 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
 }
 
 /*
-Handle incoming media Urls.
-Returns false if Url is not persisted and Cloudinary media deletion request was send.
-mediaMetaData object: cloudinaryId, createdAt, url
+Handle incoming media Urls (cloudinary ids).
+Returns false if cloudinary id is not persisted and Cloudinary media deletion request was send.
+mediaMetaData object: cloudinaryId, createdAt
 */
 async function handleMediaUpload(db, mediaMetaData) {
   let activeMediaStreams = await activeMediaStreamsCache({ db });
-  // get active media stream with matching id
-  // format id entry (convention.. original looks like "ID/randomString")
-  mediaMetaData.cloudinaryId = mediaMetaData.cloudinaryId.substring(
-    0,
-    mediaMetaData.cloudinaryId.lastIndexOf('/')
-  );
+  // get active media stream with matching name
+  // format id entry (convention.. original looks like "matchingName/randomString")
+  let matchingName = mediaMetaData.cloudinaryId;
+  matchingName = matchingName.substring(0, matchingName.lastIndexOf('/'));
   var activeMediaStream = null;
   var oldEnoughLatestMediaFile = null;
   for (var i = 0; i < activeMediaStreams.length; i++) {
     let mediaStream = activeMediaStreams[i];
-    if (
-      mediaStream.active &&
-      !mediaStream.name.localeCompare(mediaMetaData.cloudinaryId)
-    ) {
+    if (mediaStream.active && !mediaStream.name.localeCompare(matchingName)) {
       // first active media stream should be the only active media stream..
       activeMediaStream = mediaStream;
       // if found, get latest media file and compare timestamp to
@@ -178,7 +173,7 @@ async function handleMediaUpload(db, mediaMetaData) {
   const data = await db.mutation.createMediaFile({
     data: {
       time: mediaMetaData.createdAt,
-      url: mediaMetaData.url,
+      publicId: mediaMetaData.cloudinaryId,
       mediaStream: {
         connect: {
           id: activeMediaStream.id

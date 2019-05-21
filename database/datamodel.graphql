@@ -163,7 +163,7 @@ type MediaStream {
 type MediaFile {
   id: ID! @id
   time: DateTime!
-  url: String! # Cloudinary
+  publicId: String! # Cloudinary, could be a (different provider) url later..
   mediaStream: MediaStream!
     @relation(name: "MediaStreamToMediaFile", onDelete: SET_NULL)
 }

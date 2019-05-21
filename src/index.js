@@ -67,8 +67,7 @@ server.express.use('/imageUploadedWebhook', (req, res) => {
     // 1. Extract needed metadata from webhook payload
     let mediaMetaData = {
       cloudinaryId: req.body.public_id,
-      createdAt: req.body.created_at,
-      url: req.body.secure_url
+      createdAt: req.body.created_at
     };
     // 2. Call an util function that will check where the posted meda should live
     // and take further consequences

@@ -1,5 +1,5 @@
 # source: https://indebrau-prisma.herokuapp.com/indebrau-database/prod
-# timestamp: Sun May 12 2019 14:50:57 GMT+0200 (Central European Summer Time)
+# timestamp: Tue May 21 2019 15:56:58 GMT+0200 (Central European Summer Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -3366,7 +3366,7 @@ scalar Long
 type MediaFile implements Node {
   id: ID!
   time: DateTime!
-  url: String!
+  publicId: String!
   mediaStream: MediaStream!
 }
 
@@ -3383,7 +3383,7 @@ type MediaFileConnection {
 input MediaFileCreateInput {
   id: ID
   time: DateTime!
-  url: String!
+  publicId: String!
   mediaStream: MediaStreamCreateOneWithoutMediaFilesInput!
 }
 
@@ -3395,7 +3395,7 @@ input MediaFileCreateManyWithoutMediaStreamInput {
 input MediaFileCreateWithoutMediaStreamInput {
   id: ID
   time: DateTime!
-  url: String!
+  publicId: String!
 }
 
 """An edge in a connection."""
@@ -3412,14 +3412,14 @@ enum MediaFileOrderByInput {
   id_DESC
   time_ASC
   time_DESC
-  url_ASC
-  url_DESC
+  publicId_ASC
+  publicId_DESC
 }
 
 type MediaFilePreviousValues {
   id: ID!
   time: DateTime!
-  url: String!
+  publicId: String!
 }
 
 input MediaFileScalarWhereInput {
@@ -3493,46 +3493,46 @@ input MediaFileScalarWhereInput {
 
   """All values greater than or equal the given value."""
   time_gte: DateTime
-  url: String
+  publicId: String
 
   """All values that are not equal to given value."""
-  url_not: String
+  publicId_not: String
 
   """All values that are contained in given list."""
-  url_in: [String!]
+  publicId_in: [String!]
 
   """All values that are not contained in given list."""
-  url_not_in: [String!]
+  publicId_not_in: [String!]
 
   """All values less than the given value."""
-  url_lt: String
+  publicId_lt: String
 
   """All values less than or equal the given value."""
-  url_lte: String
+  publicId_lte: String
 
   """All values greater than the given value."""
-  url_gt: String
+  publicId_gt: String
 
   """All values greater than or equal the given value."""
-  url_gte: String
+  publicId_gte: String
 
   """All values containing the given string."""
-  url_contains: String
+  publicId_contains: String
 
   """All values not containing the given string."""
-  url_not_contains: String
+  publicId_not_contains: String
 
   """All values starting with the given string."""
-  url_starts_with: String
+  publicId_starts_with: String
 
   """All values not starting with the given string."""
-  url_not_starts_with: String
+  publicId_not_starts_with: String
 
   """All values ending with the given string."""
-  url_ends_with: String
+  publicId_ends_with: String
 
   """All values not ending with the given string."""
-  url_not_ends_with: String
+  publicId_not_ends_with: String
 }
 
 type MediaFileSubscriptionPayload {
@@ -3576,18 +3576,18 @@ input MediaFileSubscriptionWhereInput {
 
 input MediaFileUpdateInput {
   time: DateTime
-  url: String
+  publicId: String
   mediaStream: MediaStreamUpdateOneRequiredWithoutMediaFilesInput
 }
 
 input MediaFileUpdateManyDataInput {
   time: DateTime
-  url: String
+  publicId: String
 }
 
 input MediaFileUpdateManyMutationInput {
   time: DateTime
-  url: String
+  publicId: String
 }
 
 input MediaFileUpdateManyWithoutMediaStreamInput {
@@ -3609,7 +3609,7 @@ input MediaFileUpdateManyWithWhereNestedInput {
 
 input MediaFileUpdateWithoutMediaStreamDataInput {
   time: DateTime
-  url: String
+  publicId: String
 }
 
 input MediaFileUpdateWithWhereUniqueWithoutMediaStreamInput {
@@ -3694,46 +3694,46 @@ input MediaFileWhereInput {
 
   """All values greater than or equal the given value."""
   time_gte: DateTime
-  url: String
+  publicId: String
 
   """All values that are not equal to given value."""
-  url_not: String
+  publicId_not: String
 
   """All values that are contained in given list."""
-  url_in: [String!]
+  publicId_in: [String!]
 
   """All values that are not contained in given list."""
-  url_not_in: [String!]
+  publicId_not_in: [String!]
 
   """All values less than the given value."""
-  url_lt: String
+  publicId_lt: String
 
   """All values less than or equal the given value."""
-  url_lte: String
+  publicId_lte: String
 
   """All values greater than the given value."""
-  url_gt: String
+  publicId_gt: String
 
   """All values greater than or equal the given value."""
-  url_gte: String
+  publicId_gte: String
 
   """All values containing the given string."""
-  url_contains: String
+  publicId_contains: String
 
   """All values not containing the given string."""
-  url_not_contains: String
+  publicId_not_contains: String
 
   """All values starting with the given string."""
-  url_starts_with: String
+  publicId_starts_with: String
 
   """All values not starting with the given string."""
-  url_not_starts_with: String
+  publicId_not_starts_with: String
 
   """All values ending with the given string."""
-  url_ends_with: String
+  publicId_ends_with: String
 
   """All values not ending with the given string."""
-  url_not_ends_with: String
+  publicId_not_ends_with: String
   mediaStream: MediaStreamWhereInput
 }
 

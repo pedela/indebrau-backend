@@ -123,7 +123,7 @@ mediaMetaData object: cloudinaryId, createdAt, url
 async function handleMediaUpload(db, mediaMetaData) {
   let activeMediaStreams = await activeMediaStreamsCache({ db });
   // get active media stream with matching id
-  // format id entry (convention.. original looks like "ID_randomNumber")
+  // format id entry (convention.. original looks like "ID/randomString")
   mediaMetaData.cloudinaryId = mediaMetaData.cloudinaryId.substring(
     0,
     mediaMetaData.cloudinaryId.lastIndexOf('/')
@@ -170,6 +170,7 @@ async function handleMediaUpload(db, mediaMetaData) {
     !oldEnoughLatestMediaFile.length == 0
   ) {
     // TODO delete file from Cloudinary!
+    console.log('should be deleted!');
     return false;
   }
 

@@ -11,7 +11,7 @@ docker-compose up -d
 prisma deploy
 graphql get-schema --project database
 
-Finally: npm run debug
+Finally: npm run dev
 
 Deploy:
 Exchange .env file values

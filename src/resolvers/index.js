@@ -7,6 +7,7 @@ const {
   brewingProcessMutations
 } = require('./mutations/brewingProcessMutations');
 const { graphMutations } = require('./mutations/graphMutations');
+const { mediaStreamMutations } = require('./mutations/mediaStreamMutations');
 
 module.exports = {
   Query: {
@@ -18,6 +19,7 @@ module.exports = {
   Mutation: {
     ...userMutations,
     ...brewingProcessMutations,
-    ...graphMutations
+    ...graphMutations,
+    ...mediaStreamMutations
   }
 };

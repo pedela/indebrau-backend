@@ -33,12 +33,22 @@ type Mutation {
   createGraph(
     name: String!
     sensorName: String!
-    updateFrequency: Int
+    updateFrequency: Int!
     brewingProcessId: ID!
   ): Graph!
 
   # admin
   deleteGraph(id: ID!): Graph!
+
+  # admin
+  createMediaStream(
+    name: String!
+    updateFrequency: Int!
+    brewingProcessId: ID!
+  ): MediaStream!
+
+  # admin
+  deleteMediaStream(id: ID!): MediaStream!
 
   # admin
   createBrewingProcess(

@@ -49,7 +49,8 @@ server.express.use(async (req, res, next) => {
 
 server.express.use(bodyParser.json());
 
-// webhook called by cloudinary, triggers entry (and possible recalc of media sending)
+// webhook called by Cloudinary, triggers entry in database
+// or removal of image from Cloudinary if "not needed"
 server.express.use('/imageUploadedWebhook', (req, res) => {
   // Validate webhook signature:
   // https://cloudinary.com/blog/webhooks_upload_notifications_and_background_image_processing

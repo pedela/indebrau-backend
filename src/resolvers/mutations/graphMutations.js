@@ -1,7 +1,7 @@
 const { activeGraphCache, checkUserPermissions } = require('../../utils');
 
 const graphMutations = {
-  async createGraph(parent, args, ctx) {
+  async createGraph(parent, args, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
 
     // 1. search for previous active graph for this sensor and update if exists
@@ -22,15 +22,13 @@ const graphMutations = {
           }
         }
       }
-    });
+    }, info);
     // update cache
     await activeGraphCache(ctx, true);
     if (!createdGraph) {
-      throw new Error('problem storing graph');
+      throw new Error('Problem creating new graph');
     }
-    return {
-      id: createdGraph.id
-    };
+    return createdGraph;
   },
 
   async deleteGraph(parent, args, ctx, info) {
@@ -43,7 +41,7 @@ const graphMutations = {
     // update cache
     await activeGraphCache(ctx, true);
     if (!deletedGraphReturn) {
-      throw new Error('Problem deleting graph');
+      throw new Error('Problem deleting graph with id: ' + args.id);
     }
     return deletedGraphReturn;
   },

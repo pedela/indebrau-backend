@@ -116,8 +116,8 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
 }
 
 /*
-Handle incoming media Urls (cloudinary ids).
-Returns false if cloudinary id is not persisted and Cloudinary media deletion request was send.
+Handles incoming media Urls (Cloudinary IDs).
+Returns false if Cloudinary ID is not persisted and Cloudinary media deletion request was send.
 mediaMetaData object: cloudinaryId, createdAt
 */
 async function handleMediaUpload(db, mediaMetaData) {

@@ -1,3 +1,12 @@
+const cloudinary = require('cloudinary').v2;
+const cloudinaryConfig = {
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+};
+// pass API key and secret to Cloudinary object
+cloudinary.config(cloudinaryConfig);
+
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
 function checkUserPermissions(
   ctx,
@@ -156,7 +165,7 @@ async function handleMediaUpload(db, mediaMetaData) {
   }
   // check if active media stream was found
   if (activeMediaStream == null) {
-    // TODO delete file from Cloudinary!
+    deleteMedia(mediaMetaData.cloudinaryId);
     return false;
   }
   // check if old media file was found (=> new data too recent)
@@ -164,7 +173,7 @@ async function handleMediaUpload(db, mediaMetaData) {
     oldEnoughLatestMediaFile != null &&
     !oldEnoughLatestMediaFile.length == 0
   ) {
-    // TODO delete file from Cloudinary!
+    deleteMedia(mediaMetaData.cloudinaryId);
     console.log('should be deleted!');
     return false;
   }
@@ -182,10 +191,24 @@ async function handleMediaUpload(db, mediaMetaData) {
     }
   });
   if (!data) {
-    // TODO delete file from Cloudinary!
+    deleteMedia(mediaMetaData.cloudinaryId);
     return false;
   }
   return true;
+}
+
+/*
+Deletes media files from Cloudinary (not: database!!).
+todo: error handling!! Currently, file stays forever on Cloudinary
+*/
+async function deleteMedia(cloudinaryId) {
+  cloudinary.uploader.destroy(cloudinaryId, function(error, result) {
+    if (!error) {
+      return result;
+    } else {
+      return error;
+    }
+  });
 }
 
 module.exports = {
@@ -193,5 +216,6 @@ module.exports = {
   activeGraphCache,
   activeMediaStreamsCache,
   reduceGraphDataEvenly,
-  handleMediaUpload
+  handleMediaUpload,
+  deleteMedia
 };

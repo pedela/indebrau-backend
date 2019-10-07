@@ -1,6 +1,7 @@
 const {
   activeMediaStreamsCache,
-  checkUserPermissions
+  checkUserPermissions,
+  deleteMedia
 } = require('../../utils');
 
 const mediaStreamMutations = {
@@ -39,18 +40,29 @@ const mediaStreamMutations = {
   async deleteMediaStream(parent, args, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: args.id };
-    const deletedMediaStreamReturn = await ctx.db.mutation.deleteMediaStream(
+    // first get mediaFile list of stream
+    const streamMediaFiles = await ctx.db.query.mediaStream(
+      { where },
+      '{ mediaFiles {publicId} }'
+    );
+    // now delete stream
+    const deletedMediaStream = await ctx.db.mutation.deleteMediaStream(
       { where },
       info
     );
-    // update cache since stream was deleted in db
-    await activeMediaStreamsCache(ctx, true);
-
-    // todo: delete images from cloudinary!
-    if (!deletedMediaStreamReturn) {
+    // check, if stream was deleted from database
+    if (!deletedMediaStream) {
       throw new Error('Problem deleting media stream with id: ' + args.id);
     }
-    return deletedMediaStreamReturn;
+    // update cache since stream was deleted in db
+    await activeMediaStreamsCache(ctx, true);
+    // finally, remove media from cloudinary
+    for (var i = 0; i < streamMediaFiles.mediaFiles.length; i++) {
+      console.log(streamMediaFiles.mediaFiles[i].publicId);
+      deleteMedia(streamMediaFiles.mediaFiles[i].publicId);
+    }
+
+    return deletedMediaStream;
   }
 };
 

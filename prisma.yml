@@ -1,3 +1,0 @@
-#endpoint: http://localhost:4466
-endpoint: http://localhost:4466/indebrau-database/prod
-datamodel: datamodel.prisma

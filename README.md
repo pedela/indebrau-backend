@@ -1,22 +1,23 @@
 # HowTo Build
 
-Run locally:
-Deploy Database:
-docker-compose up -d
-prisma deploy
-graphql get-schema --project database
+## Prerequisites
+Docker, Node v13.5.0, Prisma 1.34.10 (npm install -g prisma), GraphQL-CLI (npm install -g graphql-cli)
 
-Deploy Prisma Server:
-docker-compose up -d
-prisma deploy
-graphql get-schema --project database
 
-Finally: npm run dev
+## Deploy Prisma Server/Database:
+From folder "database": docker-compose up -d
 
-Deploy:
-Exchange .env file values
-PRISMA_MANAGEMENT_API_SECRET can be found in Heroku env-variables config on their webpage
+From root folder: prisma deploy
+
+
+## Deploy Backend Service:
+Exchange .env file values (local dev/deployment), then:
+
 prisma deploy (only needed if DB has changed)
+
 graphql get-schema --project database
 
-...and push current version to Heroku
+## Run:
+npm run dev (development)
+
+npm run start (deployment)

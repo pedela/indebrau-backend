@@ -1,32 +1,12 @@
 # Indebrau Backend
 
-## Prerequisites
-
 ## Development
 
-### Additional Prerequisites
-Node v13.5.0, Prisma 1.34.10 (`npm install -g prisma`), GraphQL-CLI (`npm install -g graphql-cli`)
+1. Prerequisites: Node v13.5.0, Prisma 1.34.10 (`npm install -g prisma`), GraphQL-CLI (`npm install -g graphql-cli`)
 
-### Decide which Database to Use
-Local (new) database for development: run docker-compose script in "database"(!) folder: `docker-compose up -d`.
-Then, use PRISMA_ENDPOINT="http://localhost:4466/indebrau-database/prod" in .env file.
+2. Rename '.env.sample' to '.env' and adjust values
 
-External database: specify endpoint accordingly in .env file.
-
-### .env File (Put in Main Folder)
-```
-PRISMA_ENDPOINT="http://localhost:4466/indebrau-database/prod"
-PRISMA_SECRET=""
-APP_SECRET=""
-FRONTEND_URL=""
-PORT=""
-PRISMA_MANAGEMENT_API_SECRET=""
-CLOUDINARY_NAME=""
-CLOUDINARY_API_KEY=""
-CLOUDINARY_API_SECRET=""
-```
-
-### Run
+3. Run
 ```
 npm install
 prisma deploy
@@ -35,7 +15,9 @@ npm run dev
 ```
 
 ## Deployment
+Build latest docker image:
 ```
-docker-compose build
-docker-compose up -d
+docker build -t indebrau/indebrau-backend .
 ```
+
+Then, use docker-compose scripts from main repository. Careful: If you change the datamodel, the container will try a redeploy on first startup. This will fail if exiting data would be corrupted by it. Manual editing may be required in that case.

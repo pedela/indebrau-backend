@@ -3,9 +3,9 @@ const { Prisma } = require('prisma-binding');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-var crypto = require('crypto');
+const express = require('express');
 const resolvers = require('./resolvers');
-const { handleMediaUpload } = require('./utils');
+const { uploadFile, handleMediaUpload } = require('./utils');
 
 const db = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',
@@ -24,13 +24,15 @@ const server = new GraphQLServer({
 });
 
 server.express.use(cookieParser());
+// storage for uploaded images
+server.express.use('/media', express.static('../indebrau-media'));
 
 // decode either auth header (priority!) or passed token and
 // populate the currently active user
 server.express.use(async (req, res, next) => {
   const Authorization = req.get('Authorization');
   const cookieToken = req.cookies.token;
-  var userId;
+  let userId;
   if (Authorization) {
     const token = Authorization.replace('Bearer ', '');
     userId = jwt.verify(token, process.env.APP_SECRET).userId;
@@ -49,33 +51,22 @@ server.express.use(async (req, res, next) => {
 
 server.express.use(bodyParser.json());
 
-// webhook called by Cloudinary, triggers entry in database
-// or removal of image from Cloudinary if "not needed"
-server.express.use('/imageUploadedWebhook', (req, res) => {
-  // Validate webhook signature:
-  // https://cloudinary.com/blog/webhooks_upload_notifications_and_background_image_processing
-  let toBeSigned = JSON.stringify(req.body).concat(
-    req.get('X-Cld-Timestamp').concat(process.env.CLOUDINARY_API_SECRET)
-  );
-  let signedPayload = crypto
-    .createHash('sha1')
-    .update(toBeSigned)
-    .digest('hex');
-  if (signedPayload != req.get('x-cld-signature')) {
-    return res.status(403).end();
-  } else {
-    // Webhook call verified
-    // 1. Extract needed metadata from webhook payload
-    let mediaMetaData = {
-      cloudinaryId: req.body.public_id,
-      createdAt: req.body.created_at
-    };
-    // 2. Call an util function that will check where the posted meda should live
-    // and take further consequences
-    // (e.g. delete it if it is not needed, adjust timing of new images etc..)
-    handleMediaUpload(db, mediaMetaData);
-    return res.status(200).end();
-  }
+// first uploads a file (admin only!) to local folder, then puts it in database
+// Be aware: mediaName and timestamp HAVE to be first in the body for this to work!
+server.express.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
+  handleMediaUpload(db, req.body.mediaStreamName, req.body.mediaTimestamp)
+    .then(
+      () => {
+        return res.status(201).end();
+      }
+    )
+    .catch(
+      error => {
+        return res.status(500).end(error.toString());
+      }
+    );
+
+
 });
 
 server.start(

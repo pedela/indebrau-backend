@@ -1,11 +1,5 @@
-const cloudinary = require('cloudinary').v2;
-const cloudinaryConfig = {
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-};
-// pass API key and secret to Cloudinary object
-cloudinary.config(cloudinaryConfig);
+const multer = require('multer');
+const fs = require('fs');
 
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
 function checkUserPermissions(
@@ -87,7 +81,7 @@ async function activeMediaStreamsCache(ctx, update) {
     cachedMediaStreams = await ctx.db.query.mediaStreams(
       { where: { active: true } },
       `{
-      id, name, active, updateFrequency
+      id, mediaFilesName, active, updateFrequency, brewingSteps, overwrite
       }`
     );
   }
@@ -125,27 +119,22 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
 }
 
 /*
-Handles incoming media Urls (Cloudinary IDs).
-Returns false if Cloudinary ID is not persisted and Cloudinary media deletion request was send.
-mediaMetaData object: cloudinaryId, createdAt
+Put's media files in database. Matches media name with stream name!
 */
-async function handleMediaUpload(db, mediaMetaData) {
-  let activeMediaStreams = await activeMediaStreamsCache({ db });
-  // get active media stream with matching name
-  // format id entry (convention.. original looks like "matchingName/randomString")
-  let matchingName = mediaMetaData.cloudinaryId;
-  matchingName = matchingName.substring(0, matchingName.lastIndexOf('/'));
-  var activeMediaStream = null;
-  var oldEnoughLatestMediaFile = null;
-  for (var i = 0; i < activeMediaStreams.length; i++) {
+async function handleMediaUpload(db, mediaStreamName, mediaTimestamp) {
+  let activeMediaStreams = await activeMediaStreamsCache({db});
+  let activeMediaStream = null;
+  let oldEnoughLatestMediaFile = null;
+  let mediaFileName = mediaStreamName + new Date(mediaTimestamp).getTime() + '.jpg';
+  for (let i = 0; i < activeMediaStreams.length; i++) {
     let mediaStream = activeMediaStreams[i];
-    if (mediaStream.active && !mediaStream.name.localeCompare(matchingName)) {
-      // first active media stream should be the only active media stream..
+    if (mediaStream.active && !mediaStream.mediaFilesName.localeCompare(mediaStreamName)) {
+      // first matching active media stream is the only machting one
       activeMediaStream = mediaStream;
-      // if found, get latest media file and compare timestamp to
-      // determine if new one has to be inserted
+      // if found, get latest media file's timestamp to
+      // determine, if new one has to be inserted
       const earliestDate =
-        new Date(mediaMetaData.createdAt).getTime() -
+            new Date(mediaTimestamp).getTime() -
         activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
       // now fetch the latest entry's timestamp
       oldEnoughLatestMediaFile = await db.query.mediaFiles(
@@ -163,26 +152,25 @@ async function handleMediaUpload(db, mediaMetaData) {
       break;
     }
   }
-  // check if active media stream was found
+  // check if active media stream was found (=> if not, delete media)
   if (activeMediaStream == null) {
-    deleteMedia(mediaMetaData.cloudinaryId);
-    return false;
+    await deleteMedia(mediaFileName);
+    throw new Error('no media stream found');
   }
-  // check if old media file was found (=> new data too recent)
+  // check if old media file was found (=> if so, new data too recent)
   if (
     oldEnoughLatestMediaFile != null &&
     !oldEnoughLatestMediaFile.length == 0
   ) {
-    deleteMedia(mediaMetaData.cloudinaryId);
-    console.log('should be deleted!');
-    return false;
+    await deleteMedia(mediaFileName);
+    throw new Error('not new enough');
   }
 
   // if all checks passed until here, insert data
   const data = await db.mutation.createMediaFile({
     data: {
-      time: mediaMetaData.createdAt,
-      publicId: mediaMetaData.cloudinaryId,
+      time: mediaTimestamp,
+      publicIdentifier:  mediaFileName,
       mediaStream: {
         connect: {
           id: activeMediaStream.id
@@ -191,25 +179,50 @@ async function handleMediaUpload(db, mediaMetaData) {
     }
   });
   if (!data) {
-    deleteMedia(mediaMetaData.cloudinaryId);
-    return false;
+    await deleteMedia(mediaFileName);
+    throw new Error('no data');
   }
+}
+
+async function deleteMedia(mediaFileName) {
+  fs.unlink('../indebrau-media/' + mediaFileName, (err) => {
+    if (err) throw err;
+  });
+
   return true;
 }
 
-/*
-Deletes media files from Cloudinary (not: database!!).
-todo: error handling!! Currently, file stays forever on Cloudinary
-*/
-async function deleteMedia(cloudinaryId) {
-  cloudinary.uploader.destroy(cloudinaryId, function(error, result) {
-    if (!error) {
-      return result;
-    } else {
-      return error;
-    }
-  });
-}
+/* Multer stuff (for file upload) */
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '../indebrau-media');
+  },
+  filename: function (req, file, cb) {
+    // TODO: ending as mimeType
+    cb(null, req.body.mediaStreamName + new Date(req.body.mediaTimestamp).getTime() + '.jpg');
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // check íf user is authenticated before actually uploading anything
+  // to prevent malicious stuff. Actual check if image is "needed/wanted"
+  // comes afterwards and might result in deletion of image.
+  checkUserPermissions({request:{user: req.user}}, ['ADMIN']);
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    // rejects storing a file
+    cb(null, false);
+  }
+};
+
+const uploadFile = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
 
 module.exports = {
   checkUserPermissions,
@@ -217,5 +230,6 @@ module.exports = {
   activeMediaStreamsCache,
   reduceGraphDataEvenly,
   handleMediaUpload,
-  deleteMedia
+  deleteMedia,
+  uploadFile
 };

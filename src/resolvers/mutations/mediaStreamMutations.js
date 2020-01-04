@@ -8,17 +8,22 @@ const mediaStreamMutations = {
   async createMediaStream(parent, args, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
 
-    // 1. search for previous active streams for this camera and update if exists
+    // 1. search for previous active streams with same name and deactivate if exists
+    // (arguably, there could be multiple media streams (of multiple brewing processes)
+    // recording the same media files. Or, there could be multiple brewing processes per
+    // media stream. Same goes for graphs..)
     await ctx.db.mutation.updateManyMediaStreams({
-      where: { active: true, name: args.name },
+      where: { active: true, mediaFilesName: args.mediaFilesName },
       data: { active: false }
     });
     // 2. create media stream
     const createdMediaStream = await ctx.db.mutation.createMediaStream(
       {
         data: {
-          name: args.name,
+          mediaFilesName: args.mediaFilesName,
           updateFrequency: args.updateFrequency,
+          overwrite: args.overwrite,
+          brewingSteps: { set: args.steps },
           active: true,
           brewingProcess: {
             connect: {
@@ -43,7 +48,7 @@ const mediaStreamMutations = {
     // first get mediaFile list of stream
     const streamMediaFiles = await ctx.db.query.mediaStream(
       { where },
-      '{ mediaFiles {publicId} }'
+      '{ mediaFiles {publicIdentifier} }'
     );
     // now delete stream
     const deletedMediaStream = await ctx.db.mutation.deleteMediaStream(
@@ -56,10 +61,9 @@ const mediaStreamMutations = {
     }
     // update cache since stream was deleted in db
     await activeMediaStreamsCache(ctx, true);
-    // finally, remove media from cloudinary
-    for (var i = 0; i < streamMediaFiles.mediaFiles.length; i++) {
-      console.log(streamMediaFiles.mediaFiles[i].publicId);
-      deleteMedia(streamMediaFiles.mediaFiles[i].publicId);
+    // finally, remove media from disk
+    for (let i = 0; i < streamMediaFiles.mediaFiles.length; i++) {
+      await deleteMedia(streamMediaFiles.mediaFiles[i].publicIdentifier);
     }
 
     return deletedMediaStream;

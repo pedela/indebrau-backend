@@ -42,7 +42,9 @@ type Mutation {
 
   # admin
   createMediaStream(
-    name: String!
+    mediaFilesName: String!
+    brewingSteps: [BrewingStep!]!
+    overwrite: Boolean!
     updateFrequency: Int!
     brewingProcessId: ID!
   ): MediaStream!

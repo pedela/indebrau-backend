@@ -151,9 +151,11 @@ type GraphData {
 # So, a media stream holds a collection of media (links). Which could of course be videos..
 type MediaStream {
   id: ID! @id
-  name: String! # example: brewingProcesses/liveImages/mainView (Cloudinary id subset)
+  mediaFilesName: String! # names of media files this stream should "collect" (TODO description to come)
+  brewingSteps: [BrewingStep!]! @scalarList(strategy: RELATION) # relating to "position" in brewing process ("where to display")(TODO description to come)
+  overwrite: Boolean! # only latest MediaFile is stored
   active: Boolean! # if false, media stream does not record any media anymore
-  updateFrequency: Int! # in seconds currently -> no real video support yet
+  updateFrequency: Int! # in seconds
   brewingProcess: BrewingProcess!
     @relation(name: "BrewingProcessToMediaStream", onDelete: SET_NULL) # link to brewing process
   mediaFiles: [MediaFile!]!
@@ -163,7 +165,7 @@ type MediaStream {
 type MediaFile {
   id: ID! @id
   time: DateTime!
-  publicId: String! # Cloudinary, could be a (different provider) url later..
+  publicIdentifier: String!
   mediaStream: MediaStream!
     @relation(name: "MediaStreamToMediaFile", onDelete: SET_NULL)
 }

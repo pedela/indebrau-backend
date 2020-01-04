@@ -44,6 +44,7 @@ const brewingProcessMutations = {
     }
     return createdBrewingProcess;
   },
+
   async advanceBrewingProcess(parent, { id, newActiveSteps }, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: id };
@@ -56,7 +57,7 @@ const brewingProcessMutations = {
     }
     let { activeSteps } = activeStepsQueryResult;
 
-    // I guess here has to be a lot of logic (and additional arguments passed in the mutation)
+    // TODO: I guess here has to be a lot of logic (and additional arguments passed in the mutation)
     // for now, let's settle by only updating the steps
     // 1. remove finished steps
     for (let i = 0; i < activeSteps.length; i++) {

@@ -1,5 +1,5 @@
 # source: http://localhost:4466/indebrau-database/prod
-# timestamp: Tue Oct 08 2019 14:49:51 GMT+0000 (UTC)
+# timestamp: Sat Jan 04 2020 18:11:45 GMT+0100 (Central European Standard Time)
 
 type AggregateboilHopAddition {
   count: Int!
@@ -3355,7 +3355,7 @@ scalar Long
 type MediaFile implements Node {
   id: ID!
   time: DateTime!
-  publicId: String!
+  publicIdentifier: String!
   mediaStream: MediaStream!
 }
 
@@ -3372,7 +3372,7 @@ type MediaFileConnection {
 input MediaFileCreateInput {
   id: ID
   time: DateTime!
-  publicId: String!
+  publicIdentifier: String!
   mediaStream: MediaStreamCreateOneWithoutMediaFilesInput!
 }
 
@@ -3384,7 +3384,7 @@ input MediaFileCreateManyWithoutMediaStreamInput {
 input MediaFileCreateWithoutMediaStreamInput {
   id: ID
   time: DateTime!
-  publicId: String!
+  publicIdentifier: String!
 }
 
 """An edge in a connection."""
@@ -3401,14 +3401,14 @@ enum MediaFileOrderByInput {
   id_DESC
   time_ASC
   time_DESC
-  publicId_ASC
-  publicId_DESC
+  publicIdentifier_ASC
+  publicIdentifier_DESC
 }
 
 type MediaFilePreviousValues {
   id: ID!
   time: DateTime!
-  publicId: String!
+  publicIdentifier: String!
 }
 
 input MediaFileScalarWhereInput {
@@ -3482,46 +3482,46 @@ input MediaFileScalarWhereInput {
 
   """All values greater than or equal the given value."""
   time_gte: DateTime
-  publicId: String
+  publicIdentifier: String
 
   """All values that are not equal to given value."""
-  publicId_not: String
+  publicIdentifier_not: String
 
   """All values that are contained in given list."""
-  publicId_in: [String!]
+  publicIdentifier_in: [String!]
 
   """All values that are not contained in given list."""
-  publicId_not_in: [String!]
+  publicIdentifier_not_in: [String!]
 
   """All values less than the given value."""
-  publicId_lt: String
+  publicIdentifier_lt: String
 
   """All values less than or equal the given value."""
-  publicId_lte: String
+  publicIdentifier_lte: String
 
   """All values greater than the given value."""
-  publicId_gt: String
+  publicIdentifier_gt: String
 
   """All values greater than or equal the given value."""
-  publicId_gte: String
+  publicIdentifier_gte: String
 
   """All values containing the given string."""
-  publicId_contains: String
+  publicIdentifier_contains: String
 
   """All values not containing the given string."""
-  publicId_not_contains: String
+  publicIdentifier_not_contains: String
 
   """All values starting with the given string."""
-  publicId_starts_with: String
+  publicIdentifier_starts_with: String
 
   """All values not starting with the given string."""
-  publicId_not_starts_with: String
+  publicIdentifier_not_starts_with: String
 
   """All values ending with the given string."""
-  publicId_ends_with: String
+  publicIdentifier_ends_with: String
 
   """All values not ending with the given string."""
-  publicId_not_ends_with: String
+  publicIdentifier_not_ends_with: String
 }
 
 type MediaFileSubscriptionPayload {
@@ -3563,18 +3563,18 @@ input MediaFileSubscriptionWhereInput {
 
 input MediaFileUpdateInput {
   time: DateTime
-  publicId: String
+  publicIdentifier: String
   mediaStream: MediaStreamUpdateOneRequiredWithoutMediaFilesInput
 }
 
 input MediaFileUpdateManyDataInput {
   time: DateTime
-  publicId: String
+  publicIdentifier: String
 }
 
 input MediaFileUpdateManyMutationInput {
   time: DateTime
-  publicId: String
+  publicIdentifier: String
 }
 
 input MediaFileUpdateManyWithoutMediaStreamInput {
@@ -3596,7 +3596,7 @@ input MediaFileUpdateManyWithWhereNestedInput {
 
 input MediaFileUpdateWithoutMediaStreamDataInput {
   time: DateTime
-  publicId: String
+  publicIdentifier: String
 }
 
 input MediaFileUpdateWithWhereUniqueWithoutMediaStreamInput {
@@ -3681,46 +3681,46 @@ input MediaFileWhereInput {
 
   """All values greater than or equal the given value."""
   time_gte: DateTime
-  publicId: String
+  publicIdentifier: String
 
   """All values that are not equal to given value."""
-  publicId_not: String
+  publicIdentifier_not: String
 
   """All values that are contained in given list."""
-  publicId_in: [String!]
+  publicIdentifier_in: [String!]
 
   """All values that are not contained in given list."""
-  publicId_not_in: [String!]
+  publicIdentifier_not_in: [String!]
 
   """All values less than the given value."""
-  publicId_lt: String
+  publicIdentifier_lt: String
 
   """All values less than or equal the given value."""
-  publicId_lte: String
+  publicIdentifier_lte: String
 
   """All values greater than the given value."""
-  publicId_gt: String
+  publicIdentifier_gt: String
 
   """All values greater than or equal the given value."""
-  publicId_gte: String
+  publicIdentifier_gte: String
 
   """All values containing the given string."""
-  publicId_contains: String
+  publicIdentifier_contains: String
 
   """All values not containing the given string."""
-  publicId_not_contains: String
+  publicIdentifier_not_contains: String
 
   """All values starting with the given string."""
-  publicId_starts_with: String
+  publicIdentifier_starts_with: String
 
   """All values not starting with the given string."""
-  publicId_not_starts_with: String
+  publicIdentifier_not_starts_with: String
 
   """All values ending with the given string."""
-  publicId_ends_with: String
+  publicIdentifier_ends_with: String
 
   """All values not ending with the given string."""
-  publicId_not_ends_with: String
+  publicIdentifier_not_ends_with: String
   mediaStream: MediaStreamWhereInput
 }
 
@@ -3730,7 +3730,9 @@ input MediaFileWhereUniqueInput {
 
 type MediaStream implements Node {
   id: ID!
-  name: String!
+  mediaFilesName: String!
+  brewingSteps: [BrewingStep!]!
+  overwrite: Boolean!
   active: Boolean!
   updateFrequency: Int!
   brewingProcess: BrewingProcess!
@@ -3747,11 +3749,17 @@ type MediaStreamConnection {
   aggregate: AggregateMediaStream!
 }
 
+input MediaStreamCreatebrewingStepsInput {
+  set: [BrewingStep!]
+}
+
 input MediaStreamCreateInput {
   id: ID
-  name: String!
+  mediaFilesName: String!
+  overwrite: Boolean!
   active: Boolean!
   updateFrequency: Int!
+  brewingSteps: MediaStreamCreatebrewingStepsInput
   brewingProcess: BrewingProcessCreateOneWithoutMediaStreamsInput!
   mediaFiles: MediaFileCreateManyWithoutMediaStreamInput
 }
@@ -3768,17 +3776,21 @@ input MediaStreamCreateOneWithoutMediaFilesInput {
 
 input MediaStreamCreateWithoutBrewingProcessInput {
   id: ID
-  name: String!
+  mediaFilesName: String!
+  overwrite: Boolean!
   active: Boolean!
   updateFrequency: Int!
+  brewingSteps: MediaStreamCreatebrewingStepsInput
   mediaFiles: MediaFileCreateManyWithoutMediaStreamInput
 }
 
 input MediaStreamCreateWithoutMediaFilesInput {
   id: ID
-  name: String!
+  mediaFilesName: String!
+  overwrite: Boolean!
   active: Boolean!
   updateFrequency: Int!
+  brewingSteps: MediaStreamCreatebrewingStepsInput
   brewingProcess: BrewingProcessCreateOneWithoutMediaStreamsInput!
 }
 
@@ -3794,8 +3806,10 @@ type MediaStreamEdge {
 enum MediaStreamOrderByInput {
   id_ASC
   id_DESC
-  name_ASC
-  name_DESC
+  mediaFilesName_ASC
+  mediaFilesName_DESC
+  overwrite_ASC
+  overwrite_DESC
   active_ASC
   active_DESC
   updateFrequency_ASC
@@ -3804,7 +3818,9 @@ enum MediaStreamOrderByInput {
 
 type MediaStreamPreviousValues {
   id: ID!
-  name: String!
+  mediaFilesName: String!
+  brewingSteps: [BrewingStep!]!
+  overwrite: Boolean!
   active: Boolean!
   updateFrequency: Int!
 }
@@ -3858,46 +3874,50 @@ input MediaStreamScalarWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  name: String
+  mediaFilesName: String
 
   """All values that are not equal to given value."""
-  name_not: String
+  mediaFilesName_not: String
 
   """All values that are contained in given list."""
-  name_in: [String!]
+  mediaFilesName_in: [String!]
 
   """All values that are not contained in given list."""
-  name_not_in: [String!]
+  mediaFilesName_not_in: [String!]
 
   """All values less than the given value."""
-  name_lt: String
+  mediaFilesName_lt: String
 
   """All values less than or equal the given value."""
-  name_lte: String
+  mediaFilesName_lte: String
 
   """All values greater than the given value."""
-  name_gt: String
+  mediaFilesName_gt: String
 
   """All values greater than or equal the given value."""
-  name_gte: String
+  mediaFilesName_gte: String
 
   """All values containing the given string."""
-  name_contains: String
+  mediaFilesName_contains: String
 
   """All values not containing the given string."""
-  name_not_contains: String
+  mediaFilesName_not_contains: String
 
   """All values starting with the given string."""
-  name_starts_with: String
+  mediaFilesName_starts_with: String
 
   """All values not starting with the given string."""
-  name_not_starts_with: String
+  mediaFilesName_not_starts_with: String
 
   """All values ending with the given string."""
-  name_ends_with: String
+  mediaFilesName_ends_with: String
 
   """All values not ending with the given string."""
-  name_not_ends_with: String
+  mediaFilesName_not_ends_with: String
+  overwrite: Boolean
+
+  """All values that are not equal to given value."""
+  overwrite_not: Boolean
   active: Boolean
 
   """All values that are not equal to given value."""
@@ -3963,24 +3983,34 @@ input MediaStreamSubscriptionWhereInput {
   node: MediaStreamWhereInput
 }
 
+input MediaStreamUpdatebrewingStepsInput {
+  set: [BrewingStep!]
+}
+
 input MediaStreamUpdateInput {
-  name: String
+  mediaFilesName: String
+  overwrite: Boolean
   active: Boolean
   updateFrequency: Int
+  brewingSteps: MediaStreamUpdatebrewingStepsInput
   brewingProcess: BrewingProcessUpdateOneRequiredWithoutMediaStreamsInput
   mediaFiles: MediaFileUpdateManyWithoutMediaStreamInput
 }
 
 input MediaStreamUpdateManyDataInput {
-  name: String
+  mediaFilesName: String
+  overwrite: Boolean
   active: Boolean
   updateFrequency: Int
+  brewingSteps: MediaStreamUpdatebrewingStepsInput
 }
 
 input MediaStreamUpdateManyMutationInput {
-  name: String
+  mediaFilesName: String
+  overwrite: Boolean
   active: Boolean
   updateFrequency: Int
+  brewingSteps: MediaStreamUpdatebrewingStepsInput
 }
 
 input MediaStreamUpdateManyWithoutBrewingProcessInput {
@@ -4008,16 +4038,20 @@ input MediaStreamUpdateOneRequiredWithoutMediaFilesInput {
 }
 
 input MediaStreamUpdateWithoutBrewingProcessDataInput {
-  name: String
+  mediaFilesName: String
+  overwrite: Boolean
   active: Boolean
   updateFrequency: Int
+  brewingSteps: MediaStreamUpdatebrewingStepsInput
   mediaFiles: MediaFileUpdateManyWithoutMediaStreamInput
 }
 
 input MediaStreamUpdateWithoutMediaFilesDataInput {
-  name: String
+  mediaFilesName: String
+  overwrite: Boolean
   active: Boolean
   updateFrequency: Int
+  brewingSteps: MediaStreamUpdatebrewingStepsInput
   brewingProcess: BrewingProcessUpdateOneRequiredWithoutMediaStreamsInput
 }
 
@@ -4086,46 +4120,50 @@ input MediaStreamWhereInput {
 
   """All values not ending with the given string."""
   id_not_ends_with: ID
-  name: String
+  mediaFilesName: String
 
   """All values that are not equal to given value."""
-  name_not: String
+  mediaFilesName_not: String
 
   """All values that are contained in given list."""
-  name_in: [String!]
+  mediaFilesName_in: [String!]
 
   """All values that are not contained in given list."""
-  name_not_in: [String!]
+  mediaFilesName_not_in: [String!]
 
   """All values less than the given value."""
-  name_lt: String
+  mediaFilesName_lt: String
 
   """All values less than or equal the given value."""
-  name_lte: String
+  mediaFilesName_lte: String
 
   """All values greater than the given value."""
-  name_gt: String
+  mediaFilesName_gt: String
 
   """All values greater than or equal the given value."""
-  name_gte: String
+  mediaFilesName_gte: String
 
   """All values containing the given string."""
-  name_contains: String
+  mediaFilesName_contains: String
 
   """All values not containing the given string."""
-  name_not_contains: String
+  mediaFilesName_not_contains: String
 
   """All values starting with the given string."""
-  name_starts_with: String
+  mediaFilesName_starts_with: String
 
   """All values not starting with the given string."""
-  name_not_starts_with: String
+  mediaFilesName_not_starts_with: String
 
   """All values ending with the given string."""
-  name_ends_with: String
+  mediaFilesName_ends_with: String
 
   """All values not ending with the given string."""
-  name_not_ends_with: String
+  mediaFilesName_not_ends_with: String
+  overwrite: Boolean
+
+  """All values that are not equal to given value."""
+  overwrite_not: Boolean
   active: Boolean
 
   """All values that are not equal to given value."""

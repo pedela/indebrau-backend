@@ -29,7 +29,7 @@ server.express.use('/media', express.static('../indebrau-media'));
 
 // decode either auth header (priority!) or passed token and
 // populate the currently active user
-// FIXME: server crashes if empty header is provided!
+// FIXME: server crashes if empty header or wrong token is provided!
 server.express.use(async (req, res, next) => {
   const Authorization = req.get('Authorization');
   const cookieToken = req.cookies.token;

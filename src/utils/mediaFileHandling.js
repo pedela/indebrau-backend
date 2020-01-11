@@ -44,7 +44,7 @@ async function handleMediaUpload(db, mediaStreamName, mediaTimestamp, mediaMimeT
     await deleteTempMedia(mediaFileName);
     throw new Error('no media stream found');
   }
-  // check if old media file was found (=> if so, new data too recent)
+  // check if old media file was found (=> if so, new data too recent, delete media)
   if (
     oldEnoughLatestMediaFile != null &&
     !oldEnoughLatestMediaFile.length == 0
@@ -54,10 +54,9 @@ async function handleMediaUpload(db, mediaStreamName, mediaTimestamp, mediaMimeT
   }
 
   // if all checks passed until here,
-  // first copy file to final destination and insert to database
+  // copy file to final destination, then insert to database
   let publicIdentifier =
     await moveAndRenameTempFile(activeMediaStream.brewingProcess.id, activeMediaStream.id, mediaFileName, mediaMimeType);
-  console.log('new public id:' + publicIdentifier);
   const data = await db.mutation.createMediaFile({
     data: {
       time: mediaTimestamp,
@@ -72,7 +71,7 @@ async function handleMediaUpload(db, mediaStreamName, mediaTimestamp, mediaMimeT
   });
   if (!data) {
     await deleteTempMedia(mediaFileName);
-    throw new Error('no data');
+    throw new Error('could not insert to database');
   }
 }
 
@@ -87,7 +86,7 @@ async function deleteTempMedia(mediaFileName) {
 async function moveAndRenameTempFile(brewingProcessId, mediaStreamId, mediaFileName, mediaMimeType) {
   let tempFileNameAndLocation =
     process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp';
-    // TODO sync with supported MIMETypes..
+    // TODO sync with supported MIME-Types..
   let finalFileEnding;
   switch (mediaMimeType) {
   case 'IMAGE_PNG':
@@ -97,8 +96,11 @@ async function moveAndRenameTempFile(brewingProcessId, mediaStreamId, mediaFileN
     finalFileEnding = '.jpg';
     break;
   case 'IMAGE_JPEG':
-    finalFileEnding =  '.JPEG';
+    finalFileEnding =  '.jpeg';
     break;
+  default:
+    await deleteTempMedia(mediaFileName);
+    throw new Error('unsupported MIME-Type');
   }
   let finalFileName = crypto.randomBytes(16).toString('hex') + finalFileEnding;
   let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${brewingProcessId}/${mediaStreamId}/${finalFileName}`;
@@ -107,7 +109,8 @@ async function moveAndRenameTempFile(brewingProcessId, mediaStreamId, mediaFileN
     await deleteTempMedia(mediaFileName);
     return finalFileName;
   } catch (err) {
-    console.error(err);
+    await deleteTempMedia(mediaFileName);
+    throw new Error(err);
   }
 }
 
@@ -116,12 +119,13 @@ async function createMediaFolder(brewingProcessId, mediaStreamId) {
   try {
     await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/' + brewingProcessId + '/' + mediaStreamId, { recursive: true });
   } catch (err) {
-    console.error(err);
-    return err;
+    throw new Error(err);
   }
-  return null;
 }
 
+// Deletes a media folder of a brewing process or media stream
+// beware, from official Docs: In recursive mode, errors are not reported if path does not exist,
+// and operations are retried on failure
 async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
   let folder;
   // case, if brewing process was deleted
@@ -134,14 +138,13 @@ async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
   try {
     await fs.rmdir(folder, { recursive: true });
   } catch (err) {
-    return(err);
+    throw new Error(err);
   }
-  return null;
 }
 
 
 /* Mulcher "Stuff" */
-// Stores a file in a temp directory. Actual "persistance" of file is done after entry was inserted to database.
+// Stores a file in a temp directory. Actual "persistence" of file is done after entry was inserted to database.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, process.env.MAIN_FILES_DIRECTORY + '/temp');

@@ -78,9 +78,7 @@ async function handleMediaUpload(db, mediaStreamName, mediaTimestamp, mediaMimeT
 async function deleteTempMedia(mediaFileName) {
   fs.unlink(process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp', (err) => {
     if (err) throw new Error(err);
-    console.log('deleted!');
   });
-  return true;
 }
 
 async function moveAndRenameTempFile(brewingProcessId, mediaStreamId, mediaFileName, mediaMimeType) {

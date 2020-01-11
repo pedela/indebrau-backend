@@ -29,16 +29,21 @@ server.express.use('/media', express.static('../indebrau-media'));
 
 // decode either auth header (priority!) or passed token and
 // populate the currently active user
-// FIXME: server crashes if empty header or wrong token is provided!
 server.express.use(async (req, res, next) => {
   const Authorization = req.get('Authorization');
   const cookieToken = req.cookies.token;
   let userId;
-  if (Authorization) {
-    const token = Authorization.replace('Bearer ', '');
-    userId = jwt.verify(token, process.env.APP_SECRET).userId;
-  } else if (cookieToken) {
-    userId = jwt.verify(cookieToken, process.env.APP_SECRET).userId;
+  try {
+    if (Authorization) {
+      const token = Authorization.replace('Bearer ', '');
+      userId = jwt.verify(token, process.env.APP_SECRET).userId;
+
+    } else if (cookieToken) {
+      userId = jwt.verify(cookieToken, process.env.APP_SECRET).userId;
+    }
+  }
+  catch (err){
+    return res.status(401).end(err.toString());
   }
   if (userId) {
     const user = await db.query.user(

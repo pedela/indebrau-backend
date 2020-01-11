@@ -1,11 +1,9 @@
-const {
-  activeMediaStreamsCache,
-  checkUserPermissions,
-  deleteMedia
-} = require('../../utils');
+const { activeMediaStreamsCache } = require('../../utils/caches');
+const { checkUserPermissions } = require('../../utils/checkUserPermissions');
+const { createMediaFolder, deleteMediaFolder } = require('../../utils/mediaFileHandling');
 
 const mediaStreamMutations = {
-  async createMediaStream(parent, args, ctx, info) {
+  async createMediaStream(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
 
     // 1. search for previous active streams with same name and deactivate if exists
@@ -32,23 +30,29 @@ const mediaStreamMutations = {
           }
         }
       },
-      info
+      `{
+        id
+      }`
     );
-    // 3. update cache (since new stream was added) and return
+    // 3. update cache (since new stream was added)
     await activeMediaStreamsCache(ctx, true);
     if (!createdMediaStream) {
       throw new Error('Problem creating new media stream');
     }
-    return createdMediaStream;
+    else {
+      // create folder for media and return
+      await createMediaFolder(args.brewingProcessId, createdMediaStream.id);
+      return createdMediaStream.id;
+    }
   },
 
   async deleteMediaStream(parent, args, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: args.id };
-    // first get mediaFile list of stream
-    const streamMediaFiles = await ctx.db.query.mediaStream(
+    // first get mediaFile list and brewing process id of stream
+    const { brewingProcess } = await ctx.db.query.mediaStream(
       { where },
-      '{ mediaFiles {publicIdentifier} }'
+      '{ brewingProcess {id} }'
     );
     // now delete stream
     const deletedMediaStream = await ctx.db.mutation.deleteMediaStream(
@@ -62,10 +66,7 @@ const mediaStreamMutations = {
     // update cache since stream was deleted in db
     await activeMediaStreamsCache(ctx, true);
     // finally, remove media from disk
-    for (let i = 0; i < streamMediaFiles.mediaFiles.length; i++) {
-      await deleteMedia(streamMediaFiles.mediaFiles[i].publicIdentifier);
-    }
-
+    await deleteMediaFolder(brewingProcess.id, args.id);
     return deletedMediaStream;
   }
 };

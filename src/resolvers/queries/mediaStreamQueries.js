@@ -1,4 +1,4 @@
-const { checkUserPermissions } = require('../../utils');
+const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const mediaStreamQueries = {
   async mediaStreams(parent, { active }, ctx, info) {

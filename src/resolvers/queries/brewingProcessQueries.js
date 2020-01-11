@@ -1,4 +1,4 @@
-const { checkUserPermissions } = require('../../utils');
+const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const brewingProcessQueries = {
 

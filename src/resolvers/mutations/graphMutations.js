@@ -1,4 +1,5 @@
-const { activeGraphCache, checkUserPermissions } = require('../../utils');
+const { activeGraphCache } = require('../../utils/caches');
+const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const graphMutations = {
   async createGraph(parent, args, ctx, info) {

@@ -1,4 +1,5 @@
-const { checkUserPermissions, reduceGraphDataEvenly } = require('../../utils');
+const { checkUserPermissions } = require('../../utils/checkUserPermissions');
+const { reduceGraphDataEvenly } = require('../../utils/reduceGraphDataEvenly');
 
 const graphQueries = {
   async graphs(parent, { dataPoints, active }, ctx, info) {

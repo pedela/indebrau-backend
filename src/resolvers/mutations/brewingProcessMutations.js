@@ -1,4 +1,6 @@
-const { activeGraphCache, checkUserPermissions } = require('../../utils');
+const { activeGraphCache, activeMediaStreamsCache } = require('../../utils/caches');
+const { checkUserPermissions } = require('../../utils/checkUserPermissions');
+const { deleteMediaFolder } = require('../../utils/mediaFileHandling');
 
 const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
@@ -82,11 +84,14 @@ const brewingProcessMutations = {
       { where },
       info
     );
-    // update cache (associated graphs might be deleted cascadingly)
+    // update caches (associated graphs and streams are deleted cascadingly)
     await activeGraphCache(ctx, true);
+    await activeMediaStreamsCache(ctx, true);
     if (!deletedBrewingProcess) {
       throw new Error('Problem deleting brewing process');
     }
+    // finally, remove media from disk
+    await deleteMediaFolder(args.id);
     return deletedBrewingProcess;
   }
 };

@@ -166,6 +166,13 @@ type MediaFile {
   id: ID! @id
   time: DateTime!
   publicIdentifier: String!
+  mimeType: MimeType! @scalar(strategy: RELATION)
   mediaStream: MediaStream!
     @relation(name: "MediaStreamToMediaFile", onDelete: SET_NULL)
+}
+
+enum MimeType {
+  IMAGE_PNG
+  IMAGE_JPG
+  IMAGE_JPEG
 }

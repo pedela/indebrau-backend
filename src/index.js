@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const express = require('express');
 const resolvers = require('./resolvers');
-const { uploadFile, handleMediaUpload } = require('./utils');
+const { uploadFile, handleMediaUpload } = require('./utils/mediaFileHandling');
 
 const db = new Prisma({
   typeDefs: 'src/generated/prisma.graphql',
@@ -29,6 +29,7 @@ server.express.use('/media', express.static('../indebrau-media'));
 
 // decode either auth header (priority!) or passed token and
 // populate the currently active user
+// FIXME: server crashes if empty header is provided!
 server.express.use(async (req, res, next) => {
   const Authorization = req.get('Authorization');
   const cookieToken = req.cookies.token;
@@ -54,7 +55,7 @@ server.express.use(bodyParser.json());
 // first uploads a file (admin only!) to local folder, then puts it in database
 // Be aware: mediaName and timestamp HAVE to be first in the body for this to work!
 server.express.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
-  handleMediaUpload(db, req.body.mediaStreamName, req.body.mediaTimestamp)
+  handleMediaUpload(db, req.body.mediaStreamName, req.body.mediaTimestamp, req.body.mediaMimeType)
     .then(
       () => {
         return res.status(201).end();
@@ -65,8 +66,6 @@ server.express.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) =
         return res.status(500).end(error.toString());
       }
     );
-
-
 });
 
 server.start(

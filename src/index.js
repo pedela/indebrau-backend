@@ -60,7 +60,7 @@ server.express.use(bodyParser.json());
 // first uploads a file (admin only!) to local folder, then puts it in database
 // Be aware: mediaName and timestamp HAVE to be first in the body for this to work!
 server.express.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
-  handleMediaUpload(db, req.body.mediaStreamName, req.body.mediaTimestamp, req.body.mediaMimeType)
+  handleMediaUpload(db, req)
     .then(
       () => {
         return res.status(201).end();

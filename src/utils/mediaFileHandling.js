@@ -7,11 +7,15 @@ const { checkUserPermissions } = require('./checkUserPermissions');
 /*
 Put's media files in database. Matches media name with stream name!
 */
-async function handleMediaUpload(db, mediaStreamName, mediaTimestamp, mediaMimeType) {
+async function handleMediaUpload(db, req) {
+  checkUserPermissions({request:{user: req.user}}, ['ADMIN']);
+  let { mediaStreamName, mediaTimestamp, mediaMimeType } = req.body;
+  let mediaFileName = mediaStreamName + new Date(mediaTimestamp).getTime();
+
   let activeMediaStreams = await activeMediaStreamsCache({db});
   let activeMediaStream = null;
   let oldEnoughLatestMediaFile = null;
-  let mediaFileName = mediaStreamName + new Date(mediaTimestamp).getTime();
+
   for (let i = 0; i < activeMediaStreams.length; i++) {
     let mediaStream = activeMediaStreams[i];
     if (mediaStream.active && !mediaStream.mediaFilesName.localeCompare(mediaStreamName)) {
@@ -156,12 +160,17 @@ const fileFilter = (req, file, cb) => {
   // check íf user is authenticated before actually uploading anything
   // to prevent malicious stuff. Actual check if image is "needed/wanted"
   // comes afterwards and might result in deletion of image.
-  checkUserPermissions({request:{user: req.user}}, ['ADMIN']);
-  // TODO Mimetype sync with database (which mime types are accepted)
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' ||  file.mimetype === 'image/png') {
-    cb(null, true);
-  } else {
-    // rejects storing a file
+  try{
+    checkUserPermissions({request:{user: req.user}}, ['ADMIN']);
+    // TODO Mimetype sync with database (which mime types are accepted)
+    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' ||  file.mimetype === 'image/png') {
+      cb(null, true);
+    } else {
+      // rejects storing a file
+      cb(null, false);
+    }
+  }
+  catch(err){
     cb(null, false);
   }
 };

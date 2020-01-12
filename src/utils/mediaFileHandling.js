@@ -77,6 +77,7 @@ async function handleMediaUpload(db, req) {
     await deleteTempMedia(mediaFileName);
     throw new Error('could not insert to database');
   }
+  return publicIdentifier;
 }
 
 async function deleteTempMedia(mediaFileName) {
@@ -86,6 +87,7 @@ async function deleteTempMedia(mediaFileName) {
 }
 
 async function moveAndRenameTempFile(brewingProcessId, mediaStreamId, mediaFileName, mediaMimeType) {
+  console.log('copying...');
   let tempFileNameAndLocation =
     process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp';
     // TODO sync with supported MIME-Types..
@@ -145,7 +147,7 @@ async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
 }
 
 
-/* Mulcher "Stuff" */
+/* Multer "Stuff" */
 // Stores a file in a temp directory. Actual "persistence" of file is done after entry was inserted to database.
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

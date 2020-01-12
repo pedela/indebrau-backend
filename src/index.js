@@ -62,8 +62,8 @@ server.express.use(bodyParser.json());
 server.express.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
   handleMediaUpload(db, req)
     .then(
-      () => {
-        return res.status(201).end();
+      (identifier) => {
+        return res.status(201).end(identifier);
       }
     )
     .catch(

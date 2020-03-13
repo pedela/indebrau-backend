@@ -21,3 +21,7 @@ docker build -t indebrau/indebrau-backend .
 ```
 
 Then, use docker-compose scripts from main repository. Careful: If you change the datamodel, the container will try a redeploy on first startup. This will fail if exiting data would be corrupted by it. Manual editing may be required in that case.
+
+## Misc
+Please keep in mind, that if changing the media directory in the environment variables, the docker-compose script has
+to be adjusted as well.

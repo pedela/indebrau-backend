@@ -122,6 +122,10 @@ async function moveAndRenameTempFile(brewingProcessId, mediaStreamId, mediaFileN
 async function createMediaFolder(brewingProcessId, mediaStreamId) {
   try {
     await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/' + brewingProcessId + '/' + mediaStreamId, { recursive: true });
+    // check for temp folder and create if not existing
+    if (!fs.existsSync(process.env.MAIN_FILES_DIRECTORY + '/temp')){
+      await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/temp'),  { recursive: true };
+    }
   } catch (err) {
     throw new Error(err);
   }

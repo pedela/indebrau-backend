@@ -25,7 +25,7 @@ const server = new GraphQLServer({
 
 server.express.use(cookieParser());
 // storage for uploaded images
-server.express.use('/media', express.static('../indebrau-media'));
+server.express.use('/media', express.static(process.env.MAIN_FILES_DIRECTORY));
 
 // decode either auth header (priority!) or passed token and
 // populate the currently active user

@@ -50,6 +50,7 @@ const mediaStreamMutations = {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: args.id };
     // first get mediaFile list and brewing process id of stream
+    // TODO check if process could be found, throw (meaningful) error otherwise
     const { brewingProcess } = await ctx.db.query.mediaStream(
       { where },
       '{ brewingProcess {id} }'

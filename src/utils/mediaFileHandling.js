@@ -8,17 +8,20 @@ const { checkUserPermissions } = require('./checkUserPermissions');
 Put's media files in database. Matches media name with stream name!
 */
 async function handleMediaUpload(db, req) {
-  checkUserPermissions({request:{user: req.user}}, ['ADMIN']);
+  checkUserPermissions({ request: { user: req.user } }, ['ADMIN']);
   let { mediaStreamName, mediaTimestamp, mediaMimeType } = req.body;
   let mediaFileName = mediaStreamName + new Date(mediaTimestamp).getTime();
 
-  let activeMediaStreams = await activeMediaStreamsCache({db});
+  let activeMediaStreams = await activeMediaStreamsCache({ db });
   let activeMediaStream = null;
   let oldEnoughLatestMediaFile = null;
 
   for (let i = 0; i < activeMediaStreams.length; i++) {
     let mediaStream = activeMediaStreams[i];
-    if (mediaStream.active && !mediaStream.mediaFilesName.localeCompare(mediaStreamName)) {
+    if (
+      mediaStream.active &&
+      !mediaStream.mediaFilesName.localeCompare(mediaStreamName)
+    ) {
       // first matching active media stream is the only machting one
       activeMediaStream = mediaStream;
       // now fetch the latest entry's timestamp
@@ -26,12 +29,10 @@ async function handleMediaUpload(db, req) {
       oldEnoughLatestMediaFile = await db.query.mediaFiles(
         {
           where: {
-            AND: [
-              { mediaStream: { id: activeMediaStream.id } }
-            ]
+            AND: [{ mediaStream: { id: activeMediaStream.id } }],
           },
           order_by: 'time_ASC',
-          last: 1
+          last: 1,
         },
         '{ id, time, publicIdentifier }'
       );
@@ -45,7 +46,8 @@ async function handleMediaUpload(db, req) {
   }
   // check if old media file was found (=> if so, check if new data too recent and delete media)
   const earliestDate =
-    new Date(mediaTimestamp).getTime() - activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
+    new Date(mediaTimestamp).getTime() -
+    activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
   if (
     oldEnoughLatestMediaFile[0] != null &&
     new Date(oldEnoughLatestMediaFile[0].time).getTime() > earliestDate
@@ -55,25 +57,28 @@ async function handleMediaUpload(db, req) {
   }
   let oldMediaFileId = -1;
   let oldPublicIdentifier = -1;
-  if(oldEnoughLatestMediaFile[0] != null && activeMediaStream.overwrite){
+  if (oldEnoughLatestMediaFile[0] != null && activeMediaStream.overwrite) {
     oldMediaFileId = oldEnoughLatestMediaFile[0].id;
     oldPublicIdentifier = oldEnoughLatestMediaFile[0].publicIdentifier;
   }
   console.log(oldMediaFileId);
   // if all checks passed until here, copy file to final destination and insert / update to database
-  let publicIdentifier =
-    await moveAndRenameTempFile(activeMediaStream, mediaFileName, mediaMimeType);
+  let publicIdentifier = await moveAndRenameTempFile(
+    activeMediaStream,
+    mediaFileName,
+    mediaMimeType
+  );
   const data = await db.mutation.upsertMediaFile({
-    where:{ id: oldMediaFileId },
+    where: { id: oldMediaFileId },
     create: {
       time: mediaTimestamp,
       publicIdentifier: publicIdentifier,
       mimeType: mediaMimeType,
       mediaStream: {
         connect: {
-          id: activeMediaStream.id
-        }
-      }
+          id: activeMediaStream.id,
+        },
+      },
     },
     update: {
       time: mediaTimestamp,
@@ -81,34 +86,46 @@ async function handleMediaUpload(db, req) {
       mimeType: mediaMimeType,
       mediaStream: {
         connect: {
-          id: activeMediaStream.id
-        }
-      }
-    }
+          id: activeMediaStream.id,
+        },
+      },
+    },
   });
   if (!data) {
     throw new Error('could not insert to database');
   }
   // if overwrite is activated and old file present, remove old file
-  if(activeMediaStream.overwrite && oldPublicIdentifier != -1){
-    await deleteMedia(activeMediaStream,oldPublicIdentifier);
+  if (activeMediaStream.overwrite && oldPublicIdentifier != -1) {
+    await deleteMedia(activeMediaStream, oldPublicIdentifier);
   }
   return publicIdentifier;
 }
 
 async function deleteMedia(mediaStream, publicIdentifier) {
-  fs.unlink(`${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewingProcess.id}/${mediaStream.id}/${publicIdentifier}`, (err) => {
-    if (err) throw new Error(err);
-  });
+  fs.unlink(
+    `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewingProcess.id}/${
+      mediaStream.id
+    }/${publicIdentifier}`,
+    (err) => {
+      if (err) throw new Error(err);
+    }
+  );
 }
 
 async function deleteTempMedia(mediaFileName) {
-  fs.unlink(process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp', (err) => {
-    if (err) throw new Error(err);
-  });
+  fs.unlink(
+    process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp',
+    (err) => {
+      if (err) throw new Error(err);
+    }
+  );
 }
 
-async function moveAndRenameTempFile(mediaStream, mediaFileName, mediaMimeType) {
+async function moveAndRenameTempFile(
+  mediaStream,
+  mediaFileName,
+  mediaMimeType
+) {
   let tempFileNameAndLocation =
     process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp';
   // TODO sync with supported MIME-Types..
@@ -121,14 +138,16 @@ async function moveAndRenameTempFile(mediaStream, mediaFileName, mediaMimeType) 
     finalFileEnding = '.jpg';
     break;
   case 'IMAGE_JPEG':
-    finalFileEnding =  '.jpeg';
+    finalFileEnding = '.jpeg';
     break;
   default:
     await deleteTempMedia(mediaFileName);
     throw new Error('unsupported MIME-Type');
   }
   let finalFileName = crypto.randomBytes(16).toString('hex') + finalFileEnding;
-  let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewingProcess.id}/${mediaStream.id}/${finalFileName}`;
+  let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${
+    mediaStream.brewingProcess.id
+  }/${mediaStream.id}/${finalFileName}`;
   try {
     await fs.copyFile(tempFileNameAndLocation, finalFileNameAndLocation);
     await deleteTempMedia(mediaFileName);
@@ -141,10 +160,18 @@ async function moveAndRenameTempFile(mediaStream, mediaFileName, mediaMimeType) 
 
 async function createMediaFolder(brewingProcessId, mediaStreamId) {
   try {
-    await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/' + brewingProcessId + '/' + mediaStreamId, { recursive: true });
+    await fs.mkdir(
+      process.env.MAIN_FILES_DIRECTORY +
+      '/' +
+      brewingProcessId +
+      '/' +
+      mediaStreamId,
+      { recursive: true }
+    );
     // check for temp folder and create if not existing
-    if (!fs.existsSync(process.env.MAIN_FILES_DIRECTORY + '/temp')){
-      await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/temp'),  { recursive: true };
+    if (!fs.existsSync(process.env.MAIN_FILES_DIRECTORY + '/temp')) {
+      await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/temp'),
+      { recursive: true };
     }
   } catch (err) {
     throw new Error(err);
@@ -157,11 +184,15 @@ async function createMediaFolder(brewingProcessId, mediaStreamId) {
 async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
   let folder;
   // case, if brewing process was deleted
-  if(!mediaStreamId){
+  if (!mediaStreamId) {
     folder = process.env.MAIN_FILES_DIRECTORY + '/' + brewingProcessId;
-  }
-  else{
-    folder = process.env.MAIN_FILES_DIRECTORY + '/' + brewingProcessId + '/' + mediaStreamId;
+  } else {
+    folder =
+      process.env.MAIN_FILES_DIRECTORY +
+      '/' +
+      brewingProcessId +
+      '/' +
+      mediaStreamId;
   }
   try {
     await fs.rmdir(folder, { recursive: true });
@@ -170,7 +201,6 @@ async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
   }
 }
 
-
 /* Multer "Stuff" */
 // Stores a file in a temp directory. Actual "persistence" of file is done after entry was inserted to database.
 const storage = multer.diskStorage({
@@ -178,25 +208,33 @@ const storage = multer.diskStorage({
     cb(null, process.env.MAIN_FILES_DIRECTORY + '/temp');
   },
   filename: function (req, file, cb) {
-    cb(null, req.body.mediaStreamName + new Date(req.body.mediaTimestamp).getTime() + '.temp');
-  }
+    cb(
+      null,
+      req.body.mediaStreamName +
+      new Date(req.body.mediaTimestamp).getTime() +
+      '.temp'
+    );
+  },
 });
 
 const fileFilter = (req, file, cb) => {
   // check íf user is authenticated before actually uploading anything
   // to prevent malicious stuff. Actual check if image is "needed/wanted"
   // comes afterwards and might result in deletion of image.
-  try{
-    checkUserPermissions({request:{user: req.user}}, ['ADMIN']);
+  try {
+    checkUserPermissions({ request: { user: req.user } }, ['ADMIN']);
     // TODO Mimetype sync with database (which mime types are accepted)
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' ||  file.mimetype === 'image/png') {
+    if (
+      file.mimetype === 'image/jpeg' ||
+      file.mimetype === 'image/jpg' ||
+      file.mimetype === 'image/png'
+    ) {
       cb(null, true);
     } else {
       // rejects storing a file
       cb(null, false);
     }
-  }
-  catch(err){
+  } catch (err) {
     cb(null, false);
   }
 };
@@ -204,15 +242,14 @@ const fileFilter = (req, file, cb) => {
 const uploadFile = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 5
+    fileSize: 1024 * 1024 * 5,
   },
-  fileFilter: fileFilter
+  fileFilter: fileFilter,
 });
-
 
 module.exports = {
   handleMediaUpload,
   uploadFile,
   createMediaFolder,
-  deleteMediaFolder
+  deleteMediaFolder,
 };

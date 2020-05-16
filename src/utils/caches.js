@@ -28,7 +28,25 @@ async function activeMediaStreamsCache(ctx, update) {
   return cachedMediaStreams;
 }
 
+/* Helper function that maintains a list of all received sensor values (regardless of active graph or not) */
+var sensorDataCache = new Map();
+function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
+  if (topic != null && sensorValue != null && sensorTimeStamp != null) {
+    let newEntry = { sensorValue: sensorValue, sensorTimeStamp: sensorTimeStamp };
+    sensorDataCache.set(topic, newEntry);
+  }
+  else{
+    throw Error('Sensor Cache: Missing values to add');
+  }
+}
+
+function cachedSensorData() {
+  return sensorDataCache;
+}
+
 module.exports = {
   activeGraphCache,
   activeMediaStreamsCache,
+  addSensorDataToCache,
+  cachedSensorData
 };

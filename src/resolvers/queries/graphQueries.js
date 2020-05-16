@@ -1,5 +1,6 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 const { reduceGraphDataEvenly } = require('../../utils/reduceGraphDataEvenly');
+const { cachedSensorData } = require('../../utils/caches');
 
 const graphQueries = {
   async graphs(parent, { dataPoints, active }, ctx, info) {
@@ -29,7 +30,22 @@ const graphQueries = {
     // reduce returned graph data evenly across time
     graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);
     return graph;
+  },
+
+  async latestSensorData(parent, args, ctx) {
+    checkUserPermissions(ctx, ['ADMIN']);
+    let returnArray = [];
+    cachedSensorData().forEach(
+      (value, key) =>
+        returnArray.push({
+          sensorName: key, sensorTimeStamp: value.sensorTimeStamp, sensorValue: value.sensorValue
+        })
+    );
+    return returnArray;
   }
+
 };
+
+
 
 module.exports = { graphQueries };

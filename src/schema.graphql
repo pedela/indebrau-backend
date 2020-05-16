@@ -7,6 +7,7 @@ type Query {
     dataPoints: Int
     active: Boolean # default false (if not set, return all graphs)
   ): [Graph!]!
+  latestSensorData: [sensorData!]!
   graph(id: ID!, dataPoints: Int): Graph # admin and participating user
   # admin
   mediaStreams(
@@ -124,4 +125,10 @@ type User {
 
 type SuccessMessage {
   message: String
+}
+
+type sensorData {
+ sensorName: String!
+ sensorTimeStamp: DateTime!
+ sensorValue: String!
 }

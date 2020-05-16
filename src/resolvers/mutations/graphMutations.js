@@ -1,4 +1,4 @@
-const { activeGraphCache } = require('../../utils/caches');
+const { activeGraphCache, addSensorDataToCache } = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const graphMutations = {
@@ -49,6 +49,8 @@ const graphMutations = {
 
   async addGraphData(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
+    // add value to sensor data cache first
+    addSensorDataToCache(args.sensorName, args.sensorValue, args.sensorTimeStamp);
     // fetch from cache
     var activeGraphs = await activeGraphCache(ctx);
     // get active graph with matching sensor name

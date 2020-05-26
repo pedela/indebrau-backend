@@ -20,7 +20,7 @@ const server = new GraphQLServer({
   resolverValidationOptions: {
     requireResolversForResolveType: false
   },
-  context: req => ({ ...req, db })
+  context: (req) => ({ ...req, db })
 });
 
 server.express.use(cookieParser());
@@ -37,12 +37,10 @@ server.express.use(async (req, res, next) => {
     if (Authorization) {
       const token = Authorization.replace('Bearer ', '');
       userId = jwt.verify(token, process.env.APP_SECRET).userId;
-
     } else if (cookieToken) {
       userId = jwt.verify(cookieToken, process.env.APP_SECRET).userId;
     }
-  }
-  catch (err){
+  } catch (err) {
     return res.status(401).end(err.toString());
   }
   if (userId) {
@@ -59,19 +57,19 @@ server.express.use(bodyParser.json());
 
 // first uploads a file (admin only!) to local folder, then puts it in database
 // Be aware: mediaName and timestamp HAVE to be first in the body for this to work!
-server.express.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
-  handleMediaUpload(db, req)
-    .then(
-      (identifier) => {
+server.express.post(
+  '/uploadMedia',
+  uploadFile.single('mediaData'),
+  (req, res) => {
+    handleMediaUpload(db, req)
+      .then((identifier) => {
         return res.status(201).end(identifier);
-      }
-    )
-    .catch(
-      error => {
+      })
+      .catch((error) => {
         return res.status(500).end(error.toString());
-      }
-    );
-});
+      });
+  }
+);
 
 server.start(
   {
@@ -80,7 +78,7 @@ server.start(
       origin: process.env.FRONTEND_URL
     }
   },
-  deets => {
+  (deets) => {
     console.log(`Server is now running on port http://localhost:${deets.port}`);
   }
 );

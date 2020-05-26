@@ -18,7 +18,7 @@ const graphQueries = {
     );
 
     // reduce returned graph data evenly across time
-    graphs.map(graph => {
+    graphs.map((graph) => {
       graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);
     });
     return graphs;
@@ -35,17 +35,15 @@ const graphQueries = {
   async latestSensorData(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     let returnArray = [];
-    cachedSensorData().forEach(
-      (value, key) =>
-        returnArray.push({
-          sensorName: key, sensorTimeStamp: value.sensorTimeStamp, sensorValue: value.sensorValue
-        })
+    cachedSensorData().forEach((value, key) =>
+      returnArray.push({
+        sensorName: key,
+        sensorTimeStamp: value.sensorTimeStamp,
+        sensorValue: value.sensorValue
+      })
     );
     return returnArray;
   }
-
 };
-
-
 
 module.exports = { graphQueries };

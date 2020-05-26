@@ -10,7 +10,7 @@ function checkUserPermissions(
   }
   if (!permissionsNeeded) return;
   const matchedPermissions = ctx.request.user.permissions.filter(
-    permissionTheyHave => permissionsNeeded.includes(permissionTheyHave)
+    (permissionTheyHave) => permissionsNeeded.includes(permissionTheyHave)
   );
 
   // not the needed user role
@@ -25,7 +25,7 @@ function checkUserPermissions(
   // user tries to access brewing process, check if she participates
   if (brewingProcessId && !ctx.request.user.permissions.includes('ADMIN')) {
     let found = false;
-    ctx.request.user.participatingBrewingProcesses.map(brewingProcess => {
+    ctx.request.user.participatingBrewingProcesses.map((brewingProcess) => {
       if (brewingProcess.id == brewingProcessId) {
         // user has permission
         found = true;
@@ -41,8 +41,8 @@ function checkUserPermissions(
   // user tries to access graph, check if she participates
   if (graphId && !ctx.request.user.permissions.includes('ADMIN')) {
     let found = false;
-    ctx.request.user.participatingBrewingProcesses.map(brewingProcess => {
-      brewingProcess.graphs.map(graph => {
+    ctx.request.user.participatingBrewingProcesses.map((brewingProcess) => {
+      brewingProcess.graphs.map((graph) => {
         if (graph.id == graphId) {
           // user has permission
           found = true;

@@ -128,7 +128,7 @@ type SuccessMessage {
 }
 
 type sensorData {
- sensorName: String!
- sensorTimeStamp: DateTime!
- sensorValue: String!
+  sensorName: String!
+  sensorTimeStamp: DateTime!
+  sensorValue: String!
 }

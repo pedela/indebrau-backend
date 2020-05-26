@@ -1,4 +1,7 @@
-const { activeGraphCache, addSensorDataToCache } = require('../../utils/caches');
+const {
+  activeGraphCache,
+  addSensorDataToCache
+} = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const graphMutations = {
@@ -11,19 +14,22 @@ const graphMutations = {
       data: { active: false }
     });
     // 2. create graph
-    const createdGraph = await ctx.db.mutation.createGraph({
-      data: {
-        name: args.name,
-        sensorName: args.sensorName,
-        updateFrequency: args.updateFrequency,
-        active: true,
-        brewingProcess: {
-          connect: {
-            id: args.brewingProcessId
+    const createdGraph = await ctx.db.mutation.createGraph(
+      {
+        data: {
+          name: args.name,
+          sensorName: args.sensorName,
+          updateFrequency: args.updateFrequency,
+          active: true,
+          brewingProcess: {
+            connect: {
+              id: args.brewingProcessId
+            }
           }
         }
-      }
-    }, info);
+      },
+      info
+    );
     // update cache
     await activeGraphCache(ctx, true);
     if (!createdGraph) {
@@ -50,7 +56,11 @@ const graphMutations = {
   async addGraphData(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     // add value to sensor data cache first
-    addSensorDataToCache(args.sensorName, args.sensorValue, args.sensorTimeStamp);
+    addSensorDataToCache(
+      args.sensorName,
+      args.sensorValue,
+      args.sensorTimeStamp
+    );
     // fetch from cache
     var activeGraphs = await activeGraphCache(ctx);
     // get active graph with matching sensor name

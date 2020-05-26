@@ -1,6 +1,9 @@
 const { activeMediaStreamsCache } = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
-const { createMediaFolder, deleteMediaFolder } = require('../../utils/mediaFileHandling');
+const {
+  createMediaFolder,
+  deleteMediaFolder
+} = require('../../utils/mediaFileHandling');
 
 const mediaStreamMutations = {
   async createMediaStream(parent, args, ctx) {
@@ -38,8 +41,7 @@ const mediaStreamMutations = {
     await activeMediaStreamsCache(ctx, true);
     if (!createdMediaStream) {
       throw new Error('Problem creating new media stream');
-    }
-    else {
+    } else {
       // create folder for media and return
       await createMediaFolder(args.brewingProcessId, createdMediaStream.id);
       return createdMediaStream.id;

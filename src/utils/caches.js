@@ -32,10 +32,12 @@ async function activeMediaStreamsCache(ctx, update) {
 var sensorDataCache = new Map();
 function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
   if (topic != null && sensorValue != null && sensorTimeStamp != null) {
-    let newEntry = { sensorValue: sensorValue, sensorTimeStamp: sensorTimeStamp };
+    let newEntry = {
+      sensorValue: sensorValue,
+      sensorTimeStamp: sensorTimeStamp
+    };
     sensorDataCache.set(topic, newEntry);
-  }
-  else{
+  } else {
     throw Error('Sensor Cache: Missing values to add');
   }
 }

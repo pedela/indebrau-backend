@@ -29,10 +29,10 @@ async function handleMediaUpload(db, req) {
       oldEnoughLatestMediaFile = await db.query.mediaFiles(
         {
           where: {
-            AND: [{ mediaStream: { id: activeMediaStream.id } }],
+            AND: [{ mediaStream: { id: activeMediaStream.id } }]
           },
           order_by: 'time_ASC',
-          last: 1,
+          last: 1
         },
         '{ id, time, publicIdentifier }'
       );
@@ -76,9 +76,9 @@ async function handleMediaUpload(db, req) {
       mimeType: mediaMimeType,
       mediaStream: {
         connect: {
-          id: activeMediaStream.id,
-        },
-      },
+          id: activeMediaStream.id
+        }
+      }
     },
     update: {
       time: mediaTimestamp,
@@ -86,10 +86,10 @@ async function handleMediaUpload(db, req) {
       mimeType: mediaMimeType,
       mediaStream: {
         connect: {
-          id: activeMediaStream.id,
-        },
-      },
-    },
+          id: activeMediaStream.id
+        }
+      }
+    }
   });
   if (!data) {
     throw new Error('could not insert to database');
@@ -131,18 +131,18 @@ async function moveAndRenameTempFile(
   // TODO sync with supported MIME-Types..
   let finalFileEnding;
   switch (mediaMimeType) {
-  case 'IMAGE_PNG':
-    finalFileEnding = '.png';
-    break;
-  case 'IMAGE_JPG':
-    finalFileEnding = '.jpg';
-    break;
-  case 'IMAGE_JPEG':
-    finalFileEnding = '.jpeg';
-    break;
-  default:
-    await deleteTempMedia(mediaFileName);
-    throw new Error('unsupported MIME-Type');
+    case 'IMAGE_PNG':
+      finalFileEnding = '.png';
+      break;
+    case 'IMAGE_JPG':
+      finalFileEnding = '.jpg';
+      break;
+    case 'IMAGE_JPEG':
+      finalFileEnding = '.jpeg';
+      break;
+    default:
+      await deleteTempMedia(mediaFileName);
+      throw new Error('unsupported MIME-Type');
   }
   let finalFileName = crypto.randomBytes(16).toString('hex') + finalFileEnding;
   let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${
@@ -162,16 +162,16 @@ async function createMediaFolder(brewingProcessId, mediaStreamId) {
   try {
     await fs.mkdir(
       process.env.MAIN_FILES_DIRECTORY +
-      '/' +
-      brewingProcessId +
-      '/' +
-      mediaStreamId,
+        '/' +
+        brewingProcessId +
+        '/' +
+        mediaStreamId,
       { recursive: true }
     );
     // check for temp folder and create if not existing
     if (!fs.existsSync(process.env.MAIN_FILES_DIRECTORY + '/temp')) {
       await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/temp'),
-      { recursive: true };
+        { recursive: true };
     }
   } catch (err) {
     throw new Error(err);
@@ -204,17 +204,17 @@ async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
 /* Multer "Stuff" */
 // Stores a file in a temp directory. Actual "persistence" of file is done after entry was inserted to database.
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function(req, file, cb) {
     cb(null, process.env.MAIN_FILES_DIRECTORY + '/temp');
   },
-  filename: function (req, file, cb) {
+  filename: function(req, file, cb) {
     cb(
       null,
       req.body.mediaStreamName +
-      new Date(req.body.mediaTimestamp).getTime() +
-      '.temp'
+        new Date(req.body.mediaTimestamp).getTime() +
+        '.temp'
     );
-  },
+  }
 });
 
 const fileFilter = (req, file, cb) => {
@@ -242,14 +242,14 @@ const fileFilter = (req, file, cb) => {
 const uploadFile = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 5,
+    fileSize: 1024 * 1024 * 5
   },
-  fileFilter: fileFilter,
+  fileFilter: fileFilter
 });
 
 module.exports = {
   handleMediaUpload,
   uploadFile,
   createMediaFolder,
-  deleteMediaFolder,
+  deleteMediaFolder
 };

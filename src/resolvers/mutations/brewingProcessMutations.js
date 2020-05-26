@@ -1,4 +1,7 @@
-const { activeGraphCache, activeMediaStreamsCache } = require('../../utils/caches');
+const {
+  activeGraphCache,
+  activeMediaStreamsCache
+} = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 const { deleteMediaFolder } = require('../../utils/mediaFileHandling');
 

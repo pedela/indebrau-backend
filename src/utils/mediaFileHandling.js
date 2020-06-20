@@ -61,7 +61,6 @@ async function handleMediaUpload(db, req) {
     oldMediaFileId = oldEnoughLatestMediaFile[0].id;
     oldPublicIdentifier = oldEnoughLatestMediaFile[0].publicIdentifier;
   }
-  console.log(oldMediaFileId);
   // if all checks passed until here, copy file to final destination and insert / update to database
   let publicIdentifier = await moveAndRenameTempFile(
     activeMediaStream,

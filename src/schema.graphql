@@ -5,7 +5,7 @@ type Query {
     data_points: Int
     active: Boolean # default false (if not set, return all graphs)
   ): [Graph!]!
-  latestSensorData: [sensorData!]!
+  latestSensorData: [SensorData!]!
   graph(id: ID!, data_points: Int): Graph # admin and participating user
   # admin
   mediaStreams(
@@ -71,9 +71,9 @@ type User {
   id: ID!
   email: String!
   name: String!
-  permissions: [Permission!]!
-  participating_brewing_processes: [BrewingProcess!]!
   token: String! #instead of password
+  permissions: [Permission!]!
+  UserToBrewingProcess: [BrewingProcess!]!
 }
 
 type BrewingProcess {
@@ -81,18 +81,18 @@ type BrewingProcess {
   name: String!
   description: String!
   active_steps: [BrewingStep!]
-  graphs: [Graph!]
-  users: [User!]
-  media_streams: [MediaStream!]
   start: DateTime
   end: DateTime
+  Graph: [Graph!]
+  UserToBrewingProcess: [User!]
+  MediaStream: [MediaStream!]
 }
 
 type SuccessMessage {
   message: String
 }
 
-type sensorData {
+type SensorData {
   sensor_name: String!
   sensor_time_stamp: DateTime!
   sensor_value: String!
@@ -104,15 +104,15 @@ type Graph {
   sensor_name: String!
   active: Boolean!
   update_frequency: Int!
-  brewing_process: BrewingProcess!
-  graph_data: [GraphData!]
+  BrewingProcess: BrewingProcess!
+  GraphData: [GraphData!]
 }
 
 type GraphData {
   id: ID!
   time: DateTime!
   value: String!
-  graph: Graph!
+  Graph: Graph!
 }
 
 type MediaStream {
@@ -121,8 +121,8 @@ type MediaStream {
   overwrite: Boolean!
   active: Boolean!
   update_frequency: Int!
-  brewing_process: BrewingProcess!
-  mediaFiles: [MediaFile!]
+  BrewingProcess: BrewingProcess!
+  MediaFile: [MediaFile!]
 }
 
 type MediaFile {
@@ -130,7 +130,7 @@ type MediaFile {
   time: DateTime!
   public_identifier: String!
   mime_type: MimeType!
-  media_stream: MediaStream!
+  MediaStream: MediaStream!
 }
 
 scalar DateTime

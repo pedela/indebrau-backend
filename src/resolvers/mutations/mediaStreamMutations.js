@@ -13,22 +13,21 @@ const mediaStreamMutations = {
     // (arguably, there could be multiple media streams (of multiple brewing processes)
     // recording the same media files. Or, there could be multiple brewing processes per
     // media stream. Same goes for graphs..)
-    await ctx.db.mutation.updateManyMediaStreams({
-      where: { active: true, mediaFilesName: args.mediaFilesName },
+    await ctx.prisma.mediaStream.updateMany({
+      where: { active: true, media_files_name: args.media_files_name },
       data: { active: false }
     });
     // 2. create media stream
-    const createdMediaStream = await ctx.db.mutation.createMediaStream(
+    const createdMediaStream = await ctx.prisma.mediaStream.create(
       {
         data: {
-          mediaFilesName: args.mediaFilesName,
-          updateFrequency: args.updateFrequency,
+          media_files_name: args.media_files_name,
+          update_frequency: args.update_frequency,
           overwrite: args.overwrite,
-          brewingSteps: { set: args.steps },
           active: true,
-          brewingProcess: {
+          BrewingProcess: {
             connect: {
-              id: args.brewingProcessId
+              id: parseInt(args.brewing_process_id)
             }
           }
         }
@@ -43,33 +42,32 @@ const mediaStreamMutations = {
       throw new Error('Problem creating new media stream');
     } else {
       // create folder for media and return
-      await createMediaFolder(args.brewingProcessId, createdMediaStream.id);
+      await createMediaFolder(args.brewing_process_id, createdMediaStream.id);
       return createdMediaStream.id;
     }
   },
 
-  async deleteMediaStream(parent, args, ctx, info) {
+  async deleteMediaStream(parent, { id }, ctx, info) {
     checkUserPermissions(ctx, ['ADMIN']);
-    const where = { id: args.id };
-    // first get mediaFile list and brewing process id of stream
+    const where = { id: parseInt(id) };
+    // first, get brewing process id of stream
     // TODO check if process could be found, throw (meaningful) error otherwise
-    const { brewingProcess } = await ctx.db.query.mediaStream(
-      { where },
-      '{ brewingProcess {id} }'
-    );
+    const { brewing_process_id } = await ctx.prisma.mediaStream.findOne({
+      where
+    });
     // now delete stream
-    const deletedMediaStream = await ctx.db.mutation.deleteMediaStream(
+    const deletedMediaStream = await ctx.prisma.mediaStream.delete(
       { where },
       info
     );
     // check, if stream was deleted from database
     if (!deletedMediaStream) {
-      throw new Error('Problem deleting media stream with id: ' + args.id);
+      throw new Error('Problem deleting media stream with id: ' + id);
     }
     // update cache since stream was deleted in db
     await activeMediaStreamsCache(ctx, true);
     // finally, remove media from disk
-    await deleteMediaFolder(brewingProcess.id, args.id);
+    await deleteMediaFolder(brewing_process_id, id);
     return deletedMediaStream;
   }
 };

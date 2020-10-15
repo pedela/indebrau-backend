@@ -7,18 +7,19 @@ const mediaStreamQueries = {
     if (active) {
       activeStreams = { active: active };
     }
-    const mediaStreams = await ctx.db.query.mediaStreams(
+    const mediaStreams = await ctx.prisma.mediaStream.findMany(
       {
         where: { ...activeStreams }
       },
       info
     );
+    console.log(mediaStreams);
     return mediaStreams;
   },
 
   async mediaStream(parent, { id }, ctx, info) {
     checkUserPermissions(ctx, ['USER'], undefined, id);
-    const mediaStream = await ctx.db.query.mediaStream(
+    const mediaStream = await ctx.prisma.mediaStream.findOne(
       { where: { id: id } },
       info
     );

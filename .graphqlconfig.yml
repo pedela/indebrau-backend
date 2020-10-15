@@ -4,7 +4,3 @@ projects:
     extensions:
       endpoints:
         default: http://localhost:process.env.PORT
-  database:
-    schemaPath: src/generated/prisma.graphql
-    extensions:
-      prisma: database/prisma.yml

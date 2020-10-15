@@ -3,32 +3,35 @@ const { reduceGraphDataEvenly } = require('../../utils/reduceGraphDataEvenly');
 const { cachedSensorData } = require('../../utils/caches');
 
 const graphQueries = {
-  async graphs(parent, { dataPoints, active }, ctx, info) {
+  async graphs(parent, { data_points, active }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-
     let activeGraphs = null;
     if (active) {
       activeGraphs = { active: active };
     }
-    const graphs = await ctx.db.query.graphs(
-      {
-        where: { ...activeGraphs }
-      },
-      info
-    );
-
-    // reduce returned graph data evenly across time
+    const graphs = await ctx.prisma.graph.findMany({
+      where: { ...activeGraphs },
+      include: {
+        GraphData: {}
+      }
+    });
+    // reduce returned graph data evenly over time
     graphs.map((graph) => {
-      graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);
+      graph.GraphData = reduceGraphDataEvenly(graph.GraphData, data_points);
     });
     return graphs;
   },
 
-  async graph(parent, { id, dataPoints }, ctx, info) {
+  async graph(parent, { id, data_points }, ctx) {
     checkUserPermissions(ctx, ['USER'], undefined, id);
-    const graph = await ctx.db.query.graph({ where: { id: id } }, info);
-    // reduce returned graph data evenly across time
-    graph.graphData = reduceGraphDataEvenly(graph.graphData, dataPoints);
+    const graph = await ctx.prisma.graph.findOne({
+      where: { id: id },
+      include: {
+        GraphData: {}
+      }
+    });
+    // reduce returned graph data evenly over time
+    graph.GraphData = reduceGraphDataEvenly(graph.GraphData, data_points);
     return graph;
   },
 
@@ -37,9 +40,9 @@ const graphQueries = {
     let returnArray = [];
     cachedSensorData().forEach((value, key) =>
       returnArray.push({
-        sensorName: key,
-        sensorTimeStamp: value.sensorTimeStamp,
-        sensorValue: value.sensorValue
+        sensor_name: key,
+        sensor_time_stamp: value.sensor_time_stamp,
+        sensor_value: value.sensor_value
       })
     );
     return returnArray;

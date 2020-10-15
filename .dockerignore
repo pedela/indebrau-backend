@@ -1,5 +1,6 @@
 node_modules
 npm-debug.log
-src/generated
 *.env
 indebrau-media
+.git
+prisma/.env

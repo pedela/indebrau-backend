@@ -1,36 +1,34 @@
 {
   "name": "indebrau-backend",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "description": "Provides a backend for indebrau",
   "repository": "https://github.com/PedeLa/indebrau-backend",
   "scripts": {
-    "deploy": "npm run prisma && npm run getSchema && npm run start",
-    "prisma": "prisma deploy",
-    "getSchema": "graphql get-schema --project database",
+    "deploy": "npm run prisma && npm run start",
+    "prisma": "npx prisma introspect && npx prisma generate",
     "start": "node -r dotenv/config src/index.js",
     "dev": "nodemon -e js,graphql -x node --inspect -r dotenv/config src/index.js"
   },
   "engines": {
-    "node": "~12.14.0",
-    "npm": "~6.13.4"
+    "node": "~12.19.0",
+    "npm": "~6.14.8"
   },
   "dependencies": {
+    "@prisma/client": "2.9.0",
     "bcryptjs": "2.4.3",
     "body-parser": "1.19.0",
     "cookie-parser": "1.4.5",
+    "dotenv": "8.2.0",
+    "fs-extra": "9.0.1",
     "graphql-yoga": "1.18.3",
     "jsonwebtoken": "8.5.1",
-    "prisma-binding": "2.3.16",
-    "multer": "1.4.2",
-    "dotenv": "8.2.0"
+    "multer": "1.4.2"
   },
   "devDependencies": {
-    "eslint": "7.6.0",
-    "graphql-cli": "3.0.14",
-    "nodemon": "2.0.4",
-    "npm-run-all": "4.1.5",
-    "prisma": "1.34.10"
+    "@prisma/cli": "2.9.0",
+    "eslint": "7.11.0",
+    "nodemon": "2.0.5"
   },
   "author": "Peter de Lange",
   "license": "ISC"

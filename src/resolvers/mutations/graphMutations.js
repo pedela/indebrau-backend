@@ -55,7 +55,7 @@ const graphMutations = {
     // add value to sensor data cache first
     addSensorDataToCache(
       args.sensor_name,
-      args.sensor_valme,
+      args.sensor_value,
       args.sensor_time_stamp
     );
     // fetch from cache
@@ -80,11 +80,14 @@ const graphMutations = {
           {
             where: {
               AND: [
-                { graph: { id: activeGraph.id } },
-                { time_gt: new Date(earliestDate).toJSON() }
+                { Graph: { id: activeGraph.id } },
+
+                {
+                  time: { gt: new Date(earliestDate) }
+                }
               ]
             },
-            first: 1
+            take: 1
           },
           '{ id, time }'
         );
@@ -112,7 +115,7 @@ const graphMutations = {
       data: {
         time: args.sensor_time_stamp,
         value: args.sensor_value,
-        graph: {
+        Graph: {
           connect: {
             id: activeGraph.id
           }

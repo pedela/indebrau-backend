@@ -4,9 +4,9 @@ DROP TABLE IF EXISTS "public"."User",
 "public"."Graph",
 "public"."GraphData",
 "public"."MediaStream",
-"public"."MediaFile";
+"public"."MediaFile" CASCADE;
 
-DROP TYPE IF EXISTS permission, brewing_step, mime_type;
+DROP TYPE IF EXISTS permission, brewing_step, mime_type CASCADE;
 
 CREATE TYPE permission AS ENUM ('ADMIN', 'USER');
 

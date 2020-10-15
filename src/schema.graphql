@@ -1,14 +1,12 @@
-# import * from "./generated/prisma.graphql"
-
 type Query {
   me: User
   # admin
   graphs(
-    dataPoints: Int
+    data_points: Int
     active: Boolean # default false (if not set, return all graphs)
   ): [Graph!]!
   latestSensorData: [sensorData!]!
-  graph(id: ID!, dataPoints: Int): Graph # admin and participating user
+  graph(id: ID!, data_points: Int): Graph # admin and participating user
   # admin
   mediaStreams(
     active: Boolean # default false (if not set, return all mediaStreams)
@@ -25,17 +23,17 @@ type Mutation {
 
   # admin
   addGraphData(
-    sensorName: String!
-    sensorTimeStamp: DateTime!
-    sensorValue: String!
+    sensor_name: String!
+    sensor_time_stamp: DateTime!
+    sensor_value: String!
   ): GraphData!
 
   # admin
   createGraph(
     name: String!
-    sensorName: String!
-    updateFrequency: Int!
-    brewingProcessId: ID!
+    sensor_name: String!
+    update_frequency: Int!
+    brewing_process_id: ID!
   ): Graph!
 
   # admin
@@ -43,11 +41,10 @@ type Mutation {
 
   # admin
   createMediaStream(
-    mediaFilesName: String!
-    brewingSteps: [BrewingStep!]!
+    media_files_name: String!
     overwrite: Boolean!
-    updateFrequency: Int!
-    brewingProcessId: ID!
+    update_frequency: Int!
+    brewing_process_id: ID!
   ): ID!
 
   # admin
@@ -56,62 +53,18 @@ type Mutation {
   # admin
   createBrewingProcess(
     name: String!
-    startNow: Boolean # default: no
+    start_now: Boolean # default: no
     description: String!
-    brewingProcessDetails: DetailsInput!
   ): BrewingProcess!
 
   # admin
   advanceBrewingProcess(
     id: ID!
-    newActiveSteps: [BrewingStep!]!
+    new_active_steps: [BrewingStep!]!
   ): BrewingProcess!
 
   # admin
   deleteBrewingProcess(id: ID!): BrewingProcess!
-}
-
-input DetailsInput {
-  # predetermined recipe values
-  # hops only added via hop additions
-  malts: [IngredientInput!]!
-  yeast: IngredientInput!
-
-  mashWaterLiter: Float!
-  spargingWaterLiter: Float!
-  yieldsLiter: Float!
-  carbonizationGramPerLiter: Float!
-  mashInTemperature: Float!
-  mashSteps: [StepInput!]!
-  spargingTemperature: Float!
-  boilingMinutes: Int!
-  boilHopAdditions: [HopAddition!]!
-  dryHopping: IngredientInput
-  fermentationSteps: [StepInput!]!
-
-  # to be added during/after brewing
-  originalExtractPlato: Float
-  pitchingTemperature: Float
-  alcoholPercent: Float
-  conditioningDays: Int # days until botteling
-}
-
-input IngredientInput {
-  name: String!
-  amountGram: Float!
-  details: String
-  type: IngredientType!
-}
-
-input StepInput {
-  durationMinutes: Int!
-  temperature: Float!
-  details: String
-}
-
-input HopAddition {
-  hop: IngredientInput! # add hops here
-  minutesAfterBoilStart: Int!
 }
 
 type User {
@@ -119,8 +72,20 @@ type User {
   email: String!
   name: String!
   permissions: [Permission!]!
-  participatingBrewingProcesses: [BrewingProcess!]!
+  participating_brewing_processes: [BrewingProcess!]!
   token: String! #instead of password
+}
+
+type BrewingProcess {
+  id: ID!
+  name: String!
+  description: String!
+  active_steps: [BrewingStep!]
+  graphs: [Graph!]
+  users: [User!]
+  media_streams: [MediaStream!]
+  start: DateTime
+  end: DateTime
 }
 
 type SuccessMessage {
@@ -128,7 +93,70 @@ type SuccessMessage {
 }
 
 type sensorData {
-  sensorName: String!
-  sensorTimeStamp: DateTime!
-  sensorValue: String!
+  sensor_name: String!
+  sensor_time_stamp: DateTime!
+  sensor_value: String!
+}
+
+type Graph {
+  id: ID!
+  name: String!
+  sensor_name: String!
+  active: Boolean!
+  update_frequency: Int!
+  brewing_process: BrewingProcess!
+  graph_data: [GraphData!]
+}
+
+type GraphData {
+  id: ID!
+  time: DateTime!
+  value: String!
+  graph: Graph!
+}
+
+type MediaStream {
+  id: ID!
+  media_files_name: String!
+  overwrite: Boolean!
+  active: Boolean!
+  update_frequency: Int!
+  brewing_process: BrewingProcess!
+  mediaFiles: [MediaFile!]
+}
+
+type MediaFile {
+  id: ID!
+  time: DateTime!
+  public_identifier: String!
+  mime_type: MimeType!
+  media_stream: MediaStream!
+}
+
+scalar DateTime
+
+enum BrewingStep {
+  MALT_CRUSHING
+  HEATING_UP
+  MASH_IN
+  MASHING
+  HEATING_SPARGE
+  LAUTERING
+  SPARGING
+  BOILING
+  CHILLING
+  FERMENTING
+  CONDITIONING
+  BOTTLED
+}
+
+enum Permission {
+  ADMIN
+  USER
+}
+
+enum MimeType {
+  IMAGE_PNG
+  IMAGE_JPG
+  IMAGE_JPEG
 }

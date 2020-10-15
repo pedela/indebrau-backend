@@ -1,9 +1,0 @@
-# The endpoint of your Prisma API
-endpoint: ${env:PRISMA_ENDPOINT}
-
-# The file containing the definition of your data model.
-datamodel: datamodel.graphql
-
-# If specified, the `secret` must be used to generate a JWT
-secret: ${env:PRISMA_SECRET}
-

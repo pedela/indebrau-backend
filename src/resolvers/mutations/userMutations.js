@@ -6,8 +6,8 @@ const userMutations = {
     const password = await bcrypt.hash(args.password, 10);
     const name = args.name;
     const email = args.email;
-    const user = await ctx.db.mutation.createUser({
-      data: { name, password, email, permissions: { set: 'USER' } }
+    const user = await ctx.prisma.user.create({
+      data: { name, password, email, permissions: { set: ['USER'] } }
     });
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     ctx.response.cookie('token', token, {
@@ -22,7 +22,7 @@ const userMutations = {
   },
 
   async signin(parent, { email, password }, ctx) {
-    const user = await ctx.db.query.user({ where: { email } });
+    const user = await ctx.prisma.user.findOne({ where: { email } });
     if (!user) {
       throw new Error(`No such user found for email: ${email}`);
     }

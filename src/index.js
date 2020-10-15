@@ -1,5 +1,5 @@
 const { GraphQLServer } = require('graphql-yoga');
-const { Prisma } = require('prisma-binding');
+const { PrismaClient } = require('@prisma/client');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
@@ -7,12 +7,7 @@ const express = require('express');
 const resolvers = require('./resolvers');
 const { uploadFile, handleMediaUpload } = require('./utils/mediaFileHandling');
 
-const db = new Prisma({
-  typeDefs: 'src/generated/prisma.graphql',
-  endpoint: process.env.PRISMA_ENDPOINT,
-  debug: true,
-  secret: process.env.PRISMA_SECRET
-});
+const prisma = new PrismaClient();
 
 const server = new GraphQLServer({
   typeDefs: './src/schema.graphql',
@@ -20,7 +15,7 @@ const server = new GraphQLServer({
   resolverValidationOptions: {
     requireResolversForResolveType: false
   },
-  context: (req) => ({ ...req, db })
+  context: (req) => ({ ...req, prisma })
 });
 
 server.express.use(cookieParser());
@@ -44,9 +39,9 @@ server.express.use(async (req, res, next) => {
     return res.status(401).end(err.toString());
   }
   if (userId) {
-    const user = await db.query.user(
+    const user = await prisma.user.findOne(
       { where: { id: userId } },
-      '{ id, permissions, email, name, participatingBrewingProcesses{id, graphs {id}} }'
+      '{ id, permissions, email, name, participating_brewing_processes{id, graphs {id}} }'
     );
     req.user = user;
   }
@@ -59,13 +54,14 @@ server.express.use(bodyParser.json());
 // Be aware: mediaName and timestamp HAVE to be first in the body for this to work!
 server.express.post(
   '/uploadMedia',
-  uploadFile.single('mediaData'),
+  uploadFile.single('media_data'),
   (req, res) => {
-    handleMediaUpload(db, req)
+    handleMediaUpload(prisma, req)
       .then((identifier) => {
         return res.status(201).end(identifier);
       })
       .catch((error) => {
+        console.log(error);
         return res.status(500).end(error.toString());
       });
   }

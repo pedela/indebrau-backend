@@ -2,11 +2,12 @@
 
 ## Development
 
-1. Prerequisites: Node v13.5.0, Prisma 1.34.10 (`npm install -g prisma`), GraphQL-CLI (`npm install -g graphql-cli`)
+1. Prerequisites: Node v13.5.0, GraphQL-CLI (`npm install -g graphql-cli`)
 
 2. Rename '.env.sample' to '.env' and adjust values
 
 3. Run
+
 ```
 npm install
 prisma deploy
@@ -15,7 +16,9 @@ npm run dev
 ```
 
 ## Deployment
+
 Build latest docker image:
+
 ```
 docker build -t indebrau/indebrau-backend .
 ```
@@ -27,4 +30,11 @@ Manual editing may be required in that case.
 (Either use a "fresh" volume or bash inside the container and wipe database.)
 
 ## Misc
+
 Please keep in mind, that if changing the media directory in the environment variables, the docker-compose script (mounting the directory as a volume) has to be adjusted as well.
+
+### Variable naming convention
+
+Everything that can be considered "data" and "API" is snake_case due to some Prisma related restrictions.
+"Temporary" or "logical" variables follow camelCase notation.
+Objects are PascalCase'd.

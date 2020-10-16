@@ -8,7 +8,7 @@ const { checkUserPermissions } = require('./checkUserPermissions');
 Put's media files in database. Matches media name with stream name!
 */
 async function handleMediaUpload(prisma, req) {
-  checkUserPermissions({ request: { user: req.user } }, ['ADMIN']);
+  checkUserPermissions({ req: { user: req.user } }, ['ADMIN']);
   let { media_stream_name, media_time_stamp, media_mime_type } = req.body;
   let mediaFileName = media_stream_name + new Date(media_time_stamp).getTime();
 
@@ -221,7 +221,7 @@ const fileFilter = (req, file, cb) => {
   // to prevent malicious stuff. Actual check if image is "needed/wanted"
   // comes afterwards and might result in deletion of image.
   try {
-    checkUserPermissions({ request: { user: req.user } }, ['ADMIN']);
+    checkUserPermissions({ req: { user: req.user } }, ['ADMIN']);
     // TODO Mimetype sync with database (which mime types are accepted)
     if (
       file.mimetype === 'image/jpeg' ||

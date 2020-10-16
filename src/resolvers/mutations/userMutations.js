@@ -31,7 +31,7 @@ const userMutations = {
       throw new Error('Invalid password');
     }
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
-    ctx.response.cookie('token', token, {
+    ctx.res.cookie('token', token, {
       httpOnly: true,
       //      secure: true, // add in deployment to ensure https
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
@@ -43,7 +43,7 @@ const userMutations = {
   },
 
   signout(parent, args, ctx) {
-    ctx.response.clearCookie('token');
+    ctx.res.clearCookie('token');
     return { message: 'Goodbye!' };
   }
 };

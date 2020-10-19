@@ -12,16 +12,10 @@ async function reduceGraphDataEvenly(graphData, dataPoints) {
     let pickPoint = Math.ceil(j * nthElement);
     // prevent overshoot and put last graphData entry into last reduced data entry
     if (pickPoint > graphData.length - 1 || j == dataPoints - 1) {
-      reducedData[j] = {
-        time: graphData[graphData.length - 1].time,
-        value: graphData[graphData.length - 1].value
-      };
+      reducedData[j] = graphData[graphData.length - 1];
       break;
     } else {
-      reducedData[j] = {
-        time: graphData[pickPoint].time,
-        value: graphData[pickPoint].value
-      };
+      reducedData[j] = graphData[pickPoint];
     }
   }
 

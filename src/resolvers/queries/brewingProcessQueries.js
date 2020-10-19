@@ -1,17 +1,16 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const brewingProcessQueries = {
-  async brewingProcesses(parent, args, ctx, info) {
+  async brewingProcesses(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    return await ctx.prisma.brewingProcess.findMany({}, info);
+    return await ctx.prisma.brewingProcess.findMany({});
   },
 
-  async brewingProcess(parent, args, ctx, info) {
+  async brewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['USER'], args.id);
-    return await ctx.prisma.brewingProcess.findOne(
-      { where: { id: args.id } },
-      info
-    );
+    return await ctx.prisma.brewingProcess.findOne({
+      where: { id: parseInt(args.id) }
+    });
   }
 };
 

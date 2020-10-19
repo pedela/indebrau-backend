@@ -28,10 +28,4 @@ docker build -t indebrau/indebrau-backend .
 
 ## Misc
 
-Please keep in mind, that if changing the media directory in the environment variables, the docker-compose script (mounting the directory as a volume) has to be adjusted as well.
-
-### Variable naming convention
-
-Everything that can be considered "data" and "API" is snake_case due to some Prisma related restrictions.
-"Temporary" or "logical" variables follow camelCase notation.
-Objects are PascalCase'd.
+Please keep in mind, that if changing the media directory in the environment variables, a docker-compose script (mounting the directory as a volume) has to be adjusted as well.

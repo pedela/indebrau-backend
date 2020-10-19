@@ -4,13 +4,11 @@ const crypto = require('crypto');
 const { activeMediaStreamsCache } = require('./caches');
 const { checkUserPermissions } = require('./checkUserPermissions');
 
-/*
-Put's media files in database. Matches media name with stream name!
-*/
+/* Put's media files in database. Matches media name with stream name! */
 async function handleMediaUpload(prisma, req) {
   checkUserPermissions({ req: { user: req.user } }, ['ADMIN']);
-  let { media_stream_name, media_time_stamp, media_mime_type } = req.body;
-  let mediaFileName = media_stream_name + new Date(media_time_stamp).getTime();
+  let { mediaStreamName, mediaTimeStamp, mediaMimeType } = req.body;
+  let mediaFileName = mediaStreamName + new Date(mediaTimeStamp).getTime();
 
   let activeMediaStreams = await activeMediaStreamsCache({ prisma });
   let activeMediaStream = null;
@@ -20,26 +18,17 @@ async function handleMediaUpload(prisma, req) {
     let mediaStream = activeMediaStreams[i];
     if (
       mediaStream.active &&
-      !mediaStream.media_files_name.localeCompare(media_stream_name)
+      !mediaStream.mediaFilesName.localeCompare(mediaStreamName)
     ) {
       // first matching active media stream is the only machting one
       activeMediaStream = mediaStream;
       // now fetch the latest entry's timestamp
       // TODO: Fetch in cache (and update cache after insert, more fail-proof against wrong inserts, also for graphs)
-      oldEnoughLatestMediaFile = await prisma.mediaFile.findMany(
-        {
-          where: {
-            AND: [{ MediaStream: { id: activeMediaStream.id } }]
-          },
-          orderBy: [
-            {
-              time: 'asc'
-            }
-          ],
-          take: 1
-        },
-        '{ id, time, public_identifier }'
-      );
+      oldEnoughLatestMediaFile = await prisma.mediaFile.findMany({
+        where: { mediaStream: { id: activeMediaStream.id } },
+        orderBy: { time: 'asc' },
+        take: 1
+      });
       break;
     }
   }
@@ -50,8 +39,8 @@ async function handleMediaUpload(prisma, req) {
   }
   // check if old media file was found (=> if so, check if new data too recent and delete media)
   const earliestDate =
-    new Date(media_time_stamp).getTime() -
-    activeMediaStream.update_frequency * 1000; // last entry must be at least this old
+    new Date(mediaTimeStamp).getTime() -
+    activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
   if (
     oldEnoughLatestMediaFile[0] != null &&
     new Date(oldEnoughLatestMediaFile[0].time).getTime() > earliestDate
@@ -63,35 +52,27 @@ async function handleMediaUpload(prisma, req) {
   let oldPublicIdentifier = -1;
   if (oldEnoughLatestMediaFile[0] != null && activeMediaStream.overwrite) {
     oldMediaFileId = oldEnoughLatestMediaFile[0].id;
-    oldPublicIdentifier = oldEnoughLatestMediaFile[0].public_identifier;
+    oldPublicIdentifier = oldEnoughLatestMediaFile[0].publicIdentifier;
   }
   // if all checks passed until here, copy file to final destination and insert / update to database
   let publicIdentifier = await moveAndRenameTempFile(
     activeMediaStream,
     mediaFileName,
-    media_mime_type
+    mediaMimeType
   );
   const data = await prisma.mediaFile.upsert({
     where: { id: oldMediaFileId },
     create: {
-      time: media_time_stamp,
-      public_identifier: publicIdentifier,
-      mime_type: media_mime_type,
-      MediaStream: {
-        connect: {
-          id: activeMediaStream.id
-        }
-      }
+      time: mediaTimeStamp,
+      publicIdentifier: publicIdentifier,
+      mimeType: mediaMimeType,
+      mediaStream: { connect: { id: activeMediaStream.id } }
     },
     update: {
-      time: media_time_stamp,
-      public_identifier: publicIdentifier,
-      mime_type: media_mime_type,
-      MediaStream: {
-        connect: {
-          id: activeMediaStream.id
-        }
-      }
+      time: mediaTimeStamp,
+      publicIdentifier: publicIdentifier,
+      mimeType: mediaMimeType,
+      mediaStream: { connect: { id: activeMediaStream.id } }
     }
   });
   if (!data) {
@@ -106,7 +87,7 @@ async function handleMediaUpload(prisma, req) {
 
 async function deleteMedia(mediaStream, publicIdentifier) {
   fs.unlink(
-    `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewing_process_id}/${mediaStream.id}/${publicIdentifier}`,
+    `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewingProcessId}/${mediaStream.id}/${publicIdentifier}`,
     (err) => {
       if (err) throw new Error(err);
     }
@@ -146,7 +127,7 @@ async function moveAndRenameTempFile(
       throw new Error('unsupported MIME-Type');
   }
   let finalFileName = crypto.randomBytes(16).toString('hex') + finalFileEnding;
-  let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewing_process_id}/${mediaStream.id}/${finalFileName}`;
+  let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewingProcessId}/${mediaStream.id}/${finalFileName}`;
   try {
     await fs.copyFile(tempFileNameAndLocation, finalFileNameAndLocation);
     await deleteTempMedia(mediaFileName);
@@ -161,10 +142,10 @@ async function createMediaFolder(brewingProcessId, mediaStreamId) {
   try {
     await fs.mkdir(
       process.env.MAIN_FILES_DIRECTORY +
-        '/' +
-        brewingProcessId +
-        '/' +
-        mediaStreamId,
+      '/' +
+      brewingProcessId +
+      '/' +
+      mediaStreamId,
       { recursive: true }
     );
     // check for temp folder and create if not existing
@@ -209,9 +190,9 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     cb(
       null,
-      req.body.media_stream_name +
-        new Date(req.body.media_time_stamp).getTime() +
-        '.temp'
+      req.body.mediaStreamName +
+      new Date(req.body.mediaTimeStamp).getTime() +
+      '.temp'
     );
   }
 });

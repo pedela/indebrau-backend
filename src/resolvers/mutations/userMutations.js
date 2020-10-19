@@ -10,14 +10,13 @@ const userMutations = {
       data: { name, password, email, permissions: { set: ['USER'] } }
     });
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
-    ctx.response.cookie('token', token, {
+    ctx.res.cookie('token', token, {
       httpOnly: true,
       //      secure: true, // add in deployment to ensure https
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
     return {
-      ...user,
-      token: token
+      user
     };
   },
 
@@ -36,10 +35,7 @@ const userMutations = {
       //      secure: true, // add in deployment to ensure https
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
-    return {
-      ...user,
-      token: token
-    };
+    return user;
   },
 
   signout(parent, args, ctx) {

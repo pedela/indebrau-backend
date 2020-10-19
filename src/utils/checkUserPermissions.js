@@ -1,10 +1,5 @@
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
-function checkUserPermissions(
-  ctx,
-  permissionsNeeded,
-  brewingProcessId,
-  graphId
-) {
+function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId) {
   if (!ctx.req || !ctx.req.user) {
     throw new Error('You must be logged in to do that!');
   }
@@ -16,15 +11,15 @@ function checkUserPermissions(
   // not the needed user role
   if (!matchedPermissions.length) {
     throw new Error(
-      `You do not have sufficient permissions: ${permissionsNeeded}, You Have: ${ctx.request.user.permissions}`
+      `You do not have sufficient permissions: ${permissionsNeeded}, You Have: ${ctx.req.user.permissions}`
     );
   }
 
   // user tries to access brewing process, check if she participates
   if (brewingProcessId && !ctx.req.user.permissions.includes('ADMIN')) {
     let found = false;
-    ctx.req.user.participatingBrewingProcesses.map((brewingProcess) => {
-      if (brewingProcess.id == brewingProcessId) {
+    ctx.req.user.participatingBrewingProcesses.map((process) => {
+      if (process.brewingProcess.id == brewingProcessId) {
         // user has permission
         found = true;
       }
@@ -39,8 +34,8 @@ function checkUserPermissions(
   // user tries to access graph, check if she participates
   if (graphId && !ctx.req.user.permissions.includes('ADMIN')) {
     let found = false;
-    ctx.req.user.participatingBrewingProcesses.map((brewingProcess) => {
-      brewingProcess.graphs.map((graph) => {
+    ctx.req.user.participatingBrewingProcesses.map((process) => {
+      process.brewingProcess.graphs.map((graph) => {
         if (graph.id == graphId) {
           // user has permission
           found = true;

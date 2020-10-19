@@ -8,75 +8,76 @@ datasource db {
 }
 
 model BrewingProcess {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  description          String
-  active_steps         brewing_step[]
-  start                DateTime?
-  end                  DateTime?
-  Graph                Graph[]
-  MediaStream          MediaStream[]
-  UserToBrewingProcess UserToBrewingProcess[]
+  id                 Int                    @id @default(autoincrement())
+  name               String
+  description        String
+  activeSteps        BrewingStep[]
+  start              DateTime?
+  end                DateTime?
+  graphs             Graph[]
+  mediaStreams       MediaStream[]
+  participatingUsers UserToBrewingProcess[]
 }
 
 model Graph {
-  id                 Int             @id @default(autoincrement())
-  name               String
-  sensor_name        String
-  active             Boolean
-  update_frequency   Int
-  brewing_process_id Int?
-  BrewingProcess     BrewingProcess? @relation(fields: [brewing_process_id], references: [id])
-  GraphData          GraphData[]
+  id               Int             @id @default(autoincrement())
+  name             String
+  sensorName       String
+  active           Boolean
+  updateFrequency  Int
+  brewingProcessId Int?
+  brewingProcess   BrewingProcess? @relation(fields: [brewingProcessId], references: [id])
+  graphData        GraphData[]
 }
 
 model GraphData {
-  id       Int      @id @default(autoincrement())
-  time     DateTime
-  value    String
-  graph_id Int?
-  Graph    Graph?   @relation(fields: [graph_id], references: [id])
+  id      Int      @id @default(autoincrement())
+  time    DateTime
+  value   String
+  graphId Int?
+  graph   Graph?   @relation(fields: [graphId], references: [id])
 }
 
 model MediaFile {
-  id                Int          @id @default(autoincrement())
-  time              DateTime
-  public_identifier String
-  mime_type         mime_type[]
-  media_stream_id   Int?
-  MediaStream       MediaStream? @relation(fields: [media_stream_id], references: [id])
+  id               Int          @id @default(autoincrement())
+  time             DateTime
+  publicIdentifier String
+  mimeType         MimeType[]
+  mediaStreamId    Int?
+  mediaStream      MediaStream? @relation(fields: [mediaStreamId], references: [id])
 }
 
 model MediaStream {
-  id                 Int             @id @default(autoincrement())
-  media_files_name   String
-  overwrite          Boolean
-  active             Boolean
-  update_frequency   Int
-  brewing_process_id Int?
-  BrewingProcess     BrewingProcess? @relation(fields: [brewing_process_id], references: [id])
-  MediaFile          MediaFile[]
+  id               Int             @id @default(autoincrement())
+  mediaFilesName   String
+  overwrite        Boolean
+  active           Boolean
+  updateFrequency  Int
+  brewingProcessId Int?
+  brewingProcess   BrewingProcess? @relation(fields: [brewingProcessId], references: [id])
+  mediaFiles       MediaFile[]
 }
 
 model User {
-  id                   Int                    @id @default(autoincrement())
-  email                String                 @unique
-  name                 String
-  password             String
-  permissions          permission[]
-  UserToBrewingProcess UserToBrewingProcess[]
+  id                            Int                    @id @default(autoincrement())
+  email                         String                 @unique
+  name                          String
+  password                      String
+  permissions                   Permission[]
+  participatingBrewingProcesses UserToBrewingProcess[]
 }
 
 model UserToBrewingProcess {
-  user_id            Int            @default(autoincrement())
-  brewing_process_id Int            @default(autoincrement())
-  BrewingProcess     BrewingProcess @relation(fields: [brewing_process_id], references: [id])
-  User               User           @relation(fields: [user_id], references: [id])
+  id               Int             @id @default(autoincrement())
+  userId           Int?
+  brewingProcessId Int?
+  brewingProcess   BrewingProcess? @relation(fields: [brewingProcessId], references: [id])
+  user             User?           @relation(fields: [userId], references: [id])
 
-  @@id([user_id, brewing_process_id])
+  @@unique([userId, brewingProcessId], name: "UserToBrewingProcess_userId_brewingProcessId_key")
 }
 
-enum brewing_step {
+enum BrewingStep {
   BOILING
   BOTTLED
   CHILLING
@@ -90,13 +91,13 @@ enum brewing_step {
   SPARGING
 }
 
-enum mime_type {
+enum MimeType {
   IMAGE_JPEG
   IMAGE_JPG
   IMAGE_PNG
 }
 
-enum permission {
+enum Permission {
   ADMIN
   USER
 }

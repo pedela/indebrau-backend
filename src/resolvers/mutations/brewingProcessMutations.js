@@ -1,7 +1,4 @@
-const {
-  activeGraphCache,
-  activeMediaStreamsCache
-} = require('../../utils/caches');
+const { activeGraphCache, activeMediaStreamsCache } = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 const { deleteMediaFolder } = require('../../utils/mediaFileHandling');
 
@@ -9,7 +6,7 @@ const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     let start = null;
-    if (args.start_now) {
+    if (args.startNow) {
       start = new Date().toJSON();
     }
     let input = {
@@ -17,12 +14,8 @@ const brewingProcessMutations = {
       description: args.description,
       start: start
     };
-
-    // and send to db
     const createdBrewingProcess = await ctx.prisma.brewingProcess.create({
-      data: {
-        ...input
-      }
+      data: { ...input }
     });
     if (!createdBrewingProcess) {
       throw new Error('problem creating brewing process');
@@ -30,43 +23,39 @@ const brewingProcessMutations = {
     return createdBrewingProcess;
   },
 
-  async advanceBrewingProcess(parent, { id, new_active_steps }, ctx, info) {
+  async advanceBrewingProcess(parent, { id, newActiveSteps }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(id) };
-    let activeStepsQueryResult = await ctx.prisma.brewingProcess.find(
+    let activeStepsQuery = await ctx.prisma.brewingProcess.findOne({
       where,
-      '{ active_steps }'
-    );
-    if (!activeStepsQueryResult) {
+      select: { activeSteps: true }
+    });
+    let activeSteps = activeStepsQuery.activeSteps;
+    if (!activeSteps) {
       throw new Error('Cannot find brewing process with id ' + id);
     }
-    let { activeSteps } = activeStepsQueryResult;
-
     // TODO: I guess here has to be a lot of logic (and additional arguments passed in the mutation)
     // for now, let's settle by only updating the steps
     // 1. remove finished steps
     for (let i = 0; i < activeSteps.length; i++) {
-      if (!new_active_steps.includes(activeSteps[i])) {
+      if (!newActiveSteps.includes(activeSteps[i])) {
         activeSteps.splice(activeSteps.indexOf(activeSteps[i]), 1);
       }
     }
     // 2. add new active steps
-    for (let i = 0; i < new_active_steps.length; i++) {
-      if (!activeSteps.includes(new_active_steps[i])) {
-        activeSteps.push(new_active_steps[i]);
+    for (let i = 0; i < newActiveSteps.length; i++) {
+      if (!activeSteps.includes(newActiveSteps[i])) {
+        activeSteps.push(newActiveSteps[i]);
       }
     }
-    const data = { active_steps: { set: activeSteps } };
-    return await ctx.prisma.brewingProcess.update({ where, data }, info);
+    const data = { activeSteps: { set: activeSteps } };
+    return await ctx.prisma.brewingProcess.update({ where, data });
   },
 
-  async deleteBrewingProcess(parent, args, ctx, info) {
+  async deleteBrewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    const where = { id: parseInt(args.id) };
-    const deletedBrewingProcess = await ctx.prisma.brewingProcess.delete(
-      { where },
-      info
-    );
+    const where = { where: { id: parseInt(args.id) } };
+    const deletedBrewingProcess = await ctx.prisma.brewingProcess.delete(where);
     // update caches (associated graphs and streams are deleted cascadingly)
     await activeGraphCache(ctx, true);
     await activeMediaStreamsCache(ctx, true);
@@ -75,7 +64,7 @@ const brewingProcessMutations = {
     }
     // finally, remove media from disk
     await deleteMediaFolder(parseInt(args.id));
-    return deletedBrewingProcess;
+    return { message: 'Deleted!' };
   }
 };
 

@@ -3,12 +3,9 @@ var cachedActiveGraphs = null;
 async function activeGraphCache(ctx, update) {
   if (cachedActiveGraphs == null || update) {
     console.log('refreshing active graph list...');
-    cachedActiveGraphs = await ctx.prisma.graph.findMany(
-      { where: { active: true } },
-      `{
-      id, sensor_name, active, update_frequency
-      }`
-    );
+    cachedActiveGraphs = await ctx.prisma.graph.findMany({
+      where: { active: true }
+    });
   }
   return cachedActiveGraphs;
 }
@@ -18,23 +15,22 @@ var cachedMediaStreams = null;
 async function activeMediaStreamsCache(ctx, update) {
   if (cachedMediaStreams == null || update) {
     console.log('refreshing active media stream list...');
-    cachedMediaStreams = await ctx.prisma.mediaStream.findMany(
-      { where: { active: true } },
-      `{
-      id, media_files_name, active, update_frequency, overwrite, brewing_process { id }
-      }`
-    );
+    cachedMediaStreams = await ctx.prisma.mediaStream.findMany({
+      where: { active: true },
+      include: {
+        brewingProcess: { select: { id: true } }
+      }
+    });
   }
   return cachedMediaStreams;
 }
 
-/* Helper function that maintains a list of all received sensor values (regardless of active graph or not) */
-var sensorDataCache = new Map();
+var sensorDataCache = null;
 function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
   if (topic != null && sensorValue != null && sensorTimeStamp != null) {
     let newEntry = {
-      sensor_value: sensorValue,
-      sensor_time_stamp: sensorTimeStamp
+      sensorValue: sensorValue,
+      sensorTimeStamp: sensorTimeStamp
     };
     sensorDataCache.set(topic, newEntry);
   } else {

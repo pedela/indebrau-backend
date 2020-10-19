@@ -1,5 +1,6 @@
 const { ApolloServer } = require('apollo-server-express');
 const express = require('express');
+var cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
@@ -20,6 +21,12 @@ const server = new ApolloServer({
 
 // Note, that the order of appearance of the middleware components matters here!
 const app = express();
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(cookieParser());
 
 // decode either auth header (priority!) or passed token and
@@ -42,11 +49,9 @@ app.use(async (req, res, next) => {
     const user = await prisma.user.findOne({
       where: { id: userId },
       include: {
-        UserToBrewingProcess: {
+        participatingBrewingProcesses: {
           select: {
-            BrewingProcess: {
-              select: { id: true, Graph: { select: { id: true } } }
-            }
+            brewingProcess: { select: { id: true, graphs: { select: { id: true } } } }
           }
         }
       }
@@ -61,7 +66,7 @@ app.use(bodyParser.json());
 app.use('/media', express.static(process.env.MAIN_FILES_DIRECTORY));
 // first uploads a file (admin only!) to local folder, then puts it in database
 // Be aware: medianame and timestamp HAVE to be first in the body for this to work!
-app.post('/uploadMedia', uploadFile.single('media_data'), (req, res) => {
+app.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
   handleMediaUpload(prisma, req)
     .then((identifier) => {
       return res.status(201).end(identifier);
@@ -72,7 +77,8 @@ app.post('/uploadMedia', uploadFile.single('media_data'), (req, res) => {
     });
 });
 
-server.applyMiddleware({ app, path: '/' });
+// Disable cors here because it's configured on express level
+server.applyMiddleware({ app, path: '/', cors: false });
 
 app.listen({ port: process.env.PORT }, () =>
   console.log(

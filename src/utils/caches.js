@@ -22,7 +22,7 @@ async function activeMediaStreamsCache(ctx, update) {
     console.log('refreshing active media stream list...');
     try {
       cachedMediaStreams = await ctx.prisma.mediaStream.findMany({
-        where: { actsive: true }
+        where: { active: true }
       });
     } catch (e) {
       console.log(e);

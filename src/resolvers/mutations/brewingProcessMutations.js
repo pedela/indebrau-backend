@@ -17,6 +17,7 @@ const brewingProcessMutations = {
     const createdBrewingProcess = await ctx.prisma.brewingProcess.create({
       data: { ...input }
     });
+    console.log(JSON.stringify(createdBrewingProcess));
     if (!createdBrewingProcess) {
       throw new Error('problem creating brewing process');
     }
@@ -117,7 +118,7 @@ const brewingProcessMutations = {
       await deleteMediaFolder(parseInt(args.id));
     } catch (e) {
       console.log(e);
-      throw new Error('Problems querying database');
+      throw new Error('Problems deleting media folders for brewing process ' + args.id);
     }
     return { message: 'Deleted!' };
   }

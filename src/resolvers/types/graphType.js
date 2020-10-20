@@ -1,12 +1,12 @@
-const { reduceGraphDataEvenly } = require('../../utils/reduceGraphDataEvenly');
+const { reduceDataEvenly } = require('../../utils/reduceDataEvenly');
 
 const graphType = {
   async graphData(parent, { dataPoints }, ctx) {
     let graphData = await ctx.prisma.graphData.findMany({
       where: { graphId: parent.id }
     });
-    // reduce returned graph data evenly over time
-    graphData = reduceGraphDataEvenly(graphData, dataPoints);
+    // reduce returned graph data evenly
+    graphData = reduceDataEvenly(graphData, dataPoints);
     return graphData;
   },
   async brewingProcess(parent, args, ctx) {

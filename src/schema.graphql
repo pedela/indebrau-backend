@@ -124,7 +124,7 @@ type MediaStream {
   active: Boolean!
   updateFrequency: Int!
   brewingProcess: BrewingProcess!
-  mediaFiles: [MediaFile!]
+  mediaFiles(dataPoints: Int): [MediaFile!]
 }
 
 type MediaFile {

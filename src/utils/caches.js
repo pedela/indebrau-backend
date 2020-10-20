@@ -32,7 +32,8 @@ async function activeMediaStreamsCache(ctx, update) {
   return cachedMediaStreams;
 }
 
-var sensorDataCache = null;
+/* Cache all incoming sensor data (regardless of graphs) */
+var sensorDataCache = new Map();
 function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
   if (topic != null && sensorValue != null && sensorTimeStamp != null) {
     let newEntry = {

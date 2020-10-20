@@ -29,6 +29,7 @@ CREATE TABLE "public"."BrewingProcess" (
   id SERIAL PRIMARY KEY NOT NULL,
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
+  "bottlesAvailable" INTEGER,
   "activeSteps" "BrewingStep" ARRAY,
   "start" TIMESTAMP,
   "end" TIMESTAMP

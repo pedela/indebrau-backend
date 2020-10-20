@@ -3,9 +3,14 @@ var cachedActiveGraphs = null;
 async function activeGraphCache(ctx, update) {
   if (cachedActiveGraphs == null || update) {
     console.log('refreshing active graph list...');
-    cachedActiveGraphs = await ctx.prisma.graph.findMany({
-      where: { active: true }
-    });
+    try {
+      cachedActiveGraphs = await ctx.prisma.graph.findMany({
+        where: { active: true }
+      });
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems updating cache');
+    }
   }
   return cachedActiveGraphs;
 }
@@ -15,12 +20,14 @@ var cachedMediaStreams = null;
 async function activeMediaStreamsCache(ctx, update) {
   if (cachedMediaStreams == null || update) {
     console.log('refreshing active media stream list...');
-    cachedMediaStreams = await ctx.prisma.mediaStream.findMany({
-      where: { active: true },
-      include: {
-        brewingProcess: { select: { id: true } }
-      }
-    });
+    try {
+      cachedMediaStreams = await ctx.prisma.mediaStream.findMany({
+        where: { actsive: true }
+      });
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems updating cache');
+    }
   }
   return cachedMediaStreams;
 }

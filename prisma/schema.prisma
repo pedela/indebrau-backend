@@ -11,6 +11,7 @@ model BrewingProcess {
   id                 Int                    @id @default(autoincrement())
   name               String
   description        String
+  bottlesAvailable   Int?
   activeSteps        BrewingStep[]
   start              DateTime?
   end                DateTime?

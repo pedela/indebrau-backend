@@ -23,20 +23,34 @@ const brewingProcessMutations = {
     return createdBrewingProcess;
   },
 
-  async advanceBrewingProcess(parent, { id, newActiveSteps }, ctx) {
+  async advanceBrewingProcess(parent, { brewingProcessId, newActiveSteps }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    const where = { id: parseInt(id) };
-    let activeStepsQuery = await ctx.prisma.brewingProcess.findOne({
-      where,
-      select: { activeSteps: true }
-    });
-    let activeSteps = activeStepsQuery.activeSteps;
-    if (!activeSteps) {
-      throw new Error('Cannot find brewing process with id ' + id);
+    const where = { id: parseInt(brewingProcessId) };
+    let data = {};
+    if (newActiveSteps.length == 0) {
+      throw new Error('No new active steps!');
+    }
+    let brewingProcess;
+    try {
+      brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems querying database');
+    }
+    if (!brewingProcess) {
+      throw new Error('Cannot find brewing process with id ' + brewingProcessId);
+    }
+    if (brewingProcess.end) {
+      throw new Error('Brewing process with id ' + brewingProcessId + ' has ended!');
+    }
+    // start process if not yet started
+    if (!brewingProcess.start) {
+      data.start = new Date().toJSON();
     }
     // TODO: I guess here has to be a lot of logic (and additional arguments passed in the mutation)
     // for now, let's settle by only updating the steps
     // 1. remove finished steps
+    let activeSteps = brewingProcess.activeSteps;
     for (let i = 0; i < activeSteps.length; i++) {
       if (!newActiveSteps.includes(activeSteps[i])) {
         activeSteps.splice(activeSteps.indexOf(activeSteps[i]), 1);
@@ -48,22 +62,63 @@ const brewingProcessMutations = {
         activeSteps.push(newActiveSteps[i]);
       }
     }
-    const data = { activeSteps: { set: activeSteps } };
-    return await ctx.prisma.brewingProcess.update({ where, data });
+    data.activeSteps = { set: activeSteps };
+    try {
+      return await ctx.prisma.brewingProcess.update({ where, data });
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems querying database');
+    }
+  },
+
+  async changeBottlesAvailable(parent, { brewingProcessId, bottlesAvailable }, ctx) {
+    checkUserPermissions(ctx, ['ADMIN']);
+    const where = { id: parseInt(brewingProcessId) };
+    let brewingProcess;
+    try {
+      brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems querying database');
+    }
+    if (!brewingProcess) {
+      throw new Error('Cannot find brewing process with id ' + brewingProcessId);
+    }
+    let activeSteps = brewingProcess.activeSteps;
+    if (brewingProcess.end) {
+      throw new Error('Brewing process with id' + brewingProcessId + ' not active!');
+    }
+    if (!activeSteps.includes('BOTTLED')) {
+      throw new Error('Brewing process with id' + brewingProcessId + ' not bottled yet!');
+    }
+    const data = { bottlesAvailable: bottlesAvailable };
+    try {
+      return await ctx.prisma.brewingProcess.update({ where, data });
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems querying database');
+    }
   },
 
   async deleteBrewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { where: { id: parseInt(args.id) } };
-    const deletedBrewingProcess = await ctx.prisma.brewingProcess.delete(where);
+    try {
+      await ctx.prisma.brewingProcess.delete(where);
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems querying database');
+    }
     // update caches (associated graphs and streams are deleted cascadingly)
     await activeGraphCache(ctx, true);
     await activeMediaStreamsCache(ctx, true);
-    if (!deletedBrewingProcess) {
-      throw new Error('Problem deleting brewing process');
-    }
     // finally, remove media from disk
-    await deleteMediaFolder(parseInt(args.id));
+    try {
+      await deleteMediaFolder(parseInt(args.id));
+    } catch (e) {
+      console.log(e);
+      throw new Error('Problems querying database');
+    }
     return { message: 'Deleted!' };
   }
 };

@@ -58,8 +58,14 @@ type Mutation {
 
   # admin
   advanceBrewingProcess(
-    id: ID!
+    brewingProcessId: ID!
     newActiveSteps: [BrewingStep!]!
+  ): BrewingProcess!
+
+  #admin
+  changeBottlesAvailable(
+    brewingProcessId: ID!
+    bottlesAvailable: Int!
   ): BrewingProcess!
 
   # admin
@@ -82,6 +88,7 @@ type BrewingProcess {
   activeSteps: [BrewingStep!]
   start: DateTime
   end: DateTime
+  bottlesAvailable: Int
   graphs: [Graph!]
   participatingUsers: [User!]
   mediaStreams: [MediaStream!]

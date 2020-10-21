@@ -43,7 +43,8 @@ app.use(async (req, res, next) => {
       userId = jwt.verify(cookieToken, process.env.APP_SECRET).userId;
     }
   } catch (err) {
-    return res.status(401).end(err.toString());
+    res.clearCookie('token');
+    return res.status(401).end('unauthorized, please login with correct credentials');
   }
   if (userId) {
     const user = await prisma.user.findOne({

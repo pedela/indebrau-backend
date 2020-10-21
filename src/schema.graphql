@@ -44,7 +44,7 @@ type Mutation {
     overwrite: Boolean!
     updateFrequency: Int!
     brewingProcessId: ID!
-  ): ID!
+  ): MediaStream!
 
   # admin
   deleteMediaStream(id: ID!): SuccessMessage!

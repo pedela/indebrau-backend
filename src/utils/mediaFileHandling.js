@@ -138,6 +138,10 @@ async function moveAndRenameTempFile(
   }
 }
 
+/*
+Creates a media folder for a given mediastream id.
+If brewing process folder does not exist, also creates this partent folder.
+*/
 async function createMediaFolder(brewingProcessId, mediaStreamId) {
   try {
     await fs.mkdir(
@@ -158,9 +162,11 @@ async function createMediaFolder(brewingProcessId, mediaStreamId) {
   }
 }
 
-// Deletes a media folder of a brewing process or media stream
-// beware, from official Docs: In recursive mode, errors are not reported if path does not exist,
-// and operations are retried on failure
+/*
+Deletes a media folder of a brewing process or media stream.
+Beware, from official Docs: In recursive mode, errors are not reported
+if path does not exist, and operations are retried on failure.
+*/
 async function deleteMediaFolder(brewingProcessId, mediaStreamId) {
   let folder;
   // case, if brewing process was deleted

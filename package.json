@@ -8,7 +8,7 @@
     "deploy": "npm run prisma && npm run start",
     "prisma": "npx prisma introspect && npx prisma generate",
     "start": "node -r dotenv/config src/index.js",
-    "dev": "nodemon -e js,graphql -x node --inspect -r dotenv/config src/index.js"
+    "dev": "nodemon -e js,graphql -x node --inspect -r dotenv/config src/index.js | pino-pretty -c -l -t SYS:standard"
   },
   "engines": {
     "node": "~12.19.0",
@@ -22,14 +22,17 @@
     "cookie-parser": "1.4.5",
     "cors": "2.8.5",
     "dotenv": "8.2.0",
+    "express-pino-logger": "5.0.0",
     "fs-extra": "9.0.1",
     "jsonwebtoken": "8.5.1",
-    "multer": "1.4.2"
+    "multer": "1.4.2",
+    "pino": "6.7.0"
   },
   "devDependencies": {
     "@prisma/cli": "2.9.0",
     "eslint": "7.11.0",
-    "nodemon": "2.0.5"
+    "nodemon": "2.0.5",
+    "pino-pretty": "4.3.0"
   },
   "author": "Peter de Lange",
   "license": "ISC"

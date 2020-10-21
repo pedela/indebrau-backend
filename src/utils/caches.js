@@ -1,15 +1,15 @@
+
 /* Helper function that caches active graphs (to speed up inserts). */
 var cachedActiveGraphs = null;
 async function activeGraphCache(ctx, update) {
   if (cachedActiveGraphs == null || update) {
-    console.log('refreshing active graph list...');
+    ctx.logger.app('refreshing active graph list...');
     try {
       cachedActiveGraphs = await ctx.prisma.graph.findMany({
         where: { active: true }
       });
     } catch (e) {
-      console.log(e);
-      throw new Error('Problems updating cache');
+      throw new Error('Problems updating active graph cache');
     }
   }
   return cachedActiveGraphs;
@@ -19,14 +19,13 @@ async function activeGraphCache(ctx, update) {
 var cachedMediaStreams = null;
 async function activeMediaStreamsCache(ctx, update) {
   if (cachedMediaStreams == null || update) {
-    console.log('refreshing active media stream list...');
+    ctx.logger.app('refreshing active media stream list...');
     try {
       cachedMediaStreams = await ctx.prisma.mediaStream.findMany({
         where: { active: true }
       });
     } catch (e) {
-      console.log(e);
-      throw new Error('Problems updating cache');
+      throw new Error('Problems updating media stream cache');
     }
   }
   return cachedMediaStreams;
@@ -42,7 +41,7 @@ function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
     };
     sensorDataCache.set(topic, newEntry);
   } else {
-    throw Error('Sensor cache: Missing values to add');
+    throw new Error('Sensor cache: missing values to add');
   }
 }
 

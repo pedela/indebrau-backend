@@ -1,5 +1,10 @@
 const { ApolloServer } = require('apollo-server-express');
 const express = require('express');
+const pino = require('pino');
+const expressPino = require('express-pino-logger');
+const logger = pino({ level: process.env.LOG_LEVEL, customLevels: { app: 41 } });
+const expressLogger = expressPino({ logger });
+
 var cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
 const cookieParser = require('cookie-parser');
@@ -16,11 +21,17 @@ const resolvers = require('./resolvers');
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: (req) => ({ ...req, prisma })
+  formatError: (err) => {
+    logger.error(err);
+    return err.message;
+  },
+
+  context: (req) => ({ ...req, prisma, logger })
 });
 
 // Note, that the order of appearance of the middleware components matters here!
 const app = express();
+app.use(expressLogger);
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
   credentials: true,
@@ -73,7 +84,7 @@ app.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
       return res.status(201).end(identifier);
     })
     .catch((error) => {
-      console.log(error);
+      logger.error(error);
       return res.status(500).end(error.toString());
     });
 });
@@ -82,7 +93,7 @@ app.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
 server.applyMiddleware({ app, path: '/', cors: false });
 
 app.listen({ port: process.env.PORT }, () =>
-  console.log(
+  logger.app(
     `Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`
   )
 );

@@ -17,7 +17,6 @@ const brewingProcessMutations = {
     const createdBrewingProcess = await ctx.prisma.brewingProcess.create({
       data: { ...input }
     });
-    console.log(JSON.stringify(createdBrewingProcess));
     if (!createdBrewingProcess) {
       throw new Error('problem creating brewing process');
     }
@@ -35,7 +34,6 @@ const brewingProcessMutations = {
     try {
       brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
     } catch (e) {
-      console.log(e);
       throw new Error('Problems querying database');
     }
     if (!brewingProcess) {
@@ -67,7 +65,6 @@ const brewingProcessMutations = {
     try {
       return await ctx.prisma.brewingProcess.update({ where, data });
     } catch (e) {
-      console.log(e);
       throw new Error('Problems querying database');
     }
   },
@@ -79,7 +76,6 @@ const brewingProcessMutations = {
     try {
       brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
     } catch (e) {
-      console.log(e);
       throw new Error('Problems querying database');
     }
     if (!brewingProcess) {
@@ -96,7 +92,6 @@ const brewingProcessMutations = {
     try {
       return await ctx.prisma.brewingProcess.update({ where, data });
     } catch (e) {
-      console.log(e);
       throw new Error('Problems querying database');
     }
   },
@@ -107,7 +102,6 @@ const brewingProcessMutations = {
     try {
       await ctx.prisma.brewingProcess.delete(where);
     } catch (e) {
-      console.log(e);
       throw new Error('Problems querying database');
     }
     // update caches (associated graphs and streams are deleted cascadingly)
@@ -117,7 +111,6 @@ const brewingProcessMutations = {
     try {
       await deleteMediaFolder(parseInt(args.id));
     } catch (e) {
-      console.log(e);
       throw new Error('Problems deleting media folders for brewing process ' + args.id);
     }
     return { message: 'Deleted!' };

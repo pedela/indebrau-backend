@@ -1,7 +1,9 @@
+const { AuthenticationError } = require('apollo-server-express');
+
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
 function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId) {
   if (!ctx.req || !ctx.req.user) {
-    throw new Error('You must be logged in to do that!');
+    throw new AuthenticationError('You must be logged in to do that!');
   }
   if (!permissionsNeeded) return;
   const matchedPermissions = ctx.req.user.permissions.filter(

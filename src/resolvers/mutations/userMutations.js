@@ -15,9 +15,7 @@ const userMutations = {
       //      secure: true, // add in deployment to ensure https
       maxAge: 1000 * 60 * 60 * 24 * 365 // 1 year cookie
     });
-    return {
-      user
-    };
+    return user;
   },
 
   async signin(parent, { email, password }, ctx) {

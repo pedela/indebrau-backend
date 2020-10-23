@@ -1,18 +1,10 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const brewingProcessType = {
-  async graphs(parent, args, ctx) {
-    let graphs = await ctx.prisma.graph.findMany({
+  async brewingSteps(parent, args, ctx) {
+    return await ctx.prisma.brewingStep.findMany({
       where: { brewingProcessId: parent.id }
     });
-    return graphs;
-  },
-
-  async mediaStreams(parent, args, ctx) {
-    let mediaStreams = await ctx.prisma.mediaStream.findMany({
-      where: { brewingProcessId: parent.id }
-    });
-    return mediaStreams;
   },
 
   async participatingUsers(parent, args, ctx) {
@@ -21,13 +13,7 @@ const brewingProcessType = {
     checkUserPermissions(ctx, ['ADMIN']);
     let returnValue = await ctx.prisma.brewingProcess.findMany({
       where: { id: parent.id },
-      select: {
-        participatingUsers: {
-          select: {
-            user: {}
-          }
-        }
-      }
+      select: { participatingUsers: { select: { user: {} } } }
     });
     // get it into the right format...
     let participatingUsers = returnValue[0].participatingUsers;

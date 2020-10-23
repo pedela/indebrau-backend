@@ -4,6 +4,7 @@ const pino = require('pino');
 const expressPino = require('express-pino-logger');
 const logger = pino({ level: process.env.LOG_LEVEL, customLevels: { app: 41 } });
 const expressLogger = expressPino({ logger });
+const { ApolloError } = require('apollo-server-express');
 
 var cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
@@ -22,10 +23,17 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   formatError: (err) => {
-    logger.error(err);
-    return err.message;
+    if (err.extensions.code == 'UNAUTHENTICATED'
+      || err.extensions.code == 'FORBIDDEN') {
+      // we don't need the stacktrace here
+      logger.warn(err.message);
+      return err;
+    }
+    else {
+      logger.error(err);
+      return new ApolloError(err);
+    }
   },
-
   context: (req) => ({ ...req, prisma, logger })
 });
 
@@ -55,16 +63,14 @@ app.use(async (req, res, next) => {
     }
   } catch (err) {
     res.clearCookie('token');
-    return res.status(401).end('unauthorized, please login with correct credentials');
+    return res.status(401).end('unauthorized, please use correct credentials..');
   }
   if (userId) {
     const user = await prisma.user.findOne({
       where: { id: userId },
       include: {
         participatingBrewingProcesses: {
-          select: {
-            brewingProcess: { select: { id: true, graphs: { select: { id: true } } } }
-          }
+          select: { brewingProcess: { select: { id: true } } }
         }
       }
     });
@@ -79,8 +85,9 @@ app.use('/media', express.static(process.env.MAIN_FILES_DIRECTORY));
 // first uploads a file (admin only!) to local folder, then puts it in database
 // Be aware: medianame and timestamp HAVE to be first in the body for this to work!
 app.post('/uploadMedia', uploadFile.single('mediaData'), (req, res) => {
-  handleMediaUpload(prisma, req)
+  handleMediaUpload(prisma, logger, req)
     .then((identifier) => {
+      logger.app('media file uploaded');
       return res.status(201).end(identifier);
     })
     .catch((error) => {

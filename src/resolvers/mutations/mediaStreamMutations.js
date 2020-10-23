@@ -5,79 +5,44 @@ const { createMediaFolder, deleteMediaFolder } = require('../../utils/mediaFileH
 const mediaStreamMutations = {
   async createMediaStream(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    // 1. create media stream
-    let createdMediaStream;
-    try {
-      createdMediaStream = await ctx.prisma.mediaStream.create(
-        {
-          data: {
-            mediaFilesName: args.mediaFilesName,
-            updateFrequency: args.updateFrequency,
-            overwrite: args.overwrite,
-            active: true,
-            brewingProcess: {
-              connect: {
-                id: parseInt(args.brewingProcessId)
-              }
+    // create media stream
+    let createdMediaStream = await ctx.prisma.mediaStream.create(
+      {
+        data: {
+          mediaFilesName: args.mediaFilesName,
+          updateFrequency: args.updateFrequency,
+          overwrite: args.overwrite,
+          brewingStep: {
+            connect: {
+              id: parseInt(args.brewingStepId)
             }
           }
         }
-      );
-      // 2. search for previous active streams with same name and deactivate if exists
-      await ctx.prisma.mediaStream.updateMany({
-        where: {
-          active: true, mediaFilesName: args.mediaFilesName,
-          NOT: { id: createdMediaStream.id }
-        },
-        data: { active: false }
-      });
-    } catch (e) {
-      console.log(e);
-      throw new Error('Problems querying database');
-    }
-    // 3. update cache (since new stream was added)
-    try {
-      await activeMediaStreamsCache(ctx, true);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Caching error');
-    }
-    // 4. create folder for media and return
-    try {
-      await createMediaFolder(args.brewingProcessId, createdMediaStream.id);
-    } catch (e) {
-      console.log(e);
-      throw new Error('Problems creating media folder for media stream ' + createdMediaStream.id);
-    }
+      }
+    );
+    // update cache (since new stream was added)
+    await activeMediaStreamsCache(ctx, true);
+    // create folder for media and return
+    await createMediaFolder(args.brewingStepId, createdMediaStream.id);
+    // TODO what if media folder creation fails -> Rollback needed!
     return createdMediaStream;
   },
 
-  async deleteMediaStream(parent, { id }, ctx) {
+  async deleteMediaStream(parent, { mediaStreamId }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    const where = { id: parseInt(id) };
+    const where = { id: parseInt(mediaStreamId) };
     let mediaStream;
     // first, get brewing process id of stream
-    try {
-      mediaStream = await ctx.prisma.mediaStream.findOne({
-        where
-      });
-    } catch (e) {
-      console.log(e);
-      throw new Error('Problems querying database');
-    }
+    mediaStream = await ctx.prisma.mediaStream.findOne({ where });
     if (!mediaStream) {
-      throw new Error('Media stream with id ' + id + ' does not exist!');
+      throw new Error('Media stream with id ' + mediaStreamId + ' does not exist!');
     }
     // now delete stream
-    const deletedMediaStream = await ctx.prisma.mediaStream.delete({ where });
-    // check, if stream was deleted from database
-    if (!deletedMediaStream) {
-      throw new Error('Problem deleting media stream with id: ' + id);
-    }
+    await ctx.prisma.mediaStream.delete({ where });
     // update cache since stream was deleted in db
     await activeMediaStreamsCache(ctx, true);
     // finally, remove media from disk
-    await deleteMediaFolder(mediaStream.brewingProcessId, id);
+    await deleteMediaFolder(mediaStream.brewingStepId, mediaStreamId);
     return { message: 'Deleted!' };
   }
 };

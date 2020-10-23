@@ -1,27 +1,22 @@
 DROP TABLE IF EXISTS "public"."User",
 "public"."BrewingProcess",
 "public"."UserToBrewingProcess",
+"public"."BrewingStep",
 "public"."Graph",
 "public"."GraphData",
 "public"."MediaStream",
 "public"."MediaFile" CASCADE;
 
-DROP TYPE IF EXISTS "Permission", "BrewingStep", "MimeType" CASCADE;
+DROP TYPE IF EXISTS "Permission", "StepName", "MimeType" CASCADE;
 
 CREATE TYPE "Permission" AS ENUM ('ADMIN', 'USER');
 
-CREATE TYPE "BrewingStep" AS ENUM (
-'MALT_CRUSHING',
-'HEATING_UP',
-'MASH_IN',
-'MASHING',
-'HEATING_SPARGE',
-'SPARGING',
-'BOILING',
-'CHILLING',
+CREATE TYPE "StepName" AS ENUM (
+'PREPARING',
+'BREWING',
 'FERMENTING',
 'CONDITIONING',
-'BOTTLED');
+'BOTTLING');
 
 CREATE TYPE "MimeType" AS ENUM ('IMAGE_PNG', 'IMAGE_JPG', 'IMAGE_JPEG');
 
@@ -30,9 +25,16 @@ CREATE TABLE "public"."BrewingProcess" (
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   "bottlesAvailable" INTEGER,
-  "activeSteps" "BrewingStep" ARRAY,
   "start" TIMESTAMP,
   "end" TIMESTAMP
+);
+
+CREATE TABLE "public"."BrewingStep" (
+  id SERIAL PRIMARY KEY NOT NULL,
+  "name" "StepName" NOT NULL,
+  "start" TIMESTAMP,
+  "end" TIMESTAMP,
+  "brewingProcessId" INTEGER REFERENCES "public"."BrewingProcess"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "public"."User" (
@@ -52,11 +54,9 @@ CREATE TABLE "public"."UserToBrewingProcess" (
 
 CREATE TABLE "public"."Graph" (
   id SERIAL PRIMARY KEY NOT NULL,
-  name VARCHAR(255) NOT NULL,
   "sensorName" VARCHAR(255) NOT NULL,
-  active BOOLEAN NOT NULL,
   "updateFrequency" INTEGER NOT NULL,
-  "brewingProcessId" INTEGER REFERENCES "public"."BrewingProcess"(id) ON DELETE CASCADE
+  "brewingStepId" INTEGER REFERENCES "public"."BrewingStep"(id) ON DELETE SET NULL
 );
 
 CREATE TABLE "public"."GraphData" (
@@ -70,9 +70,8 @@ CREATE TABLE "public"."MediaStream" (
   id SERIAL PRIMARY KEY NOT NULL,
   "mediaFilesName" VARCHAR(255) NOT NULL,
   overwrite BOOLEAN NOT NULL,
-  active BOOLEAN NOT NULL,
   "updateFrequency" INTEGER NOT NULL,
-  "brewingProcessId" INTEGER REFERENCES "public"."BrewingProcess"(id) ON DELETE CASCADE
+  "brewingStepId" INTEGER REFERENCES "public"."BrewingStep"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "public"."MediaFile" (

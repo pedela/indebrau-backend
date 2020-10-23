@@ -1,26 +1,21 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
+const { activeMediaStreamCache } = require('../../utils/caches');
 
 const mediaStreamQueries = {
   async mediaStreams(parent, { active }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    let activeStreams = null;
     if (active) {
-      activeStreams = { active: active };
+      // update so that it returns a fresh instance, not cached results
+      return activeMediaStreamCache(ctx, true);
     }
-    const mediaStreams = await ctx.prisma.mediaStream.findMany(
-      {
-        where: { ...activeStreams }
-      }
-    );
-    return mediaStreams;
+    return await ctx.prisma.mediaStream.findMany();
   },
 
   async mediaStream(parent, { id }, ctx) {
     checkUserPermissions(ctx, ['USER'], undefined, id);
-    const mediaStream = await ctx.prisma.mediaStream.findOne(
+    return await ctx.prisma.mediaStream.findOne(
       { where: { id: parseInt(id) } }
     );
-    return mediaStream;
   }
 };
 

@@ -2,18 +2,16 @@ const { reduceDataEvenly } = require('../../utils/reduceDataEvenly');
 const mediaStreamType = {
   async mediaFiles(parent, { dataPoints }, ctx) {
     let mediaFiles = await ctx.prisma.mediaFile.findMany({
-      where: { mediaStreamId: parent.id }
+      where: { mediaStreamId: parent.id }, orderBy: { time: 'asc' },
     });
     // reduce returned files evenly
-    mediaFiles = reduceDataEvenly(mediaFiles, dataPoints);
-    return mediaFiles;
+    return reduceDataEvenly(mediaFiles, dataPoints);
   },
 
-  async brewingProcess(parent, args, ctx) {
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne({
-      where: { id: parent.brewingProcessId }
+  async brewingStep(parent, args, ctx) {
+    return await ctx.prisma.brewingStep.findOne({
+      where: { id: parent.brewingStep }
     });
-    return brewingProcess;
   }
 };
 

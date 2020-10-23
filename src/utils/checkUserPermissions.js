@@ -1,4 +1,4 @@
-const { AuthenticationError } = require('apollo-server-express');
+const { AuthenticationError, ForbiddenError } = require('apollo-server-express');
 
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
 function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId) {
@@ -12,7 +12,7 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
 
   // not the needed user role
   if (!matchedPermissions.length) {
-    throw new Error(
+    throw new ForbiddenError(
       `You do not have sufficient permissions: ${permissionsNeeded}, You Have: ${ctx.req.user.permissions}`
     );
   }
@@ -20,7 +20,7 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
   // user tries to access brewing process, check if she participates
   if (brewingProcessId && !ctx.req.user.permissions.includes('ADMIN')) {
     let found = false;
-    ctx.req.user.participatingBrewingProcesses.map((process) => {
+    ctx.req.user.participatingBrewingProcesses.map(process => {
       if (process.brewingProcess.id == brewingProcessId) {
         // user has permission
         found = true;
@@ -28,7 +28,7 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
     });
     // no permission
     if (!found) {
-      throw new Error(
+      throw new ForbiddenError(
         `You do not have the right to access brewing process: ${brewingProcessId}`
       );
     }
@@ -36,17 +36,16 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
   // user tries to access graph, check if she participates
   if (graphId && !ctx.req.user.permissions.includes('ADMIN')) {
     let found = false;
-    ctx.req.user.participatingBrewingProcesses.map((process) => {
-      process.brewingProcess.graphs.map((graph) => {
+    ctx.req.user.participatingBrewingProcesses.map(process => {
+      process.brewingProcess.graphs.map(graph => {
         if (graph.id == graphId) {
-          // user has permission
           found = true;
         }
       });
     });
     // no permission
     if (!found) {
-      throw new Error(`You do not have the right to access graph: ${graphId}`);
+      throw new ForbiddenError(`You do not have the right to access graph: ${graphId}`);
     }
   }
 }

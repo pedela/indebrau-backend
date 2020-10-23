@@ -5,113 +5,135 @@ const { deleteMediaFolder } = require('../../utils/mediaFileHandling');
 const brewingProcessMutations = {
   async createBrewingProcess(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    let start = null;
-    if (args.startNow) {
-      start = new Date().toJSON();
-    }
     let input = {
       name: args.name,
       description: args.description,
-      start: start
     };
-    const createdBrewingProcess = await ctx.prisma.brewingProcess.create({
+    // start with preparing state (if startNow is true)
+    if (args.startNow) {
+      input.start = new Date().toJSON();
+      input.brewingSteps = {
+        create: { name: 'PREPARING', start: input.start }
+      };
+    }
+    return await ctx.prisma.brewingProcess.create({
       data: { ...input }
     });
-    if (!createdBrewingProcess) {
-      throw new Error('problem creating brewing process');
-    }
-    return createdBrewingProcess;
   },
 
-  async advanceBrewingProcess(parent, { brewingProcessId, newActiveSteps }, ctx) {
+  async advanceBrewingProcess(parent, { brewingProcessId }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
-    let data = {};
-    if (newActiveSteps.length == 0) {
-      throw new Error('No new active steps!');
-    }
-    let brewingProcess;
-    try {
-      brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
-    } catch (e) {
-      throw new Error('Problems querying database');
-    }
+    //we only need the steps here
+    let brewingProcess = await ctx.prisma.brewingProcess.findOne(
+      { where, select: { end: true, brewingSteps: {} } }
+    );
     if (!brewingProcess) {
       throw new Error('Cannot find brewing process with id ' + brewingProcessId);
+    } else if (brewingProcess.end) {
+      throw new Error('Brewing process with id ' + brewingProcessId + ' has already ended!');
     }
-    if (brewingProcess.end) {
-      throw new Error('Brewing process with id ' + brewingProcessId + ' has ended!');
-    }
-    // start process if not yet started
-    if (!brewingProcess.start) {
-      data.start = new Date().toJSON();
-    }
-    // TODO: I guess here has to be a lot of logic (and additional arguments passed in the mutation)
-    // for now, let's settle by only updating the steps
-    // 1. remove finished steps
-    let activeSteps = brewingProcess.activeSteps;
-    for (let i = 0; i < activeSteps.length; i++) {
-      if (!newActiveSteps.includes(activeSteps[i])) {
-        activeSteps.splice(activeSteps.indexOf(activeSteps[i]), 1);
+    // advance process, based on previous steps (length of array)
+    let data = {};
+    let now = new Date().toJSON();
+    switch (brewingProcess.brewingSteps.length) {
+      case (0): {
+        data.start = now;
+        data.brewingSteps = { create: { name: 'PREPARING', start: now } };
+        break;
+      }
+      case (1): {
+        data.brewingSteps = {
+          create: { name: 'BREWING', start: now },
+          updateMany: {
+            data: { end: now },
+            where: { name: 'PREPARING' },
+          },
+        };
+        break;
+      }
+      case (2): {
+        data.brewingSteps = {
+          create: { name: 'FERMENTING', start: now },
+          updateMany: {
+            data: { end: now },
+            where: { name: 'BREWING' },
+          },
+        };
+        break;
+      }
+      case (3): {
+        data.brewingSteps = {
+          create: { name: 'CONDITIONING', start: now },
+          updateMany: {
+            data: { end: now },
+            where: { name: 'FERMENTING' },
+          },
+        };
+        break;
+      }
+      case (4): {
+        data.brewingSteps = {
+          create: { name: 'BOTTLING', start: now },
+          updateMany: {
+            data: { end: now },
+            where: { name: 'CONDITIONING' },
+          },
+        };
+        break;
+      }
+      // Process ended, no bottles remaining
+      case (5): {
+        data.brewingSteps = {
+          updateMany: {
+            data: { end: now },
+            where: { name: 'BOTTLING' },
+          },
+        };
+        data.end = now;
+        data.bottlesAvailable = 0;
+        break;
       }
     }
-    // 2. add new active steps
-    for (let i = 0; i < newActiveSteps.length; i++) {
-      if (!activeSteps.includes(newActiveSteps[i])) {
-        activeSteps.push(newActiveSteps[i]);
-      }
-    }
-    data.activeSteps = { set: activeSteps };
-    try {
-      return await ctx.prisma.brewingProcess.update({ where, data });
-    } catch (e) {
-      throw new Error('Problems querying database');
-    }
+    // graphs and media streams could become inactive through this action..
+    await activeGraphCache(ctx, true);
+    await activeMediaStreamsCache(ctx, true);
+
+    return await ctx.prisma.brewingProcess.update({ where, data });
   },
 
   async changeBottlesAvailable(parent, { brewingProcessId, bottlesAvailable }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
-    let brewingProcess;
-    try {
-      brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
-    } catch (e) {
-      throw new Error('Problems querying database');
-    }
+    const data = { bottlesAvailable: bottlesAvailable };
+
+    let brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
     if (!brewingProcess) {
       throw new Error('Cannot find brewing process with id ' + brewingProcessId);
     }
-    let activeSteps = brewingProcess.activeSteps;
-    if (brewingProcess.end) {
-      throw new Error('Brewing process with id' + brewingProcessId + ' not active!');
+    if (!brewingProcess.end) {
+      throw new Error('Brewing process with id' + brewingProcessId + ' not ended yet!');
     }
-    if (!activeSteps.includes('BOTTLED')) {
-      throw new Error('Brewing process with id' + brewingProcessId + ' not bottled yet!');
-    }
-    const data = { bottlesAvailable: bottlesAvailable };
-    try {
-      return await ctx.prisma.brewingProcess.update({ where, data });
-    } catch (e) {
-      throw new Error('Problems querying database');
-    }
+    return await ctx.prisma.brewingProcess.update({ where, data });
   },
 
-  async deleteBrewingProcess(parent, args, ctx) {
+  async deleteBrewingProcess(parent, { brewingProcessId }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    const where = { where: { id: parseInt(args.id) } };
-    try {
-      await ctx.prisma.brewingProcess.delete(where);
-    } catch (e) {
-      throw new Error('Problems querying database');
-    }
+    // delete and return steps to delete folders afterwards
+    const { brewingSteps } = await ctx.prisma.brewingProcess.delete({
+      where: { id: parseInt(brewingProcessId) },
+      select: { brewingSteps: {} }
+    });
     // update caches (associated graphs and streams are deleted cascadingly)
     await activeGraphCache(ctx, true);
     await activeMediaStreamsCache(ctx, true);
     // finally, remove media from disk
-    try {
-      await deleteMediaFolder(parseInt(args.id));
-    } catch (e) {
-      throw new Error('Problems deleting media folders for brewing process ' + args.id);
+    for (let i = 0; i < brewingSteps.length; i++) {
+      try {
+        await deleteMediaFolder(brewingSteps[i].id);
+      } catch (e) {
+        throw new Error('Problems deleting media folders for brewing process ' + brewingProcessId);
+      }
     }
     return { message: 'Deleted!' };
   }

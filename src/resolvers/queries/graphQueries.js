@@ -1,23 +1,19 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
-const { cachedSensorData } = require('../../utils/caches');
+const { cachedSensorData, activeGraphCache } = require('../../utils/caches');
 
 const graphQueries = {
   async graphs(parent, { active }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    let where = {};
     if (active) {
-      where = { where: { active: active } };
+      // update so that it returns a fresh instance, not cached results
+      return activeGraphCache(ctx, true);
     }
-    const graphs = await ctx.prisma.graph.findMany(where);
-    return graphs;
+    return await ctx.prisma.graph.findMany();
   },
 
   async graph(parent, { id }, ctx) {
     checkUserPermissions(ctx, ['USER'], undefined, id);
-    const graph = await ctx.prisma.graph.findOne({
-      where: { id: parseInt(id) }
-    });
-    return graph;
+    return await ctx.prisma.graph.findOne({ where: { id: parseInt(id) } });
   },
 
   async latestSensorData(parent, args, ctx) {

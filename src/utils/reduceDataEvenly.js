@@ -5,17 +5,17 @@ async function reduceDataEvenly(data, dataPoints) {
   if (!data || !dataPoints || data.length < dataPoints) {
     return data;
   }
-  var reducedData = [];
-  var nthElement = data.length / dataPoints;
+  const nthElement = data.length / dataPoints;
+  let reducedData = [];
 
-  for (var j = 0; j < dataPoints; j++) {
-    let pickPoint = Math.ceil(j * nthElement);
+  for (let i = 0; i < dataPoints; i++) {
+    let pickPoint = Math.ceil(i * nthElement);
     // prevent overshoot and put last graphData entry into last reduced data entry
-    if (pickPoint > data.length - 1 || j == dataPoints - 1) {
-      reducedData[j] = data[data.length - 1];
+    if (pickPoint > data.length - 1 || i == dataPoints - 1) {
+      reducedData[i] = data[data.length - 1];
       break;
     } else {
-      reducedData[j] = data[pickPoint];
+      reducedData[i] = data[pickPoint];
     }
   }
 

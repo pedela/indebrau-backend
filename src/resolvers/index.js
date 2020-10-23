@@ -7,9 +7,10 @@ const { brewingProcessMutations } = require('./mutations/brewingProcessMutations
 const { graphMutations } = require('./mutations/graphMutations');
 const { mediaStreamMutations } = require('./mutations/mediaStreamMutations');
 const { userType } = require('./types/userType');
+const { brewingProcessType } = require('./types/brewingProcessType');
+const { brewingStepType } = require('./types/brewingStepType');
 const { graphType } = require('./types/graphType');
 const { graphDataType } = require('./types/graphDataType');
-const { brewingProcessType } = require('./types/brewingProcessType');
 const { mediaStreamType } = require('./types/mediaStreamType');
 const { mediaFileType } = require('./types/mediaFileType');
 
@@ -28,6 +29,7 @@ module.exports = {
   },
   User: { ...userType },
   BrewingProcess: { ...brewingProcessType },
+  BrewingStep: { ...brewingStepType },
   Graph: { ...graphType },
   GraphData: { ...graphDataType },
   MediaStream: { ...mediaStreamType },

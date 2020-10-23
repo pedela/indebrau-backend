@@ -1,75 +1,69 @@
 type Query {
+  # User Queries
   me: User
-  # admin
-  graphs(
-    active: Boolean # default false (if not set, return all graphs)
-  ): [Graph!]!
-  latestSensorData: [SensorData!]!
-  graph(id: ID!): Graph # admin and participating user
-  # admin
-  mediaStreams(
-    active: Boolean # default false (if not set, return all mediaStreams)
-  ): [MediaStream!]!
-  mediaStream(id: ID!): MediaStream # admin and participating user
+
+  # Brewing Process Queries
   brewingProcesses: [BrewingProcess!]! # admin
   brewingProcess(id: ID!): BrewingProcess # admin and participating users
+
+  # Graph Queries
+  graphs( active: Boolean ): [Graph!]!  # admin, active is default set to false
+  graph(id: ID!): Graph # admin and participating user
+  latestSensorData: [SensorData!]! # admin
+
+  # Media Stream Queries
+  mediaStreams( active: Boolean ): [MediaStream!]! # admin
+  mediaStream(id: ID!): MediaStream # admin and participating user
 }
 
 type Mutation {
+  # User Mutations
   signup(email: String!, name: String!, password: String!): User!
   signin(email: String!, password: String!): User!
   signout: SuccessMessage!
 
-  # admin
-  addGraphData(
-    sensorName: String!
-    sensorTimeStamp: DateTime!
-    sensorValue: String!
-  ): GraphData!
-
-  # admin
-  createGraph(
-    name: String!
-    sensorName: String!
-    updateFrequency: Int!
-    brewingProcessId: ID!
-  ): Graph!
-
-  # admin
-  deleteGraph(id: ID!): SuccessMessage!
-
-  # admin
-  createMediaStream(
-    mediaFilesName: String!
-    overwrite: Boolean!
-    updateFrequency: Int!
-    brewingProcessId: ID!
-  ): MediaStream!
-
-  # admin
-  deleteMediaStream(id: ID!): SuccessMessage!
-
-  # admin
+  # Brewing Process Mutations (Admin)
   createBrewingProcess(
     name: String!
     startNow: Boolean # default: no
     description: String!
   ): BrewingProcess!
 
-  # admin
   advanceBrewingProcess(
     brewingProcessId: ID!
-    newActiveSteps: [BrewingStep!]!
   ): BrewingProcess!
 
-  #admin
   changeBottlesAvailable(
     brewingProcessId: ID!
     bottlesAvailable: Int!
   ): BrewingProcess!
 
-  # admin
-  deleteBrewingProcess(id: ID!): SuccessMessage!
+  deleteBrewingProcess(brewingProcessId: ID!): SuccessMessage!
+
+  # Graph Mutations (Admin)
+  createGraph(
+    sensorName: String!
+    updateFrequency: Int!
+    brewingStepId: ID!
+  ): Graph!
+
+  deleteGraph(graphId: ID!): SuccessMessage!
+
+  addGraphData(
+    sensorName: String!
+    sensorTimeStamp: DateTime!
+    sensorValue: String!
+  ): [GraphData!]!
+
+  # MediaStream Mutations (Admin)
+  createMediaStream(
+    mediaFilesName: String!
+    overwrite: Boolean!
+    updateFrequency: Int!
+    brewingStepId: ID!
+  ): MediaStream!
+
+  deleteMediaStream(mediaStreamId: ID!): SuccessMessage!
 }
 
 type User {
@@ -85,12 +79,20 @@ type BrewingProcess {
   id: ID!
   name: String!
   description: String!
-  activeSteps: [BrewingStep!]
   start: DateTime
   end: DateTime
   bottlesAvailable: Int
-  graphs: [Graph!]
+  brewingSteps: [BrewingStep!]
   participatingUsers: [User!]
+}
+
+type BrewingStep {
+  id: ID!
+  name: StepName!
+  start: DateTime
+  end: DateTime
+  brewingProcess: BrewingProcess!
+  graphs: [Graph!]
   mediaStreams: [MediaStream!]
 }
 
@@ -102,11 +104,9 @@ type SensorData {
 
 type Graph {
   id: ID!
-  name: String!
   sensorName: String!
-  active: Boolean!
   updateFrequency: Int!
-  brewingProcess: BrewingProcess!
+  brewingStep: BrewingStep!
   graphData(dataPoints: Int): [GraphData!]
 }
 
@@ -121,9 +121,8 @@ type MediaStream {
   id: ID!
   mediaFilesName: String!
   overwrite: Boolean!
-  active: Boolean!
   updateFrequency: Int!
-  brewingProcess: BrewingProcess!
+  brewingStep: BrewingStep!
   mediaFiles(dataPoints: Int): [MediaFile!]
 }
 
@@ -141,19 +140,12 @@ type SuccessMessage {
 
 scalar DateTime
 
-enum BrewingStep {
-  MALT_CRUSHING
-  HEATING_UP
-  MASH_IN
-  MASHING
-  HEATING_SPARGE
-  LAUTERING
-  SPARGING
-  BOILING
-  CHILLING
+enum StepName {
+  PREPARING
+  BREWING
   FERMENTING
   CONDITIONING
-  BOTTLED
+  BOTTLING
 }
 
 enum Permission {

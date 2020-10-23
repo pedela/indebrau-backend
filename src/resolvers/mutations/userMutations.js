@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { AuthenticationError } = require('apollo-server-express');
 
 const userMutations = {
   async signup(parent, args, ctx) {
@@ -21,11 +22,11 @@ const userMutations = {
   async signin(parent, { email, password }, ctx) {
     const user = await ctx.prisma.user.findOne({ where: { email } });
     if (!user) {
-      throw new Error(`No such user found for email: ${email}`);
+      throw new AuthenticationError(`No user found for email: ${email}`);
     }
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) {
-      throw new Error('Invalid password');
+      throw new AuthenticationError('Invalid password');
     }
     let token = jwt.sign({ userId: user.id }, process.env.APP_SECRET);
     ctx.res.cookie('token', token, {

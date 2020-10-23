@@ -12,23 +12,19 @@ model BrewingProcess {
   name               String
   description        String
   bottlesAvailable   Int?
-  activeSteps        BrewingStep[]
   start              DateTime?
   end                DateTime?
-  graphs             Graph[]
-  mediaStreams       MediaStream[]
+  brewingSteps       BrewingStep[]
   participatingUsers UserToBrewingProcess[]
 }
 
 model Graph {
-  id               Int             @id @default(autoincrement())
-  name             String
-  sensorName       String
-  active           Boolean
-  updateFrequency  Int
-  brewingProcessId Int?
-  brewingProcess   BrewingProcess? @relation(fields: [brewingProcessId], references: [id])
-  graphData        GraphData[]
+  id              Int          @id @default(autoincrement())
+  sensorName      String
+  updateFrequency Int
+  brewingStepId   Int?
+  brewingStep     BrewingStep? @relation(fields: [brewingStepId], references: [id])
+  graphData       GraphData[]
 }
 
 model GraphData {
@@ -49,14 +45,13 @@ model MediaFile {
 }
 
 model MediaStream {
-  id               Int             @id @default(autoincrement())
-  mediaFilesName   String
-  overwrite        Boolean
-  active           Boolean
-  updateFrequency  Int
-  brewingProcessId Int?
-  brewingProcess   BrewingProcess? @relation(fields: [brewingProcessId], references: [id])
-  mediaFiles       MediaFile[]
+  id              Int          @id @default(autoincrement())
+  mediaFilesName  String
+  overwrite       Boolean
+  updateFrequency Int
+  brewingStepId   Int?
+  brewingStep     BrewingStep? @relation(fields: [brewingStepId], references: [id])
+  mediaFiles      MediaFile[]
 }
 
 model User {
@@ -78,18 +73,15 @@ model UserToBrewingProcess {
   @@unique([userId, brewingProcessId], name: "UserToBrewingProcess_userId_brewingProcessId_key")
 }
 
-enum BrewingStep {
-  BOILING
-  BOTTLED
-  CHILLING
-  CONDITIONING
-  FERMENTING
-  HEATING_SPARGE
-  HEATING_UP
-  MALT_CRUSHING
-  MASHING
-  MASH_IN
-  SPARGING
+model BrewingStep {
+  id               Int             @id @default(autoincrement())
+  name             StepName
+  start            DateTime?
+  end              DateTime?
+  brewingProcessId Int?
+  brewingProcess   BrewingProcess? @relation(fields: [brewingProcessId], references: [id])
+  graphs           Graph[]
+  mediaStreams     MediaStream[]
 }
 
 enum MimeType {
@@ -101,4 +93,12 @@ enum MimeType {
 enum Permission {
   ADMIN
   USER
+}
+
+enum StepName {
+  BOTTLING
+  BREWING
+  CONDITIONING
+  FERMENTING
+  PREPARING
 }

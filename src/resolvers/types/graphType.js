@@ -7,14 +7,12 @@ const graphType = {
       orderBy: { time: 'asc' },
     });
     // reduce returned graph data evenly
-    graphData = reduceDataEvenly(graphData, dataPoints);
-    return graphData;
+    return reduceDataEvenly(graphData, dataPoints);
   },
-  async brewingProcess(parent, args, ctx) {
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne({
-      where: { id: parent.brewingProcessId }
+  async brewingStep(parent, args, ctx) {
+    return await ctx.prisma.brewingStep.findOne({
+      where: { id: parent.brewingStepId }
     });
-    return brewingProcess;
   }
 };
 

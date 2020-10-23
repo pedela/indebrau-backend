@@ -7,11 +7,7 @@ const userType = {
     let { participatingBrewingProcesses } = await ctx.prisma.user.findOne({
       where: { id: parent.id },
       select: {
-        participatingBrewingProcesses: {
-          select: {
-            brewingProcess: {}
-          }
-        }
+        participatingBrewingProcesses: { select: { brewingProcess: {} } }
       }
     });
     // bit of magic to get the processes in an array of the right format...
@@ -21,6 +17,7 @@ const userType = {
     }
     return processes;
   },
+
   async token(parent) {
     return jwt.sign({ userId: parent.id }, process.env.APP_SECRET);
   }

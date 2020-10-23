@@ -1,15 +1,22 @@
-
 /* Helper function that caches active graphs (to speed up inserts). */
 var cachedActiveGraphs = null;
 async function activeGraphCache(ctx, update) {
   if (cachedActiveGraphs == null || update) {
     ctx.logger.app('refreshing active graph list...');
+    cachedActiveGraphs = [];
     try {
-      cachedActiveGraphs = await ctx.prisma.graph.findMany({
-        where: { active: true }
+      const queryResult = await ctx.prisma.brewingProcess.findMany({
+        select: { brewingSteps: { where: { end: null }, select: { graphs: {} } } }
       });
+      if (queryResult) {
+        queryResult.map(process => {
+          process.brewingSteps.map(graphs => {
+            cachedActiveGraphs = cachedActiveGraphs.concat(graphs.graphs);
+          });
+        });
+      }
     } catch (e) {
-      throw new Error('Problems updating active graph cache');
+      throw new Error('Problems updating active graph cache: ' + e);
     }
   }
   return cachedActiveGraphs;
@@ -20,12 +27,20 @@ var cachedMediaStreams = null;
 async function activeMediaStreamsCache(ctx, update) {
   if (cachedMediaStreams == null || update) {
     ctx.logger.app('refreshing active media stream list...');
+    cachedMediaStreams = [];
     try {
-      cachedMediaStreams = await ctx.prisma.mediaStream.findMany({
-        where: { active: true }
+      const queryResult = await ctx.prisma.brewingProcess.findMany({
+        select: { brewingSteps: { where: { end: null }, select: { mediaStreams: {} } } }
       });
+      if (queryResult) {
+        queryResult.map(process => {
+          process.brewingSteps.map(streams => {
+            cachedMediaStreams = cachedMediaStreams.concat(streams.mediaStreams);
+          });
+        });
+      }
     } catch (e) {
-      throw new Error('Problems updating media stream cache');
+      throw new Error('Problems updating media stream cache: ' + e);
     }
   }
   return cachedMediaStreams;
@@ -41,7 +56,7 @@ function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
     };
     sensorDataCache.set(topic, newEntry);
   } else {
-    throw new Error('Sensor cache: missing values to add');
+    throw new Error('Sensor cache: missing values to add!');
   }
 }
 

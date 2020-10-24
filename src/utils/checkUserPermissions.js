@@ -1,7 +1,7 @@
 const { AuthenticationError, ForbiddenError } = require('apollo-server-express');
 
 /* Authorizes users, permissions may be undefined for any permissions acceptable */
-function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId) {
+function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId) {
   if (!ctx.req || !ctx.req.user) {
     throw new AuthenticationError('You must be logged in to do that!');
   }
@@ -9,7 +9,6 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
   const matchedPermissions = ctx.req.user.permissions.filter(
     (permissionTheyHave) => permissionsNeeded.includes(permissionTheyHave)
   );
-
   // not the needed user role
   if (!matchedPermissions.length) {
     throw new ForbiddenError(
@@ -31,21 +30,6 @@ function checkUserPermissions(ctx, permissionsNeeded, brewingProcessId, graphId)
       throw new ForbiddenError(
         `You do not have the right to access brewing process: ${brewingProcessId}`
       );
-    }
-  }
-  // user tries to access graph, check if she participates
-  if (graphId && !ctx.req.user.permissions.includes('ADMIN')) {
-    let found = false;
-    ctx.req.user.participatingBrewingProcesses.map(process => {
-      process.brewingProcess.graphs.map(graph => {
-        if (graph.id == graphId) {
-          found = true;
-        }
-      });
-    });
-    // no permission
-    if (!found) {
-      throw new ForbiddenError(`You do not have the right to access graph: ${graphId}`);
     }
   }
 }

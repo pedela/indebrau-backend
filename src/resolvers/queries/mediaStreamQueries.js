@@ -5,8 +5,7 @@ const mediaStreamQueries = {
   async mediaStreams(parent, { active }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     if (active) {
-      // update so that it returns a fresh instance, not cached results
-      return activeMediaStreamCache(ctx, true);
+      return activeMediaStreamCache(ctx);
     }
     return await ctx.prisma.mediaStream.findMany();
   },

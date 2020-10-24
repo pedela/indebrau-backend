@@ -1,10 +1,12 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const brewingProcessType = {
-  async brewingSteps(parent, args, ctx) {
-    return await ctx.prisma.brewingStep.findMany({
-      where: { brewingProcessId: parent.id }
-    });
+  async brewingSteps(parent, { active }, ctx) {
+    let where = { brewingProcessId: parent.id };
+    if (active) {
+      where = { brewingProcessId: parent.id, end: null, NOT: [{ start: null }] };
+    }
+    return await ctx.prisma.brewingStep.findMany({ where: where });
   },
 
   async participatingUsers(parent, args, ctx) {

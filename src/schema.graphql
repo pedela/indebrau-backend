@@ -8,7 +8,7 @@ type Query {
 
   # Graph Queries
   graphs( active: Boolean ): [Graph!]!  # admin, active is default set to false
-  graph(id: ID!): Graph # admin and participating user
+  graph(id: ID!): Graph # admin
   latestSensorData: [SensorData!]! # admin
 
   # Media Stream Queries
@@ -44,7 +44,8 @@ type Mutation {
   createGraph(
     sensorName: String!
     updateFrequency: Int!
-    brewingStepId: ID!
+    brewingProcessId: ID!
+    brewingStepName: StepName!
   ): Graph!
 
   deleteGraph(graphId: ID!): SuccessMessage!
@@ -60,7 +61,8 @@ type Mutation {
     mediaFilesName: String!
     overwrite: Boolean!
     updateFrequency: Int!
-    brewingStepId: ID!
+    brewingProcessId: ID!
+    brewingStepName: StepName!
   ): MediaStream!
 
   deleteMediaStream(mediaStreamId: ID!): SuccessMessage!
@@ -82,7 +84,7 @@ type BrewingProcess {
   start: DateTime
   end: DateTime
   bottlesAvailable: Int
-  brewingSteps: [BrewingStep!]
+  brewingSteps(active: Boolean): [BrewingStep!] # only active step returned
   participatingUsers: [User!]
 }
 

@@ -10,7 +10,7 @@ const mediaStreamType = {
 
   async brewingStep(parent, args, ctx) {
     return await ctx.prisma.brewingStep.findOne({
-      where: { id: parent.brewingStep }
+      where: { id: parent.brewingStepId }
     });
   }
 };

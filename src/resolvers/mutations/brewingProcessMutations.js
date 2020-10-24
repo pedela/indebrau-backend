@@ -9,13 +9,19 @@ const brewingProcessMutations = {
       name: args.name,
       description: args.description,
     };
-    // start with preparing state (if startNow is true)
+    // start with active preparing step  (if startNow is true)
     if (args.startNow) {
       input.start = new Date().toJSON();
       input.brewingSteps = {
-        create: { name: 'PREPARING', start: input.start }
+        create: [{ name: 'PREPARING', start: input.start }]
       };
     }
+    else {
+      input.brewingSteps = {
+        create: [{ name: 'PREPARING' }]
+      };
+    }
+    input.brewingSteps.create.push({ name: 'BREWING' }, { name: 'FERMENTING' }, { name: 'CONDITIONING' }, { name: 'BOTTLING' });
     return await ctx.prisma.brewingProcess.create({
       data: { ...input }
     });
@@ -33,68 +39,96 @@ const brewingProcessMutations = {
     } else if (brewingProcess.end) {
       throw new Error('Brewing process with id ' + brewingProcessId + ' has already ended!');
     }
-    // advance process, based on previous steps (length of array)
     let data = {};
     let now = new Date().toJSON();
-    switch (brewingProcess.brewingSteps.length) {
-      case (0): {
-        data.start = now;
-        data.brewingSteps = { create: { name: 'PREPARING', start: now } };
-        break;
+    for (let i = 0; i < brewingProcess.brewingSteps.length; i++) {
+      const brewingStep = brewingProcess.brewingSteps[i];
+      // advance process
+      switch (brewingStep.name) {
+        case ('PREPARING'): {
+          if (brewingStep.start == null) {
+            data.start = now;
+            data.brewingSteps = {
+              updateMany: {
+                data: { start: now },
+                where: { name: 'PREPARING' },
+              }
+            };
+          }
+          else if (brewingStep.end == null) {
+            data.brewingSteps = {
+              updateMany: [{
+                data: { end: now },
+                where: { name: 'PREPARING' },
+              }, {
+                data: { start: now },
+                where: { name: 'BREWING' },
+              }]
+            };
+          }
+          break;
+        }
+        case ('BREWING'): {
+          if (!brewingStep.end && brewingStep.start) {
+            data.brewingSteps = {
+              updateMany: [{
+                data: { end: now },
+                where: { name: 'BREWING' },
+              }, {
+                data: { start: now },
+                where: { name: 'FERMENTING' },
+              }]
+            };
+          }
+          break;
+        }
+        case ('FERMENTING'): {
+          if (!brewingStep.end && brewingStep.start) {
+            data.brewingSteps = {
+              updateMany: [{
+                data: { end: now },
+                where: { name: 'FERMENTING' },
+              }, {
+                data: { start: now },
+                where: { name: 'CONDITIONING' },
+              }]
+            };
+          }
+          break;
+        }
+        case ('CONDITIONING'): {
+          if (!brewingStep.end && brewingStep.start) {
+            data.brewingSteps = {
+              updateMany: [{
+                data: { end: now },
+                where: { name: 'CONDITIONING' },
+              }, {
+                data: { start: now },
+                where: { name: 'BOTTLING' },
+              }]
+            };
+          }
+          break;
+        }
+        case ('BOTTLING'): {
+          if (!brewingStep.end && brewingStep.start) {
+            data.brewingSteps = {
+              updateMany: {
+                data: { end: now },
+                where: { name: 'BOTTLING' },
+              }
+            };
+            data.end = now;
+          }
+          break;
+        }
       }
-      case (1): {
-        data.brewingSteps = {
-          create: { name: 'BREWING', start: now },
-          updateMany: {
-            data: { end: now },
-            where: { name: 'PREPARING' },
-          },
-        };
-        break;
-      }
-      case (2): {
-        data.brewingSteps = {
-          create: { name: 'FERMENTING', start: now },
-          updateMany: {
-            data: { end: now },
-            where: { name: 'BREWING' },
-          },
-        };
-        break;
-      }
-      case (3): {
-        data.brewingSteps = {
-          create: { name: 'CONDITIONING', start: now },
-          updateMany: {
-            data: { end: now },
-            where: { name: 'FERMENTING' },
-          },
-        };
-        break;
-      }
-      case (4): {
-        data.brewingSteps = {
-          create: { name: 'BOTTLING', start: now },
-          updateMany: {
-            data: { end: now },
-            where: { name: 'CONDITIONING' },
-          },
-        };
-        break;
-      }
-      // Process ended, no bottles remaining
-      case (5): {
-        data.brewingSteps = {
-          updateMany: {
-            data: { end: now },
-            where: { name: 'BOTTLING' },
-          },
-        };
-        data.end = now;
-        data.bottlesAvailable = 0;
+      // we got our update, no need to continue
+      if (data.brewingSteps) {
         break;
       }
     }
+
     // graphs and media streams could become inactive through this action..
     await activeGraphCache(ctx, true);
     await activeMediaStreamsCache(ctx, true);
@@ -132,7 +166,7 @@ const brewingProcessMutations = {
       try {
         await deleteMediaFolder(brewingSteps[i].id);
       } catch (e) {
-        throw new Error('Problems deleting media folders for brewing process ' + brewingProcessId);
+        throw new Error(`Problems deleting media folders for brewing process ${brewingProcessId}`);
       }
     }
     return { message: 'Deleted!' };

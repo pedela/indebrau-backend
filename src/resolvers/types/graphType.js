@@ -9,6 +9,7 @@ const graphType = {
     // reduce returned graph data evenly
     return reduceDataEvenly(graphData, dataPoints);
   },
+
   async brewingStep(parent, args, ctx) {
     return await ctx.prisma.brewingStep.findOne({
       where: { id: parent.brewingStepId }

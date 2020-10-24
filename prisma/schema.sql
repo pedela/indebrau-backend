@@ -56,7 +56,7 @@ CREATE TABLE "public"."Graph" (
   id SERIAL PRIMARY KEY NOT NULL,
   "sensorName" VARCHAR(255) NOT NULL,
   "updateFrequency" INTEGER NOT NULL,
-  "brewingStepId" INTEGER REFERENCES "public"."BrewingStep"(id) ON DELETE SET NULL
+  "brewingStepId" INTEGER REFERENCES "public"."BrewingStep"(id) ON DELETE CASCADE
 );
 
 CREATE TABLE "public"."GraphData" (

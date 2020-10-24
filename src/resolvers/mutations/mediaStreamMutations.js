@@ -5,25 +5,26 @@ const { createMediaFolder, deleteMediaFolder } = require('../../utils/mediaFileH
 const mediaStreamMutations = {
   async createMediaStream(parent, args, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    // create media stream
-    let createdMediaStream = await ctx.prisma.mediaStream.create(
-      {
-        data: {
-          mediaFilesName: args.mediaFilesName,
-          updateFrequency: args.updateFrequency,
-          overwrite: args.overwrite,
-          brewingStep: {
-            connect: {
-              id: parseInt(args.brewingStepId)
-            }
-          }
-        }
+    // Mind, that it is possible to connect a mediaStream to an already
+    // ended brewing process (step). Then, this stream will not be "active".
+    let steps = await ctx.prisma.brewingStep.findMany({
+      where: {
+        AND: [{ brewingProcessId: parseInt(args.brewingProcessId) },
+        { name: args.brewingStepName }]
       }
-    );
+    });
+    let createdMediaStream = await ctx.prisma.mediaStream.create({
+      data: {
+        mediaFilesName: args.mediaFilesName,
+        overwrite: args.overwrite,
+        updateFrequency: args.updateFrequency,
+        brewingStep: { connect: { id: steps[0].id } }
+      }
+    });
     // update cache (since new stream was added)
     await activeMediaStreamsCache(ctx, true);
     // create folder for media and return
-    await createMediaFolder(args.brewingStepId, createdMediaStream.id);
+    await createMediaFolder(createdMediaStream.brewingStepId, createdMediaStream.id);
     // TODO what if media folder creation fails -> Rollback needed!
     return createdMediaStream;
   },

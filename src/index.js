@@ -31,7 +31,7 @@ const server = new ApolloServer({
     }
     else {
       logger.error(err);
-      return new ApolloError(err);
+      return err;
     }
   },
   context: (req) => ({ ...req, prisma, logger })

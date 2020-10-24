@@ -1,11 +1,11 @@
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
-const { activeMediaStreamCache } = require('../../utils/caches');
+const { activeMediaStreamsCache } = require('../../utils/caches');
 
 const mediaStreamQueries = {
   async mediaStreams(parent, { active }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     if (active) {
-      return activeMediaStreamCache(ctx);
+      return activeMediaStreamsCache(ctx);
     }
     return await ctx.prisma.mediaStream.findMany();
   },

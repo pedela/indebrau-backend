@@ -6,7 +6,7 @@ async function activeGraphCache(ctx, update) {
     cachedActiveGraphs = [];
     try {
       const queryResult = await ctx.prisma.brewingProcess.findMany({
-        select: { brewingSteps: { where: { end: null }, select: { graphs: {} } } }
+        select: { brewingSteps: { where:  {end: null, NOT: [{ start: null }]}, select: { graphs: {} } } }
       });
       if (queryResult) {
         queryResult.map(process => {

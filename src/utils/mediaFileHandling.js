@@ -30,7 +30,7 @@ async function handleMediaUpload(prisma, logger, req) {
         const earliestDate = new Date(mediaTimeStamp).getTime() -
           activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
         // if "old enough"..
-        if (new Date(latestMediaFile.time).getTime() > earliestDate) {
+        if (new Date(latestMediaFile.time).getTime() < earliestDate) {
           // prepare for overwrite
           if (activeMediaStream.overwrite) {
             oldMediaFileId = latestMediaFile.id;

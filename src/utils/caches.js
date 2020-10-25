@@ -30,7 +30,7 @@ async function activeMediaStreamsCache(ctx, update) {
     cachedMediaStreams = [];
     try {
       const queryResult = await ctx.prisma.brewingProcess.findMany({
-        select: { brewingSteps: { where: { end: null }, select: { mediaStreams: {} } } }
+        select: { brewingSteps: { where: {end: null, NOT: [{ start: null }]}, select: { mediaStreams: {} } } }
       });
       if (queryResult) {
         queryResult.map(process => {

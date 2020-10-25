@@ -102,17 +102,17 @@ async function copyAndRenameTempFile(mediaStream, mediaFileName, mediaMimeType) 
   // TODO sync with supported MIME-Types..
   let finalFileEnding;
   switch (mediaMimeType) {
-    case 'IMAGE_PNG':
-      finalFileEnding = '.png';
-      break;
-    case 'IMAGE_JPG':
-      finalFileEnding = '.jpg';
-      break;
-    case 'IMAGE_JEPG':
-      finalFileEnding = '.jpeg';
-      break;
-    default:
-      throw new Error('unsupported MIME-Type');
+  case 'IMAGE_PNG':
+    finalFileEnding = '.png';
+    break;
+  case 'IMAGE_JPG':
+    finalFileEnding = '.jpg';
+    break;
+  case 'IMAGE_JEPG':
+    finalFileEnding = '.jpeg';
+    break;
+  default:
+    throw new Error('unsupported MIME-Type');
   }
   let finalFileName = crypto.randomBytes(16).toString('hex') + finalFileEnding;
   let finalFileNameAndLocation = `${process.env.MAIN_FILES_DIRECTORY}/${mediaStream.brewingStepId}/${mediaStream.id}/${finalFileName}`;
@@ -139,7 +139,7 @@ async function createMediaFolder(brewingStepId, mediaStreamId) {
     // check for temp folder and create if not existing
     if (!fs.existsSync(process.env.MAIN_FILES_DIRECTORY + '/temp')) {
       await fs.mkdir(process.env.MAIN_FILES_DIRECTORY + '/temp'),
-        { recursive: true };
+      { recursive: true };
     }
   } catch (err) {
     throw new Error('Cannot create media folder for media stream ' + mediaStreamId + ': ' + err);

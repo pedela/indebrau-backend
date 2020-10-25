@@ -13,6 +13,7 @@ module.exports = {
     ecmaVersion: 2018,
   },
   rules: {
+    indent: ['error', 2],
     quotes: ['error', 'single'],
     semi: ['error', 'always'],
     'no-console': 'off',

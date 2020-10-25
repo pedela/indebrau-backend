@@ -10,7 +10,7 @@ const mediaStreamMutations = {
     let steps = await ctx.prisma.brewingStep.findMany({
       where: {
         AND: [{ brewingProcessId: parseInt(args.brewingProcessId) },
-        { name: args.brewingStepName }]
+          { name: args.brewingStepName }]
       }
     });
     let createdMediaStream = await ctx.prisma.mediaStream.create({

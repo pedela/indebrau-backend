@@ -9,7 +9,7 @@ const graphMutations = {
     let steps = await ctx.prisma.brewingStep.findMany({
       where: {
         AND: [{ brewingProcessId: parseInt(args.brewingProcessId) },
-        { name: args.brewingStepName }]
+          { name: args.brewingStepName }]
       }
     });
     let createdGraph = await ctx.prisma.graph.create({
@@ -49,7 +49,7 @@ const graphMutations = {
           {
             where: {
               AND: [{ graph: { id: activeGraph.id } },
-              { time: { gt: new Date(earliestDate) } }]
+                { time: { gt: new Date(earliestDate) } }]
             }
           }
         );

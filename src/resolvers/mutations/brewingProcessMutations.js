@@ -45,83 +45,83 @@ const brewingProcessMutations = {
       const brewingStep = brewingProcess.brewingSteps[i];
       // advance process
       switch (brewingStep.name) {
-        case ('PREPARING'): {
-          if (brewingStep.start == null) {
-            data.start = now;
-            data.brewingSteps = {
-              updateMany: {
-                data: { start: now },
-                where: { name: 'PREPARING' },
-              }
-            };
-          }
-          else if (brewingStep.end == null) {
-            data.brewingSteps = {
-              updateMany: [{
-                data: { end: now },
-                where: { name: 'PREPARING' },
-              }, {
-                data: { start: now },
-                where: { name: 'BREWING' },
-              }]
-            };
-          }
-          break;
+      case ('PREPARING'): {
+        if (brewingStep.start == null) {
+          data.start = now;
+          data.brewingSteps = {
+            updateMany: {
+              data: { start: now },
+              where: { name: 'PREPARING' },
+            }
+          };
         }
-        case ('BREWING'): {
-          if (!brewingStep.end && brewingStep.start) {
-            data.brewingSteps = {
-              updateMany: [{
-                data: { end: now },
-                where: { name: 'BREWING' },
-              }, {
-                data: { start: now },
-                where: { name: 'FERMENTING' },
-              }]
-            };
-          }
-          break;
+        else if (brewingStep.end == null) {
+          data.brewingSteps = {
+            updateMany: [{
+              data: { end: now },
+              where: { name: 'PREPARING' },
+            }, {
+              data: { start: now },
+              where: { name: 'BREWING' },
+            }]
+          };
         }
-        case ('FERMENTING'): {
-          if (!brewingStep.end && brewingStep.start) {
-            data.brewingSteps = {
-              updateMany: [{
-                data: { end: now },
-                where: { name: 'FERMENTING' },
-              }, {
-                data: { start: now },
-                where: { name: 'CONDITIONING' },
-              }]
-            };
-          }
-          break;
+        break;
+      }
+      case ('BREWING'): {
+        if (!brewingStep.end && brewingStep.start) {
+          data.brewingSteps = {
+            updateMany: [{
+              data: { end: now },
+              where: { name: 'BREWING' },
+            }, {
+              data: { start: now },
+              where: { name: 'FERMENTING' },
+            }]
+          };
         }
-        case ('CONDITIONING'): {
-          if (!brewingStep.end && brewingStep.start) {
-            data.brewingSteps = {
-              updateMany: [{
-                data: { end: now },
-                where: { name: 'CONDITIONING' },
-              }, {
-                data: { start: now },
-                where: { name: 'BOTTLING' },
-              }]
-            };
-          }
-          break;
+        break;
+      }
+      case ('FERMENTING'): {
+        if (!brewingStep.end && brewingStep.start) {
+          data.brewingSteps = {
+            updateMany: [{
+              data: { end: now },
+              where: { name: 'FERMENTING' },
+            }, {
+              data: { start: now },
+              where: { name: 'CONDITIONING' },
+            }]
+          };
         }
-        case ('BOTTLING'): {
-          if (!brewingStep.end && brewingStep.start) {
-            data.brewingSteps = {
-              updateMany: {
-                data: { end: now },
-                where: { name: 'BOTTLING' },
-              }
-            };
-            data.end = now;
-          }
-          break;
+        break;
+      }
+      case ('CONDITIONING'): {
+        if (!brewingStep.end && brewingStep.start) {
+          data.brewingSteps = {
+            updateMany: [{
+              data: { end: now },
+              where: { name: 'CONDITIONING' },
+            }, {
+              data: { start: now },
+              where: { name: 'BOTTLING' },
+            }]
+          };
         }
+        break;
+      }
+      case ('BOTTLING'): {
+        if (!brewingStep.end && brewingStep.start) {
+          data.brewingSteps = {
+            updateMany: {
+              data: { end: now },
+              where: { name: 'BOTTLING' },
+            }
+          };
+          data.end = now;
+        }
+        break;
+      }
       }
       // we got our update, no need to continue
       if (data.brewingSteps) {

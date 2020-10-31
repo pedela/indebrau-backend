@@ -128,12 +128,11 @@ const brewingProcessMutations = {
         break;
       }
     }
-
+    const updatedBrewingProcess = await ctx.prisma.brewingProcess.update({ where, data });
     // graphs and media streams could become inactive through this action..
     await activeGraphCache(ctx, true);
     await activeMediaStreamsCache(ctx, true);
-
-    return await ctx.prisma.brewingProcess.update({ where, data });
+    return updatedBrewingProcess;
   },
 
   async changeBottlesAvailable(parent, { brewingProcessId, bottlesAvailable }, ctx) {

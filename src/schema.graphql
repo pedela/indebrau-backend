@@ -38,6 +38,11 @@ type Mutation {
     bottlesAvailable: Int!
   ): BrewingProcess!
 
+  addUserToBrewingProcess(
+    brewingProcessId: ID!
+    userId: ID!
+  ): BrewingProcess!
+
   deleteBrewingProcess(brewingProcessId: ID!): SuccessMessage!
 
   # Graph Mutations (Admin)

@@ -16,7 +16,7 @@ async function activeGraphCache(ctx, update) {
         });
       }
     } catch (e) {
-      throw new Error('Problems updating active graph cache: ' + e);
+      throw new Error(`Problems updating active graph cache: ${e}`);
     }
   }
   return cachedActiveGraphs;
@@ -40,7 +40,7 @@ async function activeMediaStreamsCache(ctx, update) {
         });
       }
     } catch (e) {
-      throw new Error('Problems updating media stream cache: ' + e);
+      throw new Error(`Problems updating media stream cache: ${e}`);
     }
   }
   return cachedMediaStreams;

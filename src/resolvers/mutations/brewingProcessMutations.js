@@ -35,9 +35,9 @@ const brewingProcessMutations = {
       { where, select: { end: true, brewingSteps: {} } }
     );
     if (!brewingProcess) {
-      throw new Error('Cannot find brewing process with id ' + brewingProcessId);
+      throw new Error(`Cannot find brewing process with id ${brewingProcessId}`);
     } else if (brewingProcess.end) {
-      throw new Error('Brewing process with id ' + brewingProcessId + ' has already ended!');
+      throw new Error(`Brewing process with id ${brewingProcessId} has already ended!`);
     }
     let data = {};
     let now = new Date().toJSON();
@@ -142,11 +142,37 @@ const brewingProcessMutations = {
 
     let brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
     if (!brewingProcess) {
-      throw new Error('Cannot find brewing process with id ' + brewingProcessId);
+      throw new Error(`Cannot find brewing process with id ${brewingProcessId}`);
     }
     if (!brewingProcess.end) {
-      throw new Error('Brewing process with id' + brewingProcessId + ' not ended yet!');
+      throw new Error(`Brewing process with id${brewingProcessId} not ended yet!`);
     }
+    return await ctx.prisma.brewingProcess.update({ where, data });
+  },
+
+  async addUserToBrewingProcess(parent, { brewingProcessId, userId }, ctx) {
+    checkUserPermissions(ctx, ['ADMIN']);
+    const where = { id: parseInt(brewingProcessId) };
+
+    let brewingProcess = await ctx.prisma.brewingProcess.findOne({ where, select: {id: true, participatingUsers: {select: {userId: true}}}});
+    if (!brewingProcess) {
+      throw new Error(`Cannot find brewing process with id ${brewingProcessId}`);
+    }
+    let participatingUsers = brewingProcess.participatingUsers;
+    participatingUsers.map(user => {
+      if(user.userId == parseInt(userId)){
+        throw new Error(`User with id ${userId} is already participating!`);
+      }
+    });
+    let user = await ctx.prisma.user.findOne({ where: {id: parseInt(userId)} });
+    if (!user) {
+      throw new Error(`Cannot find user with id ${userId}`);
+    }
+    let data = {
+      participatingUsers: { create:
+        { user: {connect: { id: parseInt(userId) } } }
+      }
+    };
     return await ctx.prisma.brewingProcess.update({ where, data });
   },
 

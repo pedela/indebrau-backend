@@ -142,7 +142,7 @@ async function createMediaFolder(brewingStepId, mediaStreamId) {
       { recursive: true };
     }
   } catch (err) {
-    throw new Error('Cannot create media folder for media stream ' + mediaStreamId + ': ' + err);
+    throw new Error(`Cannot create media folder for media stream ${mediaStreamId}: ${err}`);
   }
 }
 
@@ -169,7 +169,7 @@ async function deleteMediaFolder(brewingStepId, mediaStreamId) {
     try {
       await fs.rmdir(folder, { recursive: true });
     } catch (err) {
-      throw new Error('Cannot remove media folder for media stream ' + mediaStreamId + ': ' + err);
+      throw new Error(`Cannot remove media folder for media stream ${mediaStreamId}: ${err}`);
     }
   }
 

@@ -36,7 +36,7 @@ const mediaStreamMutations = {
     // first, get brewing process id of stream
     mediaStream = await ctx.prisma.mediaStream.findOne({ where });
     if (!mediaStream) {
-      throw new Error('Media stream with id ' + mediaStreamId + ' does not exist!');
+      throw new Error(`Media stream with id ${mediaStreamId} does not exist!`);
     }
     // now delete stream
     await ctx.prisma.mediaStream.delete({ where });

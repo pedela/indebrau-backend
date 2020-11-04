@@ -1,4 +1,7 @@
-const { activeGraphCache, addSensorDataToCache } = require('../../utils/caches');
+const {
+  activeGraphCache,
+  addSensorDataToCache,
+} = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 
 const graphMutations = {
@@ -8,15 +11,18 @@ const graphMutations = {
     // ended brewing process (step). Then, this graph will not be "active".
     let steps = await ctx.prisma.brewingStep.findMany({
       where: {
-        AND: [{ brewingProcessId: parseInt(args.brewingProcessId) },
-          { name: args.brewingStepName }]
-      }
+        AND: [
+          { brewingProcessId: parseInt(args.brewingProcessId) },
+          { name: args.brewingStepName },
+        ],
+      },
     });
     let createdGraph = await ctx.prisma.graph.create({
       data: {
-        sensorName: args.sensorName, updateFrequency: args.updateFrequency,
-        brewingStep: { connect: { id: steps[0].id } }
-      }
+        sensorName: args.sensorName,
+        updateFrequency: args.updateFrequency,
+        brewingStep: { connect: { id: steps[0].id } },
+      },
     });
     await activeGraphCache(ctx, true);
     return createdGraph;
@@ -29,7 +35,11 @@ const graphMutations = {
     return { message: 'Deleted!' };
   },
 
-  async addGraphData(parent, { sensorName, sensorValue, sensorTimeStamp }, ctx) {
+  async addGraphData(
+    parent,
+    { sensorName, sensorValue, sensorTimeStamp },
+    ctx
+  ) {
     checkUserPermissions(ctx, ['ADMIN']);
     // add value to sensor data cache first and fetch graphs from cache
     addSensorDataToCache(sensorName, sensorValue, sensorTimeStamp);
@@ -45,14 +55,14 @@ const graphMutations = {
           new Date(sensorTimeStamp).getTime() -
           activeGraph.updateFrequency * 1000; // last entry must be at least this old
         // see if graph data new than this date can be found
-        const oldEnoughLatestGraphData = await ctx.prisma.graphData.findMany(
-          {
-            where: {
-              AND: [{ graph: { id: activeGraph.id } },
-                { time: { gt: new Date(earliestDate) } }]
-            }
-          }
-        );
+        const oldEnoughLatestGraphData = await ctx.prisma.graphData.findMany({
+          where: {
+            AND: [
+              { graph: { id: activeGraph.id } },
+              { time: { gt: new Date(earliestDate) } },
+            ],
+          },
+        });
         // if not, insert
         if (oldEnoughLatestGraphData.length == 0) {
           insertedGraphData.push(
@@ -61,9 +71,9 @@ const graphMutations = {
                 time: sensorTimeStamp,
                 value: sensorValue,
                 graph: {
-                  connect: { id: activeGraph.id }
-                }
-              }
+                  connect: { id: activeGraph.id },
+                },
+              },
             })
           );
         }
@@ -71,10 +81,12 @@ const graphMutations = {
     }
     // check if some graph was found
     if (insertedGraphData.length == 0) {
-      throw new Error(`Did not add to any graphs with sensor name ${sensorName}`);
+      throw new Error(
+        `Did not add to any graphs with sensor name ${sensorName}`
+      );
     }
     return insertedGraphData;
-  }
+  },
 };
 
 module.exports = { graphMutations };

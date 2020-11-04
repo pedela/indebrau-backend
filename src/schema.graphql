@@ -2,18 +2,15 @@ type Query {
   # User Queries
   me: User
   users: [User]! # admin
-
   # Brewing Process Queries
   brewingProcesses: [BrewingProcess!]! # admin
   brewingProcess(id: ID!): BrewingProcess # admin and participating users
-
   # Graph Queries
-  graphs( active: Boolean ): [Graph!]!  # admin, active is default set to false
+  graphs(active: Boolean): [Graph!]! # admin, active is default set to false
   graph(id: ID!): Graph # admin
   latestSensorData: [SensorData!]! # admin
-
   # Media Stream Queries
-  mediaStreams( active: Boolean ): [MediaStream!]! # admin
+  mediaStreams(active: Boolean): [MediaStream!]! # admin
   mediaStream(id: ID!): MediaStream # admin and participating user
 }
 
@@ -30,18 +27,16 @@ type Mutation {
     description: String!
   ): BrewingProcess!
 
-  advanceBrewingProcess(
-    brewingProcessId: ID!
-  ): BrewingProcess!
+  advanceBrewingProcess(brewingProcessId: ID!): BrewingProcess!
 
   changeBottlesAvailable(
     brewingProcessId: ID!
     bottlesAvailable: Int!
   ): BrewingProcess!
 
-  addUserToBrewingProcess(
+  addUsersToBrewingProcess(
     brewingProcessId: ID!
-    userId: ID!
+    userIds: [ID!]!
   ): BrewingProcess!
 
   deleteBrewingProcess(brewingProcessId: ID!): SuccessMessage!

@@ -20,14 +20,15 @@ async function handleMediaUpload(prisma, logger, req) {
       const mediaFileQuery = await prisma.mediaFile.findMany({
         where: { mediaStream: { id: activeMediaStream.id } },
         orderBy: { time: 'asc' },
-        take: 1
+        take: 1,
       });
       let oldMediaFileId = -1;
       let oldPublicIdentifier = -1;
       // if found one "old" file
       if (!mediaFileQuery.length == 0) {
         let latestMediaFile = mediaFileQuery[0];
-        const earliestDate = new Date(mediaTimeStamp).getTime() -
+        const earliestDate =
+          new Date(mediaTimeStamp).getTime() -
           activeMediaStream.updateFrequency * 1000; // last entry must be at least this old
         // if "old enough"..
         if (new Date(latestMediaFile.time).getTime() < earliestDate) {
@@ -36,8 +37,7 @@ async function handleMediaUpload(prisma, logger, req) {
             oldMediaFileId = latestMediaFile.id;
             oldPublicIdentifier = latestMediaFile.publicIdentifier;
           }
-        }
-        else {
+        } else {
           continue; // media too recent
         }
       }
@@ -55,14 +55,14 @@ async function handleMediaUpload(prisma, logger, req) {
             time: mediaTimeStamp,
             publicIdentifier: publicIdentifier,
             mimeType: mediaMimeType,
-            mediaStream: { connect: { id: activeMediaStream.id } }
+            mediaStream: { connect: { id: activeMediaStream.id } },
           },
           update: {
             time: mediaTimeStamp,
             publicIdentifier: publicIdentifier,
             mimeType: mediaMimeType,
-            mediaStream: { connect: { id: activeMediaStream.id } }
-          }
+            mediaStream: { connect: { id: activeMediaStream.id } },
+          },
         })
       );
       // if overwrite is activated and old file was present, remove old file
@@ -96,7 +96,11 @@ async function deleteTempMedia(mediaFileName) {
   );
 }
 
-async function copyAndRenameTempFile(mediaStream, mediaFileName, mediaMimeType) {
+async function copyAndRenameTempFile(
+  mediaStream,
+  mediaFileName,
+  mediaMimeType
+) {
   let tempFileNameAndLocation =
     process.env.MAIN_FILES_DIRECTORY + '/temp/' + mediaFileName + '.temp';
   // TODO sync with supported MIME-Types..
@@ -131,9 +135,11 @@ If brewing step folder does not exist, also creates this parent folder.
 async function createMediaFolder(brewingStepId, mediaStreamId) {
   try {
     await fs.mkdir(
-      process.env.MAIN_FILES_DIRECTORY + '/' +
-      brewingStepId + '/' +
-      mediaStreamId,
+      process.env.MAIN_FILES_DIRECTORY +
+        '/' +
+        brewingStepId +
+        '/' +
+        mediaStreamId,
       { recursive: true }
     );
     // check for temp folder and create if not existing
@@ -142,7 +148,9 @@ async function createMediaFolder(brewingStepId, mediaStreamId) {
       { recursive: true };
     }
   } catch (err) {
-    throw new Error(`Cannot create media folder for media stream ${mediaStreamId}: ${err}`);
+    throw new Error(
+      `Cannot create media folder for media stream ${mediaStreamId}: ${err}`
+    );
   }
 }
 
@@ -160,19 +168,28 @@ async function deleteMediaFolder(brewingStepId, mediaStreamId) {
     try {
       await fs.rmdir(folder, { recursive: true });
     } catch (err) {
-      throw new Error('Cannot remove media folder for brewing step ' + brewingStepId + ': ' + err);
+      throw new Error(
+        'Cannot remove media folder for brewing step ' +
+          brewingStepId +
+          ': ' +
+          err
+      );
     }
   } else {
     folder =
-      process.env.MAIN_FILES_DIRECTORY + '/' +
-      brewingStepId + '/' + mediaStreamId;
+      process.env.MAIN_FILES_DIRECTORY +
+      '/' +
+      brewingStepId +
+      '/' +
+      mediaStreamId;
     try {
       await fs.rmdir(folder, { recursive: true });
     } catch (err) {
-      throw new Error(`Cannot remove media folder for media stream ${mediaStreamId}: ${err}`);
+      throw new Error(
+        `Cannot remove media folder for media stream ${mediaStreamId}: ${err}`
+      );
     }
   }
-
 }
 
 /* Multer "Stuff" */
@@ -185,9 +202,10 @@ const storage = multer.diskStorage({
     cb(
       null,
       req.body.mediaStreamName +
-      new Date(req.body.mediaTimeStamp).getTime() + '.temp'
+        new Date(req.body.mediaTimeStamp).getTime() +
+        '.temp'
     );
-  }
+  },
 });
 
 const fileFilter = (req, file, cb) => {
@@ -217,14 +235,14 @@ const fileFilter = (req, file, cb) => {
 const uploadFile = multer({
   storage: storage,
   limits: {
-    fileSize: 1024 * 1024 * 5
+    fileSize: 1024 * 1024 * 5,
   },
-  fileFilter: fileFilter
+  fileFilter: fileFilter,
 });
 
 module.exports = {
   handleMediaUpload,
   uploadFile,
   createMediaFolder,
-  deleteMediaFolder
+  deleteMediaFolder,
 };

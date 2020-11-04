@@ -1,4 +1,7 @@
-const { activeGraphCache, activeMediaStreamsCache } = require('../../utils/caches');
+const {
+  activeGraphCache,
+  activeMediaStreamsCache,
+} = require('../../utils/caches');
 const { checkUserPermissions } = require('../../utils/checkUserPermissions');
 const { deleteMediaFolder } = require('../../utils/mediaFileHandling');
 
@@ -13,17 +16,21 @@ const brewingProcessMutations = {
     if (args.startNow) {
       input.start = new Date().toJSON();
       input.brewingSteps = {
-        create: [{ name: 'PREPARING', start: input.start }]
+        create: [{ name: 'PREPARING', start: input.start }],
       };
-    }
-    else {
+    } else {
       input.brewingSteps = {
-        create: [{ name: 'PREPARING' }]
+        create: [{ name: 'PREPARING' }],
       };
     }
-    input.brewingSteps.create.push({ name: 'BREWING' }, { name: 'FERMENTING' }, { name: 'CONDITIONING' }, { name: 'BOTTLING' });
+    input.brewingSteps.create.push(
+      { name: 'BREWING' },
+      { name: 'FERMENTING' },
+      { name: 'CONDITIONING' },
+      { name: 'BOTTLING' }
+    );
     return await ctx.prisma.brewingProcess.create({
-      data: { ...input }
+      data: { ...input },
     });
   },
 
@@ -31,13 +38,18 @@ const brewingProcessMutations = {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
     //we only need the steps here
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne(
-      { where, select: { end: true, brewingSteps: {} } }
-    );
+    let brewingProcess = await ctx.prisma.brewingProcess.findOne({
+      where,
+      select: { end: true, brewingSteps: {} },
+    });
     if (!brewingProcess) {
-      throw new Error(`Cannot find brewing process with id ${brewingProcessId}`);
+      throw new Error(
+        `Cannot find brewing process with id ${brewingProcessId}`
+      );
     } else if (brewingProcess.end) {
-      throw new Error(`Brewing process with id ${brewingProcessId} has already ended!`);
+      throw new Error(
+        `Brewing process with id ${brewingProcessId} has already ended!`
+      );
     }
     let data = {};
     let now = new Date().toJSON();
@@ -45,78 +57,89 @@ const brewingProcessMutations = {
       const brewingStep = brewingProcess.brewingSteps[i];
       // advance process
       switch (brewingStep.name) {
-      case ('PREPARING'): {
+      case 'PREPARING': {
         if (brewingStep.start == null) {
           data.start = now;
           data.brewingSteps = {
             updateMany: {
               data: { start: now },
               where: { name: 'PREPARING' },
-            }
+            },
           };
-        }
-        else if (brewingStep.end == null) {
+        } else if (brewingStep.end == null) {
           data.brewingSteps = {
-            updateMany: [{
-              data: { end: now },
-              where: { name: 'PREPARING' },
-            }, {
-              data: { start: now },
-              where: { name: 'BREWING' },
-            }]
+            updateMany: [
+              {
+                data: { end: now },
+                where: { name: 'PREPARING' },
+              },
+              {
+                data: { start: now },
+                where: { name: 'BREWING' },
+              },
+            ],
           };
         }
         break;
       }
-      case ('BREWING'): {
+      case 'BREWING': {
         if (!brewingStep.end && brewingStep.start) {
           data.brewingSteps = {
-            updateMany: [{
-              data: { end: now },
-              where: { name: 'BREWING' },
-            }, {
-              data: { start: now },
-              where: { name: 'FERMENTING' },
-            }]
+            updateMany: [
+              {
+                data: { end: now },
+                where: { name: 'BREWING' },
+              },
+              {
+                data: { start: now },
+                where: { name: 'FERMENTING' },
+              },
+            ],
           };
         }
         break;
       }
-      case ('FERMENTING'): {
+      case 'FERMENTING': {
         if (!brewingStep.end && brewingStep.start) {
           data.brewingSteps = {
-            updateMany: [{
-              data: { end: now },
-              where: { name: 'FERMENTING' },
-            }, {
-              data: { start: now },
-              where: { name: 'CONDITIONING' },
-            }]
+            updateMany: [
+              {
+                data: { end: now },
+                where: { name: 'FERMENTING' },
+              },
+              {
+                data: { start: now },
+                where: { name: 'CONDITIONING' },
+              },
+            ],
           };
         }
         break;
       }
-      case ('CONDITIONING'): {
+      case 'CONDITIONING': {
         if (!brewingStep.end && brewingStep.start) {
           data.brewingSteps = {
-            updateMany: [{
-              data: { end: now },
-              where: { name: 'CONDITIONING' },
-            }, {
-              data: { start: now },
-              where: { name: 'BOTTLING' },
-            }]
+            updateMany: [
+              {
+                data: { end: now },
+                where: { name: 'CONDITIONING' },
+              },
+              {
+                data: { start: now },
+                where: { name: 'BOTTLING' },
+              },
+            ],
           };
         }
         break;
       }
-      case ('BOTTLING'): {
+      case 'BOTTLING': {
         if (!brewingStep.end && brewingStep.start) {
           data.brewingSteps = {
             updateMany: {
               data: { end: now },
               where: { name: 'BOTTLING' },
-            }
+            },
           };
           data.end = now;
         }
@@ -128,14 +151,21 @@ const brewingProcessMutations = {
         break;
       }
     }
-    const updatedBrewingProcess = await ctx.prisma.brewingProcess.update({ where, data });
+    const updatedBrewingProcess = await ctx.prisma.brewingProcess.update({
+      where,
+      data,
+    });
     // graphs and media streams could become inactive through this action..
     await activeGraphCache(ctx, true);
     await activeMediaStreamsCache(ctx, true);
     return updatedBrewingProcess;
   },
 
-  async changeBottlesAvailable(parent, { brewingProcessId, bottlesAvailable }, ctx) {
+  async changeBottlesAvailable(
+    parent,
+    { brewingProcessId, bottlesAvailable },
+    ctx
+  ) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
     const data = { bottlesAvailable: bottlesAvailable };
@@ -150,29 +180,37 @@ const brewingProcessMutations = {
     return await ctx.prisma.brewingProcess.update({ where, data });
   },
 
-  async addUserToBrewingProcess(parent, { brewingProcessId, userId }, ctx) {
+  async addUsersToBrewingProcess(parent, { brewingProcessId, userIds }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
 
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne({ where, select: {id: true, participatingUsers: {select: {userId: true}}}});
+    let brewingProcess = await ctx.prisma.brewingProcess.findOne({
+      where,
+      select: { id: true, participatingUsers: { select: { userId: true } } },
+    });
     if (!brewingProcess) {
       throw new Error(`Cannot find brewing process with id ${brewingProcessId}`);
     }
+    let data = { participatingUsers: { create: [] } };
     let participatingUsers = brewingProcess.participatingUsers;
-    participatingUsers.map(user => {
-      if(user.userId == parseInt(userId)){
-        throw new Error(`User with id ${userId} is already participating!`);
-      }
+    userIds.map((userId) => {
+      participatingUsers.map((user) => {
+        if (user.userId == parseInt(userId)) {
+          throw new Error(`User with id ${userId} is already participating!`);
+        }
+      });
+      data.participatingUsers.create.push({
+        user: { connect: { id: parseInt(userId) } },
+      });
     });
-    let user = await ctx.prisma.user.findOne({ where: {id: parseInt(userId)} });
-    if (!user) {
-      throw new Error(`Cannot find user with id ${userId}`);
-    }
-    let data = {
-      participatingUsers: { create:
-        { user: {connect: { id: parseInt(userId) } } }
+    for (let userId of userIds) {
+      let user = await ctx.prisma.user.findOne({
+        where: { id: parseInt(userId) },
+      });
+      if (!user) {
+        throw new Error(`Cannot find user with id ${userId}`);
       }
-    };
+    }
     return await ctx.prisma.brewingProcess.update({ where, data });
   },
 
@@ -181,7 +219,7 @@ const brewingProcessMutations = {
     // delete and return steps to delete folders afterwards
     const { brewingSteps } = await ctx.prisma.brewingProcess.delete({
       where: { id: parseInt(brewingProcessId) },
-      select: { brewingSteps: {} }
+      select: { brewingSteps: {} },
     });
     // update caches (associated graphs and streams are deleted cascadingly)
     await activeGraphCache(ctx, true);
@@ -191,11 +229,13 @@ const brewingProcessMutations = {
       try {
         await deleteMediaFolder(brewingSteps[i].id);
       } catch (e) {
-        throw new Error(`Problems deleting media folders for brewing process ${brewingProcessId}`);
+        throw new Error(
+          `Problems deleting media folders for brewing process ${brewingProcessId}`
+        );
       }
     }
     return { message: 'Deleted!' };
-  }
+  },
 };
 
 module.exports = { brewingProcessMutations };

@@ -1,6 +1,7 @@
 type Query {
   # User Queries
   me: User
+  users: [User]! # admin
 
   # Brewing Process Queries
   brewingProcesses: [BrewingProcess!]! # admin

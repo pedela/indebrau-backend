@@ -85,9 +85,9 @@ model BrewingStep {
 }
 
 enum MimeType {
-  IMAGE_JPEG
-  IMAGE_JPG
   IMAGE_PNG
+  IMAGE_JPG
+  IMAGE_JPEG
 }
 
 enum Permission {
@@ -96,9 +96,9 @@ enum Permission {
 }
 
 enum StepName {
-  BOTTLING
-  BREWING
-  CONDITIONING
-  FERMENTING
   PREPARING
+  BREWING
+  FERMENTING
+  CONDITIONING
+  BOTTLING
 }

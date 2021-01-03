@@ -46,7 +46,7 @@ async function activeMediaStreamsCache(ctx, update) {
   return cachedMediaStreams;
 }
 
-/* Cache all incoming sensor data (regardless of graphs) */
+/* Cache all incoming sensor data (regardless of graphs) for up to 48h */
 var sensorDataCache = new Map();
 function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
   if (topic != null && sensorValue != null && sensorTimeStamp != null) {
@@ -60,7 +60,13 @@ function addSensorDataToCache(topic, sensorValue, sensorTimeStamp) {
   }
 }
 
+/* Returns sensor data cache. Removes values older than 48h */
 function cachedSensorData() {
+  sensorDataCache.forEach((value, key) => {
+    if(new Date(value.sensorTimeStamp).getTime() < new Date() - 48 * 60 * 60 * 1000) { // 48h
+      sensorDataCache.delete(key);
+    }
+  });
   return sensorDataCache;
 }
 

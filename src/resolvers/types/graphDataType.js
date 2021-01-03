@@ -1,6 +1,6 @@
 const graphDataType = {
   async graph(parent, args, ctx) {
-    return await ctx.prisma.graph.findOne({ where: { id: parent.graphId } });
+    return await ctx.prisma.graph.findUnique({ where: { id: parent.graphId } });
   }
 };
 

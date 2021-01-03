@@ -4,7 +4,7 @@ const userType = {
   // no auth neeeded here, since a user can only be
   // accessed by admins and the user herself
   async participatingBrewingProcesses(parent, args, ctx) {
-    let { participatingBrewingProcesses } = await ctx.prisma.user.findOne({
+    let { participatingBrewingProcesses } = await ctx.prisma.user.findUnique({
       where: { id: parent.id },
       select: {
         participatingBrewingProcesses: { select: { brewingProcess: {} } }

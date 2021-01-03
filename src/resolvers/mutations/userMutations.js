@@ -20,7 +20,7 @@ const userMutations = {
   },
 
   async signin(parent, { email, password }, ctx) {
-    const user = await ctx.prisma.user.findOne({ where: { email } });
+    const user = await ctx.prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new AuthenticationError(`No user found for email: ${email}`);
     }

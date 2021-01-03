@@ -12,7 +12,7 @@ const brewingStepType = {
   },
 
   async brewingProcess(parent, args, ctx) {
-    return await ctx.prisma.brewingProcess.findOne({
+    return await ctx.prisma.brewingProcess.findUnique({
       where: { id: parent.brewingProcessId }
     });
   },

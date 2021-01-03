@@ -38,7 +38,7 @@ const brewingProcessMutations = {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
     //we only need the steps here
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne({
+    let brewingProcess = await ctx.prisma.brewingProcess.findUnique({
       where,
       select: { end: true, brewingSteps: {} },
     });
@@ -170,7 +170,7 @@ const brewingProcessMutations = {
     const where = { id: parseInt(brewingProcessId) };
     const data = { bottlesAvailable: bottlesAvailable };
 
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne({ where });
+    let brewingProcess = await ctx.prisma.brewingProcess.findUnique({ where });
     if (!brewingProcess) {
       throw new Error(`Cannot find brewing process with id ${brewingProcessId}`);
     }
@@ -184,7 +184,7 @@ const brewingProcessMutations = {
     checkUserPermissions(ctx, ['ADMIN']);
     const where = { id: parseInt(brewingProcessId) };
 
-    let brewingProcess = await ctx.prisma.brewingProcess.findOne({
+    let brewingProcess = await ctx.prisma.brewingProcess.findUnique({
       where,
       select: { id: true, participatingUsers: { select: { userId: true } } },
     });
@@ -204,7 +204,7 @@ const brewingProcessMutations = {
       });
     });
     for (let userId of userIds) {
-      let user = await ctx.prisma.user.findOne({
+      let user = await ctx.prisma.user.findUnique({
         where: { id: parseInt(userId) },
       });
       if (!user) {

@@ -65,7 +65,7 @@ app.use(async (req, res, next) => {
     return res.status(401).end('unauthorized, please use correct credentials..');
   }
   if (userId) {
-    const user = await prisma.user.findOne({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
         participatingBrewingProcesses: {

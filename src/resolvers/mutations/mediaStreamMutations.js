@@ -34,7 +34,7 @@ const mediaStreamMutations = {
     const where = { id: parseInt(mediaStreamId) };
     let mediaStream;
     // first, get brewing process id of stream
-    mediaStream = await ctx.prisma.mediaStream.findOne({ where });
+    mediaStream = await ctx.prisma.mediaStream.findUnique({ where });
     if (!mediaStream) {
       throw new Error(`Media stream with id ${mediaStreamId} does not exist!`);
     }

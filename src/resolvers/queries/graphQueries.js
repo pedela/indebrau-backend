@@ -12,7 +12,7 @@ const graphQueries = {
 
   async graph(parent, { id }, ctx) {
     checkUserPermissions(ctx, ['ADMIN']);
-    return await ctx.prisma.graph.findOne({ where: { id: parseInt(id) } });
+    return await ctx.prisma.graph.findUnique({ where: { id: parseInt(id) } });
   },
 
   async latestSensorData(parent, args, ctx) {

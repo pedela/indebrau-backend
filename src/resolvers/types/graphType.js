@@ -11,7 +11,7 @@ const graphType = {
   },
 
   async brewingStep(parent, args, ctx) {
-    return await ctx.prisma.brewingStep.findOne({
+    return await ctx.prisma.brewingStep.findUnique({
       where: { id: parent.brewingStepId }
     });
   }
